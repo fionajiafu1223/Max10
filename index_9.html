@@ -1,0 +1,3594 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>圣多纳释放法 · 内心疗愈</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Noto+Sans+SC:wght@300;400&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    overflow: hidden; position: relative;
+    background: linear-gradient(180deg, #b8daf5 0%, #6aaee0 38%, #2e82cc 52%, #0f4a8a 100%);
+  }
+
+  /* ── SKY CLOUDS ── */
+  .sky-clouds {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 1;
+    overflow: hidden;
+  }
+  .cloud {
+    position: absolute;
+    background: rgba(255,255,255,0.38);
+    border-radius: 50px;
+    animation: driftCloud linear infinite;
+    filter: blur(2px);
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: rgba(255,255,255,0.38);
+    border-radius: 50%;
+  }
+  .cloud::before { width: 55%; height: 140%; top: -35%; left: 15%; }
+  .cloud::after  { width: 40%; height: 120%; top: -25%; left: 50%; }
+  @keyframes driftCloud {
+    from { transform: translateX(-200px); }
+    to   { transform: translateX(calc(100vw + 200px)); }
+  }
+
+  /* underwater rays removed */
+
+  /* ── HEADER ── */
+  .header {
+    position: relative; z-index: 20;
+    text-align: center;
+    padding: 32px 20px 4px;
+  }
+  .header h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.42rem; font-weight: 400;
+    color: #fff; letter-spacing: 0.18em;
+    text-shadow: 0 1px 10px rgba(0,60,120,0.5), 0 0 2px rgba(255,255,255,0.3);
+  }
+  .header p {
+    font-size: 0.74rem; color: rgba(230,245,255,0.95);
+    margin-top: 4px; letter-spacing: 0.12em; font-weight: 400;
+    text-shadow: 0 1px 6px rgba(0,40,100,0.35);
+  }
+
+  /* ── WATER SURFACE SVG ── */
+  .water-surface {
+    position: fixed; left: 0; width: 100%;
+    pointer-events: none; z-index: 10;
+  }
+
+  /* ── BUBBLE SCENE ── */
+  .scene {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 8;
+    overflow: hidden;
+  }
+
+  /* ── BUBBLES ── */
+  .bubble {
+    position: fixed;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 400;
+    color: rgba(255,255,255,0.92);
+    cursor: pointer;
+    border: 2px solid rgba(180,230,255,0.7);
+    background: radial-gradient(circle at 32% 28%, rgba(200,230,255,0.55), rgba(60,120,220,0.38));
+    box-shadow: 0 2px 12px rgba(0,60,160,0.28), inset 0 1px 0 rgba(255,255,255,0.38);
+    backdrop-filter: blur(3px);
+    text-shadow: 0 1px 6px rgba(0,30,80,0.6);
+    color: rgba(255,255,255,1);
+    user-select: none;
+    white-space: pre-line;
+    line-height: 1.35;
+  }
+  .bubble.idle:hover { filter: brightness(1.18); transform: scale(1.06); animation-play-state: paused; }
+  .bubble.idle:active { transform: scale(0.93); }
+
+  .bubble.idle.bc {
+    background: radial-gradient(circle at 35% 30%, rgba(255,192,210,0.58), rgba(187,46,77,0.38));
+    border: 1.5px solid rgba(246,134,160,0.68);
+    box-shadow: 0 0 14px 5px rgba(192,51,82,0.22), 0 0 36px 12px rgba(192,51,82,0.09), inset 0 1px 0 rgba(255,248,252,0.35);
+    color: rgba(255,240,245,0.92);
+    text-shadow: 0 1px 5px rgba(55,0,14,0.55);
+  }
+  .bubble.idle.ba {
+    background: radial-gradient(circle at 35% 30%, rgba(153,251,200,0.58), rgba(20,122,65,0.38));
+    border: 1.5px solid rgba(87,198,134,0.68);
+    box-shadow: 0 0 14px 5px rgba(24,134,73,0.22), 0 0 36px 12px rgba(24,134,73,0.09), inset 0 1px 0 rgba(234,255,244,0.35);
+    color: rgba(238,255,245,0.92);
+    text-shadow: 0 1px 5px rgba(0,35,12,0.55);
+  }
+  .bubble.idle.bs {
+    background: radial-gradient(circle at 35% 30%, rgba(161,202,255,0.58), rgba(38,69,207,0.38));
+    border: 1.5px solid rgba(104,150,255,0.68);
+    box-shadow: 0 0 14px 5px rgba(43,74,219,0.22), 0 0 36px 12px rgba(43,74,219,0.09), inset 0 1px 0 rgba(240,245,255,0.35);
+    color: rgba(238,244,255,0.92);
+    text-shadow: 0 1px 5px rgba(0,8,50,0.55);
+  }
+
+  /* 光晕脉动动画 */
+  @keyframes auraPulse {
+    0%   { box-shadow: 0 0 10px 3px var(--aura), 0 0 28px 8px var(--aura-far), inset 0 1px 0 rgba(255,255,255,0.35); }
+    50%  { box-shadow: 0 0 20px 8px var(--aura), 0 0 48px 16px var(--aura-far), inset 0 1px 0 rgba(255,255,255,0.35); }
+    100% { box-shadow: 0 0 10px 3px var(--aura), 0 0 28px 8px var(--aura-far), inset 0 1px 0 rgba(255,255,255,0.35); }
+  }
+  .bubble.idle.bc { --aura: rgba(145,38,62,0.22); --aura-far: rgba(145,38,62,0.09); animation: auraPulse 3.2s ease-in-out infinite; }
+  .bubble.idle.ba { --aura: rgba(18,100,55,0.22); --aura-far: rgba(18,100,55,0.09); animation: auraPulse 3.6s ease-in-out infinite; }
+  .bubble.idle.bs { --aura: rgba(32,56,165,0.22); --aura-far: rgba(32,56,165,0.09); animation: auraPulse 4.0s ease-in-out infinite; }
+
+  .bubble.idle { animation: none; }
+  .bubble.rising { cursor: default; z-index: 12; pointer-events: none; }
+
+  .bubble.at-surface {
+    cursor: default; z-index: 15; pointer-events: none;
+    border: none !important;
+    box-shadow: 0 6px 28px rgba(0,100,200,0.28), inset 0 2px 0 rgba(255,255,255,0.5) !important;
+    color: #0e2840 !important;
+    text-shadow: none !important;
+    backdrop-filter: blur(6px);
+  }
+  .bubble.at-surface.bc { background: radial-gradient(circle at 34% 28%, rgba(255,210,220,0.88), rgba(210,80,110,0.65)) !important; color: #3a0a18 !important; }
+  .bubble.at-surface.ba { background: radial-gradient(circle at 34% 28%, rgba(200,255,225,0.88), rgba(50,170,105,0.65)) !important; color: #063020 !important; }
+  .bubble.at-surface.bs { background: radial-gradient(circle at 34% 28%, rgba(210,225,255,0.88), rgba(70,110,220,0.65)) !important; color: #080e38 !important; }
+
+  .surf-btn {
+    position: fixed; z-index: 16;
+    width: 62px; height: 62px; border-radius: 50%; border: none;
+    font-family: 'Noto Serif SC', serif; font-size: 0.74rem; font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; line-height: 1.3;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.15s ease;
+  }
+  .surf-btn.show { opacity: 1; pointer-events: auto; }
+  .surf-deny, .surf-allow {
+    background: radial-gradient(circle at 38% 32%, rgba(255,255,255,0.98), rgba(200,215,235,0.88));
+    color: #1a3050; font-weight: 500;
+    border: none;
+    box-shadow:
+      inset 0 1.5px 2px rgba(255,255,255,1),
+      inset 0 -2px 4px rgba(160,180,210,0.5),
+      0 6px 20px rgba(0,20,60,0.35),
+      0 2px 6px rgba(0,10,40,0.25),
+      0 1px 0 rgba(0,0,0,0.12);
+    text-shadow: none;
+  }
+  .surf-btn:hover {
+    background: radial-gradient(circle at 38% 32%, rgba(255,255,255,1), rgba(215,228,248,0.92));
+    transform: scale(1.08) translateY(-2px);
+    box-shadow:
+      inset 0 1.5px 2px rgba(255,255,255,1),
+      inset 0 -2px 4px rgba(160,180,210,0.45),
+      0 10px 28px rgba(0,20,60,0.4),
+      0 3px 8px rgba(0,10,40,0.25);
+  }
+  .surf-btn:active {
+    background: radial-gradient(circle at 38% 32%, rgba(235,240,250,0.98), rgba(190,205,228,0.9));
+    transform: scale(0.96) translateY(2px);
+    box-shadow:
+      inset 0 1px 3px rgba(140,160,200,0.4),
+      inset 0 2px 5px rgba(0,0,0,0.08),
+      0 2px 8px rgba(0,20,60,0.28);
+  }
+
+  .bubble.at-surface.bm {
+    background: radial-gradient(circle at 34% 28%, rgba(235,240,255,0.95), rgba(160,120,220,0.7)) !important;
+    border: 2px solid rgba(200,180,255,0.85) !important;
+    color: #1a0a38 !important;
+  }
+  .bubble.at-surface.bm3 {
+    background: radial-gradient(circle at 34% 28%, rgba(255,240,220,0.95), rgba(180,130,80,0.65)) !important;
+    border: 2px solid rgba(255,210,140,0.85) !important;
+    color: #2a1400 !important;
+  }
+
+  @keyframes escapeToSky {
+    0%   { opacity: 1;   transform: translateY(0)     scale(1); }
+    15%  { opacity: 0.95; transform: translateY(-50px)  scale(1.06); }
+    55%  { opacity: 0.5;  transform: translateY(-180px) scale(0.74); }
+    100% { opacity: 0;   transform: translateY(-400px) scale(0.08); }
+  }
+  .go-sky {
+    animation: escapeToSky 1.9s cubic-bezier(0.22,0.58,0.38,0.96) forwards !important;
+    pointer-events: none !important;
+    z-index: 18 !important;
+  }
+
+  /* Underwater ambient particles */
+  .uw-particle {
+    position: absolute; border-radius: 50%;
+    background: rgba(140,210,255,0.2);
+    animation: uwFloat linear infinite;
+    pointer-events: none;
+  }
+  @keyframes uwFloat {
+    0%   { transform: translateY(0); opacity: 0; }
+    10%  { opacity: 0.5; }
+    90%  { opacity: 0.12; }
+    100% { transform: translateY(-60vh); opacity: 0; }
+  }
+
+  .toast {
+    position: fixed; bottom: 58px; left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
+    color: #0e2840; padding: 9px 24px; border-radius: 40px;
+    font-family: 'Noto Serif SC', serif; font-size: 0.84rem; letter-spacing: 0.04em;
+    opacity: 0; transition: all 0.38s ease; pointer-events: none; z-index: 200;
+    white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .instruction {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    font-family: 'Noto Serif SC', serif; font-size: 0.72rem;
+    color: rgba(220,240,255,0.75); letter-spacing: 0.06em;
+    text-shadow: 0 1px 4px rgba(0,40,100,0.4);
+    text-align: center; white-space: nowrap;
+  }
+  .counter {
+    position: fixed; bottom: 8px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    font-family: 'Noto Serif SC', serif; font-size: 0.65rem;
+    color: rgba(180,220,255,0.6); letter-spacing: 0.1em;
+    text-shadow: 0 1px 4px rgba(0,40,60,0.4);
+  }
+
+
+  .gain-input-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .gain-input-row input {
+    flex: 1; padding: 9px 14px;
+    border: 1.5px solid rgba(100,160,220,0.4); border-radius: 12px;
+    background: rgba(255,255,255,0.7);
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.88rem; color: #0e2840;
+    outline: none; transition: border-color 0.2s;
+  }
+  .gain-input-row input:focus { border-color: rgba(80,140,220,0.8); }
+  .gain-input-row button {
+    padding: 9px 16px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #4a9fd4, #2a7abf); color: #fff;
+    font-family: 'Noto Serif SC', serif; font-size: 0.84rem;
+    cursor: pointer; white-space: nowrap;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .gain-input-row button:hover { opacity: 0.88; transform: scale(1.04); }
+  .gain-cats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .gain-cat {
+    padding: 4px 10px; border-radius: 20px;
+    border: 1.5px solid rgba(100,160,220,0.4);
+    background: rgba(255,255,255,0.55);
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.72rem;
+    color: #2a5080; cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .gain-cat:hover { background: rgba(200,230,255,0.7); }
+  .gain-cat.active {
+    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
+    border-color: rgba(74,159,212,0.6); color: #fff;
+  }
+  .gain-filter-row {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px;
+  }
+  .gain-filter-label { font-size: 0.72rem; color: #5a7aa0; font-family: 'Noto Sans SC', sans-serif; }
+  .gain-filter {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid rgba(100,160,220,0.4);
+    background: rgba(255,255,255,0.55);
+    font-size: 0.9rem; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.18s ease;
+  }
+  .gain-filter[data-filter="all"] { width: auto; padding: 0 10px; font-size: 0.72rem; font-family: 'Noto Sans SC', sans-serif; color: #5a7aa0; }
+  .gain-filter:hover { background: rgba(200,230,255,0.7); }
+  .gain-filter.active {
+    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
+    border-color: rgba(74,159,212,0.6); color: #fff;
+  }
+  .gain-section-title {
+    font-size: 0.78rem; color: #2a5080; letter-spacing: 0.08em;
+    margin: 14px 0 8px; font-weight: 600;
+  }
+  .gain-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .gain-item {
+    background: rgba(255,255,255,0.62); border-radius: 12px;
+    padding: 10px 14px; border: 1px solid rgba(100,160,220,0.2);
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .gain-item.shared { background: rgba(230,245,255,0.62); }
+  .gain-text { font-size: 0.84rem; color: #0e2840; line-height: 1.5; }
+  .gain-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: rgba(74,159,212,0.15); border-radius: 10px;
+    padding: 2px 8px; font-size: 0.68rem; color: #2a6090;
+    font-family: 'Noto Sans SC', sans-serif; align-self: flex-start;
+  }
+  .gain-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 2px;
+  }
+  .gain-meta { font-size: 0.64rem; color: #7a9ab0; font-family: 'Noto Sans SC', sans-serif; }
+  .gain-like-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: none; border: 1px solid rgba(100,160,220,0.25);
+    border-radius: 20px; padding: 3px 10px;
+    font-size: 0.7rem; color: #7a9ab0;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer; transition: all 0.18s ease;
+    line-height: 1;
+  }
+  .gain-like-btn:hover { background: rgba(255,100,130,0.08); border-color: rgba(255,100,130,0.4); color: #e05080; }
+  .gain-like-btn.liked { background: rgba(255,100,130,0.12); border-color: rgba(255,100,130,0.5); color: #e05080; }
+  .gain-like-count { font-weight: 600; }
+  .gain-sort-btn {
+    padding: 4px 10px; border-radius: 14px;
+    border: 1.5px solid rgba(100,160,220,0.35);
+    background: rgba(255,255,255,0.5);
+    font-size: 0.68rem; color: #5a7aa0;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer; transition: all 0.18s ease;
+  }
+  .gain-sort-btn:hover { background: rgba(200,230,255,0.7); }
+  .gain-sort-btn.active {
+    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
+    border-color: rgba(74,159,212,0.6); color: #fff;
+  }
+  .gain-loading { font-size: 0.78rem; color: #8aaac0; text-align: center; padding: 10px 0; }
+  .gain-close-btn {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none; font-size: 1.1rem;
+    color: #5a7aa0; cursor: pointer; line-height: 1;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .gain-close-btn:hover { color: #0e2840; transform: scale(1.2); }
+
+
+  /* ── MUSIC BUTTON & PANEL ── */
+  .music-btn {
+    position: fixed; top: 16px; right: 62px; z-index: 600;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    color: #fff; font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 14px rgba(0,40,100,0.18);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .music-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.32); }
+  .music-btn.playing {
+    background: rgba(100,190,255,0.28);
+    border-color: rgba(160,225,255,0.55);
+  }
+  .music-btn.playing .music-icon {
+    display: inline-block;
+    animation: musicRotate 4s linear infinite;
+  }
+  @keyframes musicRotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .music-panel {
+    position: fixed; top: 50%; left: 50%; transform: translateX(-50%) translateY(-48%) scale(0.97); z-index: 590;
+    width: min(390px, 90vw);
+    background: rgba(22,48,100,0.93); backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(0,20,70,0.55);
+    padding: 16px 14px 14px;
+    max-height: min(75vh, 560px); overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    opacity: 0; pointer-events: none; visibility: hidden;
+    /* transform set in base rule */
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  .music-panel.open { opacity: 1; pointer-events: auto; visibility: visible; transform: translateX(-50%) translateY(-50%) scale(1); }
+  .music-panel-title {
+    display: block;
+    font-family: 'Noto Serif SC', serif; font-size: 0.8rem;
+    color: rgba(200,220,255,0.65); letter-spacing: 0.22em;
+    text-align: center; margin-bottom: 12px;
+  }
+  .music-tracks { display: flex; flex-direction: column; gap: 8px; }
+  .music-track {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 14px; border-radius: 12px; cursor: pointer;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: background 0.18s, border-color 0.18s;
+  }
+  .music-track:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.18); }
+  .music-track.active { background: rgba(60,120,220,0.3); border-color: rgba(120,180,255,0.4); }
+  .music-track-icon { font-size: 1.5rem; width: 36px; text-align: center; flex-shrink: 0; }
+  .music-track-info { flex: 1; min-width: 0; }
+  .music-play-btn {
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.14); color: rgba(220,240,255,0.9);
+    font-size: 0.8rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.18s, transform 0.12s;
+  }
+  .music-play-btn:hover { background: rgba(255,255,255,0.26); transform: scale(1.1); }
+  .music-play-btn.playing { background: rgba(60,120,220,0.55); color: rgba(200,230,255,1); }
+  .music-track-name {
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.9rem;
+    font-weight: 400; color: rgba(230,245,255,0.95);
+    letter-spacing: 0.03em;
+  }
+  .music-track-desc {
+    display: block; font-size: 0.68rem;
+    color: rgba(170,200,255,0.55); margin-top: 2px; letter-spacing: 0.02em;
+  }
+  .music-playing-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(140,220,255,0.9);
+    animation: dotPulse 1.4s ease-in-out infinite; flex-shrink: 0;
+  }
+  @keyframes dotPulse {
+    0%,100% { opacity: 0.3; transform: scale(0.8); }
+    50%      { opacity: 1;   transform: scale(1.2); }
+  }
+  .music-volume-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .music-vol-icon { font-size: 1.1rem; color: rgba(180,220,255,0.6); }
+  .music-volume {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 3px; border-radius: 2px; outline: none; cursor: pointer;
+    background: rgba(255,255,255,0.2);
+  }
+  .music-volume::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 13px; height: 13px;
+    border-radius: 50%; background: rgba(220,240,255,0.9);
+    box-shadow: 0 1px 5px rgba(0,40,100,0.35); cursor: pointer;
+  }
+
+  /* ── MUSIC SOURCE TABS ── */
+  .music-source-tabs {
+    display: flex; gap: 4px;
+    background: rgba(0,0,0,0.18); border-radius: 12px;
+    padding: 4px; margin-bottom: 14px;
+  }
+  .music-source-tab {
+    flex: 1; padding: 7px 4px; border-radius: 9px; border: none;
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.7rem;
+    color: rgba(170,200,255,0.65); cursor: pointer;
+    background: none; transition: all 0.18s ease;
+    letter-spacing: 0.02em; text-align: center; line-height: 1.3;
+  }
+  .music-source-tab.active {
+    background: rgba(60,120,220,0.42);
+    color: rgba(220,240,255,0.95);
+    box-shadow: 0 1px 6px rgba(0,20,80,0.3);
+  }
+  .music-source-tab:hover:not(.active) { color: rgba(200,230,255,0.85); }
+
+  .music-source-panel { display: none; }
+  .music-source-panel.active { display: block; animation: pageFadeIn 0.18s ease; }
+
+  /* ── LOCAL IMPORT ── */
+  .music-import-zone {
+    border: 1.5px dashed rgba(100,160,220,0.35);
+    border-radius: 14px; padding: 18px 14px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s ease; margin-bottom: 10px;
+    background: rgba(255,255,255,0.04);
+  }
+  .music-import-zone:hover { border-color: rgba(140,200,255,0.6); background: rgba(255,255,255,0.08); }
+  .music-import-zone.dragover { border-color: rgba(140,200,255,0.8); background: rgba(60,120,220,0.15); }
+  .music-import-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .music-import-text { font-size: 0.76rem; color: rgba(170,200,255,0.7); line-height: 1.5; }
+  .music-import-sub  { font-size: 0.65rem; color: rgba(120,160,210,0.5); margin-top: 3px; }
+
+  .music-url-row {
+    display: flex; gap: 6px; margin-bottom: 10px;
+  }
+  .music-url-input {
+    flex: 1; padding: 8px 12px; border-radius: 10px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(220,240,255,0.9); font-size: 0.76rem;
+    font-family: 'Noto Sans SC', sans-serif; outline: none;
+    transition: border-color 0.18s;
+  }
+  .music-url-input::placeholder { color: rgba(120,160,210,0.45); }
+  .music-url-input:focus { border-color: rgba(100,180,255,0.45); }
+  .music-url-btn {
+    padding: 8px 14px; border-radius: 10px; border: none;
+    background: rgba(60,120,220,0.45); color: rgba(220,240,255,0.92);
+    font-size: 0.74rem; font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer; transition: background 0.18s; white-space: nowrap;
+  }
+  .music-url-btn:hover { background: rgba(80,140,240,0.6); }
+
+  .music-imported-list { display: flex; flex-direction: column; gap: 7px; }
+  .music-imported-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.09);
+    cursor: pointer; transition: background 0.16s;
+  }
+  .music-imported-item:hover { background: rgba(255,255,255,0.11); }
+  .music-imported-item.active { background: rgba(60,120,220,0.28); border-color: rgba(100,180,255,0.35); }
+  .music-imported-name {
+    flex: 1; font-size: 0.8rem; color: rgba(210,235,255,0.88);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  .music-imported-del {
+    background: none; border: none; color: rgba(180,200,230,0.4);
+    font-size: 0.9rem; cursor: pointer; padding: 2px 4px;
+    transition: color 0.15s; flex-shrink: 0; line-height: 1;
+  }
+  .music-imported-del:hover { color: rgba(255,120,120,0.8); }
+  .music-import-empty {
+    font-size: 0.74rem; color: rgba(120,160,200,0.5);
+    text-align: center; padding: 8px 0;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+
+  /* ── RECORD TAB ── */
+  .music-record-panel {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 14px; padding: 8px 0 4px;
+  }
+  .record-btn-wrap { position: relative; }
+  .record-btn {
+    width: 68px; height: 68px; border-radius: 50%; border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    background: radial-gradient(circle at 38% 35%, rgba(255,120,120,0.85), rgba(180,30,30,0.75));
+    box-shadow: 0 4px 18px rgba(180,30,30,0.4), 0 0 0 0 rgba(220,60,60,0.35);
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .record-btn:hover { transform: scale(1.06); }
+  .record-btn.recording {
+    background: radial-gradient(circle at 38% 35%, rgba(255,60,60,0.9), rgba(160,10,10,0.85));
+    animation: recordPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes recordPulse {
+    0%,100% { box-shadow: 0 4px 18px rgba(180,30,30,0.4), 0 0 0 0 rgba(220,60,60,0.35); }
+    50%      { box-shadow: 0 4px 24px rgba(220,30,30,0.6), 0 0 0 14px rgba(220,60,60,0); }
+  }
+  .record-btn.has-recording {
+    background: radial-gradient(circle at 38% 35%, rgba(80,180,120,0.88), rgba(20,100,60,0.78));
+    box-shadow: 0 4px 18px rgba(20,120,70,0.4);
+  }
+  .record-status {
+    font-size: 0.76rem; color: rgba(180,220,255,0.7);
+    font-family: 'Noto Sans SC', sans-serif; text-align: center; letter-spacing: 0.04em;
+  }
+  .record-timer {
+    font-size: 1.5rem; font-family: 'Noto Serif SC', serif;
+    color: rgba(220,240,255,0.9); letter-spacing: 0.1em;
+    min-height: 2rem; display: flex; align-items: center; justify-content: center;
+  }
+  .record-timer.active { color: rgba(255,140,140,0.95); }
+  .record-waveform {
+    width: 100%; height: 40px;
+    display: flex; align-items: center; justify-content: center; gap: 2px;
+  }
+  .record-wave-bar {
+    width: 3px; background: rgba(100,180,255,0.45);
+    border-radius: 2px; transition: height 0.06s ease;
+    min-height: 3px;
+  }
+  .record-actions {
+    display: flex; gap: 10px; width: 100%;
+  }
+  .record-action-btn {
+    flex: 1; padding: 9px; border-radius: 12px; border: none;
+    font-family: 'Noto Serif SC', serif; font-size: 0.8rem;
+    cursor: pointer; transition: opacity 0.18s, transform 0.12s;
+  }
+  .record-action-btn:hover { opacity: 0.85; transform: scale(1.03); }
+  .record-play-btn {
+    background: rgba(60,120,220,0.45); color: rgba(220,240,255,0.92);
+    border: 1px solid rgba(100,180,255,0.25);
+  }
+  .record-save-btn {
+    background: linear-gradient(135deg, rgba(60,180,120,0.8), rgba(20,120,70,0.8));
+    color: rgba(220,255,235,0.95);
+  }
+  .record-discard-btn {
+    background: rgba(255,255,255,0.06); color: rgba(180,200,230,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .record-hint {
+    font-size: 0.66rem; color: rgba(100,150,200,0.5);
+    font-family: 'Noto Sans SC', sans-serif; text-align: center;
+    line-height: 1.6;
+  }
+
+  /* ── RECORD BG PICKER ── */
+  .record-bg-section {
+    width: 100%; margin-bottom: 6px;
+  }
+  .record-bg-label {
+    font-size: 0.68rem; color: rgba(140,180,220,0.7);
+    font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .record-bg-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+    margin-bottom: 8px;
+  }
+  .record-bg-item {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 7px 4px; border-radius: 10px; cursor: pointer;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.09);
+    transition: all 0.16s ease;
+  }
+  .record-bg-item:hover { background: rgba(255,255,255,0.11); }
+  .record-bg-item.active {
+    background: rgba(60,120,220,0.35);
+    border-color: rgba(100,180,255,0.45);
+  }
+  .record-bg-icon { font-size: 1.2rem; }
+  .record-bg-name {
+    font-size: 0.62rem; color: rgba(180,210,255,0.75);
+    font-family: 'Noto Sans SC', sans-serif; text-align: center;
+  }
+  .record-bg-vol-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 2px;
+  }
+
+  /* ── LANG TOGGLE ── */
+  .lang-btn {
+    position: fixed; top: 16px; right: 16px; z-index: 600;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    color: rgba(255,255,255,0.9); font-size: 0.65rem; font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer; letter-spacing: 0.04em;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 14px rgba(0,40,100,0.18);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .lang-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.32); }
+  /* ── MENU BUTTON ── */
+  .menu-btn {
+    position: fixed; top: 16px; left: 16px; z-index: 600;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    color: #fff; font-size: 1.05rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 14px rgba(0,40,100,0.18);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .menu-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.32); }
+
+  /* ── SIDEBAR ── */
+  .sidebar-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,20,60,0.25);
+    z-index: 550; opacity: 0; pointer-events: none;
+    transition: opacity 0.26s ease;
+  }
+  .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: min(260px, 80vw);
+    background: rgba(255,255,255,0.12); backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid rgba(255,255,255,0.22);
+    box-shadow: 4px 0 32px rgba(0,40,100,0.2);
+    z-index: 560; display: flex; flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    font-family: 'Noto Serif SC', serif;
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  .sidebar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.18);
+  }
+  .sidebar-title { font-size: 0.95rem; font-weight: 600; color: rgba(255,255,255,0.92); letter-spacing: 0.1em; }
+  .sidebar-close {
+    background: none; border: none; font-size: 1.05rem;
+    color: rgba(200,230,255,0.8); cursor: pointer;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .sidebar-close:hover { color: #fff; transform: scale(1.18); }
+
+  .sidebar-menu { list-style: none; padding: 6px 0; }
+  .sidebar-menu-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 15px 20px; cursor: pointer;
+    font-family: 'Noto Serif SC', serif; font-size: 0.9rem;
+    color: rgba(220,240,255,0.88); letter-spacing: 0.06em;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .sidebar-menu-item:last-child { border-bottom: none; }
+  .sidebar-menu-item:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .sidebar-menu-item.active { background: rgba(255,255,255,0.18); color: #fff; font-weight: 600; }
+  .sidebar-menu-item .menu-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+  .sidebar-menu-item .menu-arrow { margin-left: auto; color: rgba(180,220,255,0.6); font-size: 0.85rem; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(5,20,50,0.45); backdrop-filter: blur(4px);
+    z-index: 500; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .modal-box {
+    background: linear-gradient(145deg, rgba(240,250,255,0.98), rgba(220,238,255,0.96));
+    border-radius: 20px; padding: 18px 16px;
+    width: min(440px, 100vw); max-height: 92vh; overflow-y: auto;
+    box-shadow: 0 16px 56px rgba(0,40,100,0.24);
+    font-family: 'Noto Serif SC', serif; position: relative;
+    transform: translateY(16px);
+    transition: transform 0.25s ease;
+  }
+  @media (max-width: 480px) {
+    .modal-overlay {
+      align-items: flex-end;
+      padding: 0 10px 12px;
+    }
+    .modal-box {
+      width: 100%;
+      max-height: 76vh;
+      border-radius: 20px;
+      transform: translateY(110%);
+      padding: 16px 14px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+    .modal-tabs { margin: -4px -14px 14px; padding: 0 14px; }
+    .gain-cats { gap: 5px; }
+    .gain-cat { font-size: 0.68rem; padding: 4px 8px; }
+    .tab-panel { overflow-y: auto; flex: 1; }
+    .asst-panel { overflow-y: auto; flex: 1; }
+  }
+
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .modal-title { font-size: 1rem; font-weight: 600; color: #0e3050; letter-spacing: 0.1em; }
+  .modal-close {
+    background: none; border: none; font-size: 1.1rem;
+    color: #5a7aa0; cursor: pointer; line-height: 1;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .modal-close:hover { color: #0e2840; transform: scale(1.2); }
+
+  /* Tabbed header inside modal */
+  .modal-tabs {
+    display: flex; gap: 0;
+    border-bottom: 2px solid rgba(100,160,220,0.18);
+    margin: -4px -18px 16px; padding: 0 18px;
+  }
+  .modal-tab {
+    flex: 1; padding: 11px 8px; background: none; border: none;
+    font-family: 'Noto Serif SC', serif; font-size: 0.88rem;
+    color: #7a9ab8; cursor: pointer; letter-spacing: 0.08em;
+    border-bottom: 2.5px solid transparent; margin-bottom: -2px;
+    transition: color 0.18s, border-color 0.18s;
+  }
+  .modal-tab.active { color: #0e3050; border-bottom-color: #4a9fd4; font-weight: 600; }
+  .modal-tab:hover:not(.active) { color: #2a6090; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: pageFadeIn 0.18s ease; }
+  @keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .goals-panel { display: flex; flex-direction: column; gap: 0; }
+  .goals-add-row {
+    display: flex; gap: 8px; margin-bottom: 14px;
+  }
+  .goals-add-row input {
+    flex: 1; padding: 9px 12px;
+    border: 1.5px solid rgba(100,160,220,0.4); border-radius: 12px;
+    background: rgba(255,255,255,0.75);
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.84rem; color: #0e2840;
+    outline: none; transition: border-color 0.2s;
+  }
+  .goals-add-row input:focus { border-color: rgba(80,140,220,0.8); }
+  .goals-add-row button {
+    padding: 9px 14px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #4a9fd4, #2a7abf); color: #fff;
+    font-family: 'Noto Serif SC', serif; font-size: 0.82rem;
+    cursor: pointer; white-space: nowrap;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .goals-add-row button:hover { opacity: 0.88; transform: scale(1.04); }
+
+  .goals-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .goal-item {
+    background: rgba(255,255,255,0.68); border-radius: 13px;
+    padding: 10px 12px;
+    border: 1px solid rgba(100,160,220,0.22);
+    display: flex; flex-direction: column; gap: 7px;
+  }
+  .goal-item-text {
+    font-size: 0.86rem; color: #0e2840; line-height: 1.45;
+    word-break: break-all;
+  }
+  .goal-item-actions { display: flex; gap: 7px; }
+  .goal-btn-release {
+    flex: 1; padding: 6px 0; border-radius: 10px; border: none;
+    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
+    color: #fff; font-family: 'Noto Serif SC', serif; font-size: 0.76rem;
+    cursor: pointer; transition: opacity 0.18s, transform 0.12s;
+  }
+  .goal-btn-release:hover { opacity: 0.85; transform: scale(1.04); }
+  .goal-btn-drop {
+    flex: 1; padding: 6px 0; border-radius: 10px; border: none;
+    background: linear-gradient(135deg, rgba(255,190,80,0.92), rgba(220,140,30,0.88));
+    color: #2a1200; font-family: 'Noto Serif SC', serif; font-size: 0.76rem;
+    cursor: pointer; transition: opacity 0.18s, transform 0.12s;
+  }
+  .goal-btn-drop:hover { opacity: 0.85; transform: scale(1.04); }
+  .goal-btn-del {
+    width: 30px; height: 30px; border-radius: 50%; border: none;
+    background: rgba(200,60,60,0.1); color: #c04040;
+    font-size: 0.78rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .goal-btn-del:hover { background: rgba(200,60,60,0.22); }
+  .goals-empty {
+    text-align: center; color: #8aaac0;
+    font-size: 0.78rem; padding: 28px 0; font-family: 'Noto Sans SC', sans-serif;
+  }
+  .active-goal-banner {
+    position: fixed; top: 90px; left: 50%; transform: translateX(-50%);
+    z-index: 25; pointer-events: none;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    opacity: 0; transition: opacity 0.4s ease;
+    max-width: 80vw;
+  }
+  .active-goal-banner.show { opacity: 1; }
+  .active-goal-label {
+    font-size: 0.58rem; color: rgba(200,230,255,0.75);
+    font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.08em;
+  }
+  .active-goal-text {
+    background: rgba(255,255,255,0.18); backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 30px; padding: 6px 20px;
+    font-family: 'Noto Serif SC', serif; font-size: 0.82rem;
+    color: rgba(255,255,255,0.92); letter-spacing: 0.06em;
+    text-shadow: 0 1px 6px rgba(0,40,100,0.3);
+    max-width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* ── RELEASE ASSISTANT ── */
+  .asst-panel { display: flex; flex-direction: column; gap: 12px; }
+  .asst-subtitle {
+    font-size: 0.7rem; color: #5a7aa0;
+    font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.04em; line-height: 1.6;
+  }
+  .asst-textarea {
+    width: 100%; padding: 11px 14px; min-height: 96px;
+    border: 1.5px solid rgba(100,160,220,0.4); border-radius: 14px;
+    background: rgba(255,255,255,0.75);
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.86rem; color: #0e2840;
+    outline: none; resize: vertical; line-height: 1.6;
+    transition: border-color 0.2s;
+  }
+  .asst-textarea:focus { border-color: rgba(80,140,220,0.75); }
+  .asst-submit {
+    align-self: flex-end; padding: 9px 22px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #4a9fd4, #2a7abf); color: #fff;
+    font-family: 'Noto Serif SC', serif; font-size: 0.84rem;
+    cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+  }
+  .asst-submit:hover { opacity: 0.88; transform: scale(1.04); }
+  .asst-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .asst-result {
+    background: rgba(255,255,255,0.7); border-radius: 14px;
+    border: 1px solid rgba(100,160,220,0.22);
+    padding: 14px 16px; display: none; flex-direction: column; gap: 10px;
+  }
+  .asst-result.show { display: flex; animation: pageFadeIn 0.22s ease; }
+
+  .asst-desire-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .asst-badge {
+    padding: 5px 14px; border-radius: 20px;
+    font-family: 'Noto Serif SC', serif; font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+  .asst-badge.bc { background: rgba(255,192,210,0.55); color: #7a1030; border: 1.5px solid rgba(192,51,82,0.3); }
+  .asst-badge.ba { background: rgba(153,251,200,0.45); color: #0a4a28; border: 1.5px solid rgba(24,134,73,0.3); }
+  .asst-badge.bs { background: rgba(161,202,255,0.45); color: #0a2860; border: 1.5px solid rgba(43,74,219,0.3); }
+
+  .asst-analysis {
+    font-size: 0.84rem; color: #1a3a5a; line-height: 1.75;
+    font-family: 'Noto Sans SC', sans-serif;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .asst-point {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: rgba(255,255,255,0.5); border-radius: 11px;
+    padding: 9px 12px;
+    border: 1px solid rgba(100,160,220,0.18);
+  }
+  .asst-point-badge {
+    flex-shrink: 0; padding: 3px 10px; border-radius: 14px;
+    font-family: 'Noto Serif SC', serif; font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 0.04em; margin-top: 1px;
+  }
+  .asst-point-body {
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .asst-point-quote {
+    font-size: 0.82rem; color: #0e2840; font-weight: 500; line-height: 1.5;
+  }
+  .asst-point-reason {
+    font-size: 0.76rem; color: #5a7aa0; line-height: 1.5;
+  }
+  .asst-go-btn {
+    width: 100%; padding: 12px; border-radius: 14px; border: none;
+    background: linear-gradient(135deg, #4a9fd4, #2a7abf); color: #fff;
+    font-family: 'Noto Serif SC', serif; font-size: 0.92rem; letter-spacing: 0.08em;
+    cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+    margin-top: 4px;
+  }
+  .asst-go-btn:hover { opacity: 0.88; transform: scale(1.02); }
+  .asst-loading {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.8rem; color: #5a7aa0; font-family: 'Noto Sans SC', sans-serif;
+  }
+  .asst-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #4a9fd4; animation: asstPulse 1.2s ease-in-out infinite;
+  }
+  .asst-dot:nth-child(2) { animation-delay: 0.2s; }
+  .asst-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes asstPulse {
+    0%,100% { opacity: 0.25; transform: scale(0.8); }
+    50%      { opacity: 1;    transform: scale(1.2); }
+  }
+
+  /* ── RELEASE QUEUE GUIDANCE ── */
+  @keyframes guidanceFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .queue-guidance {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    z-index: 17; width: min(360px, 84vw);
+    display: none; flex-direction: column; align-items: center; gap: 4px;
+    text-align: center; pointer-events: none;
+  }
+  .queue-guidance.show { display: flex; animation: guidanceFade 0.3s ease; }
+  .queue-guidance-step {
+    font-size: 0.6rem; color: rgba(180,215,255,0.6);
+    font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.12em;
+  }
+  .queue-guidance-text {
+    font-family: 'Noto Serif SC', serif; font-size: 0.96rem; font-weight: 300;
+    color: rgba(255,255,255,0.9); letter-spacing: 0.04em; line-height: 1.6;
+    text-shadow: 0 1px 8px rgba(0,30,100,0.5);
+  }
+
+  .lang-panel {
+    position: fixed; top: 50%; left: 50%;
+    transform: translateX(-50%) translateY(-50%) scale(0.97);
+    z-index: 590;
+    width: min(280px, 85vw);
+    background: rgba(22,48,100,0.93); backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(0,20,70,0.55);
+    padding: 20px 16px;
+    opacity: 0; pointer-events: none; visibility: hidden;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  .lang-panel.open {
+    opacity: 1; pointer-events: auto; visibility: visible;
+    transform: translateX(-50%) translateY(-50%) scale(1);
+  }
+  .lang-panel-title {
+    font-family: 'Noto Serif SC', serif; font-size: 0.8rem;
+    color: rgba(200,220,255,0.65); letter-spacing: 0.22em;
+    text-align: center; margin-bottom: 16px;
+  }
+  .lang-option {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; border-radius: 12px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 8px;
+    color: rgba(220,240,255,0.88);
+    font-family: 'Noto Serif SC', serif; font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    transition: background 0.15s;
+  }
+  .lang-option:last-child { margin-bottom: 0; }
+  .lang-option:hover { background: rgba(255,255,255,0.1); }
+  .lang-option.active { background: rgba(60,120,220,0.35); border-color: rgba(120,180,255,0.35); }
+  .lang-option-check { color: rgba(120,200,255,0.8); font-size: 1rem; }
+</style>
+</head>
+<body>
+
+<!-- Sky layer -->
+<div class="sky-clouds" id="skyClouds"></div>
+
+<!-- Header in sky -->
+<div class="header">
+  <h1>圣多纳释放法</h1>
+  <p>觉察 · 允许 · 释放</p>
+</div>
+
+<!-- Water surface SVG (animated waves) -->
+<svg class="water-surface" id="waterSvg" xmlns="http://www.w3.org/2000/svg"
+     style="position:fixed;left:0;width:100%;pointer-events:none;z-index:10;">
+  <defs>
+    <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(10,80,160,0.9)"/>
+      <stop offset="8%" stop-color="rgba(8,60,120,0)"/>
+    </linearGradient>
+  </defs>
+  <path id="wavePath" fill="url(#waveGrad)" opacity="0.95"/>
+  <path id="wavePath2" fill="rgba(15,100,190,0.35)" opacity="0.7"/>
+</svg>
+
+<!-- Bubble scene layer -->
+<div class="scene" id="scene"></div>
+
+<!-- Single shared decision button pair -->
+<button class="surf-btn surf-deny"  id="sharedDeny"  onclick="handleDecision(false)" style="z-index:16;">不允许</button>
+<button class="surf-btn surf-allow" id="sharedAllow" onclick="handleDecision(true)"  style="z-index:16;">允许</button>
+
+<div class="instruction" id="instr">点击水下的欲望泡泡，让它浮上水面（最多同时3个）</div>
+<div class="counter"     id="counter">已释放 0 个欲望</div>
+<div class="toast"       id="toast"></div>
+
+<!-- Active Goal Banner -->
+<div class="active-goal-banner" id="activeGoalBanner">
+  <span class="active-goal-label">当前正在释放的目标</span>
+  <span class="active-goal-text" id="activeGoalText"></span>
+</div>
+
+<!-- Release Queue Guidance (gentle question above decision buttons) -->
+<div class="queue-guidance" id="queueGuidance">
+  <div class="queue-guidance-step" id="queueStep"></div>
+  <div class="queue-guidance-text" id="queueText"></div>
+</div>
+
+<!-- Lang Toggle -->
+<!-- Music Button -->
+
+<!-- Music Panel -->
+<div class="music-panel" id="musicPanel">
+  <div class="music-panel-title">背 景 音 乐</div>
+
+  <!-- Source tabs -->
+  <div class="music-source-tabs">
+    <button class="music-source-tab active" id="msrc-builtin" onclick="switchMusicSource('builtin')">🎵 App内置</button>
+    <button class="music-source-tab" id="msrc-import" onclick="switchMusicSource('import')">📁 本地导入</button>
+    <button class="music-source-tab" id="msrc-record" onclick="switchMusicSource('record')">🎙️ 录制背景音</button>
+  </div>
+
+  <!-- Tab 1: Built-in tracks -->
+  <div class="music-source-panel active" id="mpanel-builtin">
+  <div class="music-tracks">
+    <div class="music-track" data-track="bowl"><span class="music-track-icon">🔔</span><div class="music-track-info"><div class="music-track-name">冥想钵</div><span class="music-track-desc">396Hz · 释放恐惧</span></div><button class="music-play-btn" onclick="selectTrack('bowl')">▶</button></div>
+    <div class="music-track" data-track="deepbowl"><span class="music-track-icon">🎐</span><div class="music-track-info"><div class="music-track-name">颂钵冥想</div><span class="music-track-desc">三钵共鸣 · 深度放松</span></div><button class="music-play-btn" onclick="selectTrack('deepbowl')">▶</button></div>
+    <div class="music-track" data-track="hz528"><span class="music-track-icon">💚</span><div class="music-track-info"><div class="music-track-name">528Hz 疗愈</div><span class="music-track-desc">爱的频率 · DNA修复</span></div><button class="music-play-btn" onclick="selectTrack('hz528')">▶</button></div>
+    <div class="music-track" data-track="awaken"><span class="music-track-icon">✨</span><div class="music-track-info"><div class="music-track-name">963Hz 觉醒</div><span class="music-track-desc">松果体 · 灵性连接</span></div><button class="music-play-btn" onclick="selectTrack('awaken')">▶</button></div>
+    <div class="music-track" data-track="schumann"><span class="music-track-icon">🌍</span><div class="music-track-info"><div class="music-track-name">舒曼共振</div><span class="music-track-desc">7.83Hz · 地球脑波</span></div><button class="music-play-btn" onclick="selectTrack('schumann')">▶</button></div>
+    <div class="music-track" data-track="deep"><span class="music-track-icon">🌌</span><div class="music-track-info"><div class="music-track-name">432Hz 深空</div><span class="music-track-desc">自然律 · 宇宙共鸣</span></div><button class="music-play-btn" onclick="selectTrack('deep')">▶</button></div>
+    <div class="music-track" data-track="piano"><span class="music-track-icon">🎹</span><div class="music-track-info"><div class="music-track-name">528调式钢琴</div><span class="music-track-desc">五声音阶 · 宁静</span></div><button class="music-play-btn" onclick="selectTrack('piano')">▶</button></div>
+    <div class="music-track" data-track="rain"><span class="music-track-icon">🌧️</span><div class="music-track-info"><div class="music-track-name">夜雨</div><span class="music-track-desc">细密雨声 · 静谧</span></div><button class="music-play-btn" onclick="selectTrack('rain')">▶</button></div>
+    <div class="music-track" data-track="ocean"><span class="music-track-icon">🌊</span><div class="music-track-info"><div class="music-track-name">海浪</div><span class="music-track-desc">潮汐呼吸 · 放松</span></div><button class="music-play-btn" onclick="selectTrack('ocean')">▶</button></div>
+    <div class="music-track" data-track="water"><span class="music-track-icon">💧</span><div class="music-track-info"><div class="music-track-name">山涧流水</div><span class="music-track-desc">溪流 · 清澈</span></div><button class="music-play-btn" onclick="selectTrack('water')">▶</button></div>
+    </div>
+  </div>
+
+  <!-- Tab 2: Local import -->
+  <div class="music-source-panel" id="mpanel-import">
+    <div class="music-import-zone" id="importDropZone"
+         onclick="document.getElementById('importFileInput').click()"
+         ondragover="handleImportDragOver(event)"
+         ondragleave="handleImportDragLeave(event)"
+         ondrop="handleImportDrop(event)">
+      <div class="music-import-icon">🎵</div>
+      <div class="music-import-text">点击选择音乐文件<br>或将文件拖拽至此</div>
+      <div class="music-import-sub">支持 MP3 · WAV · AAC · OGG · FLAC</div>
+    </div>
+    <input type="file" id="importFileInput" accept="audio/*" multiple style="display:none" onchange="handleImportFile(this.files)">
+    <div class="music-imported-list" id="importedList">
+      <div class="music-import-empty" id="importEmptyHint">还没有导入的音乐</div>
+    </div>
+  </div>
+
+  <!-- Tab 3: Record -->
+  <div class="music-source-panel" id="mpanel-record">
+    <div class="music-record-panel">
+
+      <!-- Step 1: pick background (optional) -->
+      <div class="record-bg-section" id="recordBgSection">
+        <div class="record-bg-label">① 选择混音背景（可跳过）</div>
+        <div class="record-bg-grid" id="recordBgGrid">
+          <div class="record-bg-item" data-track="" onclick="selectRecordBg(this,'')">
+            <span class="record-bg-icon">🔇</span>
+            <span class="record-bg-name">纯人声</span>
+          </div>
+          <div class="record-bg-item" data-track="bowl" onclick="selectRecordBg(this,'bowl')">
+            <span class="record-bg-icon">🔔</span>
+            <span class="record-bg-name">冥想钵</span>
+          </div>
+          <div class="record-bg-item" data-track="deepbowl" onclick="selectRecordBg(this,'deepbowl')">
+            <span class="record-bg-icon">🎐</span>
+            <span class="record-bg-name">颂钵</span>
+          </div>
+          <div class="record-bg-item" data-track="hz528" onclick="selectRecordBg(this,'hz528')">
+            <span class="record-bg-icon">💚</span>
+            <span class="record-bg-name">528Hz</span>
+          </div>
+          <div class="record-bg-item" data-track="awaken" onclick="selectRecordBg(this,'awaken')">
+            <span class="record-bg-icon">✨</span>
+            <span class="record-bg-name">963Hz</span>
+          </div>
+          <div class="record-bg-item" data-track="schumann" onclick="selectRecordBg(this,'schumann')">
+            <span class="record-bg-icon">🌍</span>
+            <span class="record-bg-name">舒曼</span>
+          </div>
+          <div class="record-bg-item" data-track="deep" onclick="selectRecordBg(this,'deep')">
+            <span class="record-bg-icon">🌌</span>
+            <span class="record-bg-name">432Hz</span>
+          </div>
+          <div class="record-bg-item" data-track="piano" onclick="selectRecordBg(this,'piano')">
+            <span class="record-bg-icon">🎹</span>
+            <span class="record-bg-name">钢琴</span>
+          </div>
+          <div class="record-bg-item" data-track="rain" onclick="selectRecordBg(this,'rain')">
+            <span class="record-bg-icon">🌧️</span>
+            <span class="record-bg-name">夜雨</span>
+          </div>
+          <div class="record-bg-item" data-track="ocean" onclick="selectRecordBg(this,'ocean')">
+            <span class="record-bg-icon">🌊</span>
+            <span class="record-bg-name">海浪</span>
+          </div>
+          <div class="record-bg-item" data-track="water" onclick="selectRecordBg(this,'water')">
+            <span class="record-bg-icon">💧</span>
+            <span class="record-bg-name">流水</span>
+          </div>
+        </div>
+        <!-- bg volume -->
+        <div class="record-bg-vol-row" id="recordBgVolRow" style="display:none;">
+          <span style="font-size:0.68rem;color:rgba(140,180,220,0.7);">背景音量</span>
+          <input type="range" class="music-volume" id="recordBgVol" min="0" max="100" value="40"
+                 oninput="updateRecordBgVol(this.value)" style="flex:1;">
+          <span style="font-size:0.68rem;color:rgba(140,180,220,0.7);" id="recordBgVolNum">40%</span>
+        </div>
+      </div>
+
+      <!-- Step 2: record -->
+      <div class="record-bg-label">② 录制</div>
+      <div class="record-waveform" id="recordWaveform"></div>
+      <div class="record-timer" id="recordTimer">00:00</div>
+      <div class="record-btn-wrap">
+        <button class="record-btn" id="recordBtn" onclick="toggleRecord()">🎙️</button>
+      </div>
+      <div class="record-status" id="recordStatus">选好背景后点击开始录制</div>
+      <div class="record-actions" id="recordActions" style="display:none;">
+        <button class="record-action-btn record-play-btn" onclick="playRecording()">▶ 试听</button>
+        <button class="record-action-btn record-save-btn" onclick="saveRecording()">💾 保存使用</button>
+        <button class="record-action-btn record-discard-btn" onclick="discardRecording()">✕ 丢弃</button>
+      </div>
+      <div class="record-hint">录制时麦克风声音与背景音将混合为一个文件</div>
+    </div>
+  </div>
+
+  <div class="music-volume-row">
+    <span class="music-vol-icon">🔉</span>
+    <input type="range" class="music-volume" id="musicVolume" min="0" max="100" value="50" oninput="setMusicVolume(this.value)">
+    <span class="music-vol-icon">🔊</span>
+  </div>
+</div>
+
+
+<!-- Menu Button -->
+<button class="menu-btn" onclick="toggleSidebar()" title="目录">☰</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-title">📋 目录</span>
+    
+  </div>
+  <div style="padding:8px 12px 4px;font-size:0.68rem;letter-spacing:0.2em;color:rgba(180,220,255,0.5);font-family:'Noto Sans SC',sans-serif;">释放工具</div>
+  <ul class="sidebar-menu" style="border-bottom:1px solid rgba(255,255,255,0.12);margin-bottom:4px;">
+    <li class="sidebar-menu-item" onclick="location.href='/sedona/'">
+      <span class="menu-icon">🫧</span>
+      <span data-i18n="tool_sedona">欲望释放</span>
+      <span class="menu-arrow">›</span>
+    </li>
+    <li class="sidebar-menu-item" onclick="location.href='/sedona2/'">
+      <span class="menu-icon">🫧</span>
+      <span data-i18n="tool_sedona2">识别即释放</span>
+      <span class="menu-arrow">›</span>
+    </li>
+    <li class="sidebar-menu-item" onclick="location.href='/emotions/'">
+      <span class="menu-icon">🫧</span>
+      <span data-i18n="tool_emotions">情绪释放</span>
+      <span class="menu-arrow">›</span>
+    </li>
+    <li class="sidebar-menu-item" onclick="location.href='/whole/'">
+      <span class="menu-icon">🫧</span>
+      <span data-i18n="tool_whole">情绪欲望完整释放</span>
+      <span class="menu-arrow">›</span>
+    </li>
+    <li class="sidebar-menu-item" onclick="location.href='/double/'">
+      <span class="menu-icon">🫧</span>
+      <span data-i18n="tool_double">好处坏处释放</span>
+      <span class="menu-arrow">›</span>
+    </li>
+  </ul>
+  <div style="padding:8px 12px 4px;font-size:0.68rem;letter-spacing:0.2em;color:rgba(180,220,255,0.5);font-family:'Noto Sans SC',sans-serif;">功能</div>
+  <ul class="sidebar-menu">
+    <li class="sidebar-menu-item" id="nav-goals" onclick="openTab('goals')">
+      <span class="menu-icon">🎯</span>
+      <span>目标表</span>
+      <span class="menu-arrow">›</span>
+    </li>
+    <li class="sidebar-menu-item" id="nav-gainbook" onclick="openTab('gainbook')">
+      <span class="menu-icon">📒</span>
+      <span>收获本</span>
+      <span class="menu-arrow">›</span>
+    </li>
+    <li class="sidebar-menu-item" id="nav-asst" onclick="openAsst()">
+      <span class="menu-icon">🫧</span>
+      <span>释放助手</span>
+      <span class="menu-arrow">›</span>
+    </li>
+    <li class="sidebar-menu-item" id="nav-music" onclick="closeSidebar();setTimeout(toggleMusicPanel,300)">
+      <span class="menu-icon">🎵</span>
+      <span id="sidebar-music-label">背景音</span>
+      <span class="menu-arrow">›</span>
+    </li>
+    <li class="sidebar-menu-item" id="nav-lang" onclick="closeSidebar();setTimeout(toggleLang,300)">
+      <span class="menu-icon">🌐</span>
+      <span id="sidebar-lang-label">语言</span>
+      <span class="menu-arrow">›</span>
+    </li>
+    <li class="sidebar-menu-item" onclick="window.open('https://freedreleasing.com/support','_blank')" style="border-top:1px solid rgba(255,255,255,0.12);margin-top:4px;">
+      <span class="menu-icon">☕</span>
+      <span>支持我们的网站</span>
+      <span class="menu-arrow">›</span>
+    </li>
+  </ul>
+</div>
+
+
+<!-- Language Panel -->
+<div class="lang-panel" id="langPanel">
+  <div class="lang-panel-title">选 择 语 言</div>
+  <div class="lang-option active" id="lang-opt-zh" onclick="selectLang('zh')">
+    <span>中文</span>
+    <span class="lang-option-check" id="lang-check-zh">✓</span>
+  </div>
+  <div class="lang-option" id="lang-opt-en" onclick="selectLang('en')">
+    <span>English</span>
+    <span class="lang-option-check" id="lang-check-en" style="opacity:0">✓</span>
+  </div>
+</div>
+
+<!-- Main Modal (目标表 + 收获本 only) -->
+<div class="modal-overlay" id="mainOverlay" onclick="closeModalOnBg(event,'mainOverlay')">
+  <div class="modal-box" id="mainModalBox">
+
+    <!-- Tabbed header -->
+    <div class="modal-header" style="margin-bottom:0;">
+      <div class="modal-tabs" style="flex:1;">
+        <button class="modal-tab active" id="tab-btn-goals"    onclick="switchTab('goals')">🎯 目标表</button>
+        <button class="modal-tab"        id="tab-btn-gainbook" onclick="switchTab('gainbook')">📒 收获本</button>
+      </div>
+      <button class="modal-close" onclick="closeNav()" style="margin-left:12px;margin-bottom:2px;">✕</button>
+    </div>
+
+    <!-- GOALS TAB -->
+    <div class="tab-panel active" id="tab-goals">
+      <div class="goals-panel">
+        <div class="gain-cats" id="goalCats" style="margin-bottom:10px;">
+          <button class="gain-cat active" data-cat="健康" onclick="selectGoalCat(this)">🌿 健康</button>
+          <button class="gain-cat" data-cat="财富" onclick="selectGoalCat(this)">💰 财富</button>
+          <button class="gain-cat" data-cat="SP" onclick="selectGoalCat(this)">💞 SP</button>
+          <button class="gain-cat" data-cat="人际关系" onclick="selectGoalCat(this)">🤝 人际关系</button>
+          <button class="gain-cat" data-cat="学业" onclick="selectGoalCat(this)">📚 学业</button>
+          <button class="gain-cat" data-cat="工作" onclick="selectGoalCat(this)">💼 工作</button>
+          <button class="gain-cat" data-cat="其他" onclick="selectGoalCat(this)">✨ 其他</button>
+        </div>
+        <div class="goals-add-row">
+          <input type="text" id="goalInput" placeholder="写下想要释放的目标…" maxlength="60"
+                 onkeydown="if(event.key==='Enter')addGoal()" />
+          <button onclick="addGoal()">添加</button>
+        </div>
+        <ul class="goals-list" id="goalsList"></ul>
+      </div>
+    </div>
+
+    <!-- GAINBOOK TAB -->
+    <div class="tab-panel" id="tab-gainbook">
+      <div class="gainbook-panel">
+        <div style="font-size:0.72rem;color:#5a7aa0;font-family:'Noto Sans SC',sans-serif;margin-bottom:10px;letter-spacing:0.04em;" id="gainSubtitle">记录每一次释放后的收获与领悟，与所有人共享</div>
+        <div class="gain-cats" id="gainCatsSb">
+          <button class="gain-cat active" data-cat="健康" onclick="selectCat(this,'sb')">🌿 健康</button>
+          <button class="gain-cat" data-cat="财富" onclick="selectCat(this,'sb')">💰 财富</button>
+          <button class="gain-cat" data-cat="SP" onclick="selectCat(this,'sb')">💞 SP</button>
+          <button class="gain-cat" data-cat="人际关系" onclick="selectCat(this,'sb')">🤝 人际关系</button>
+          <button class="gain-cat" data-cat="学业" onclick="selectCat(this,'sb')">📚 学业</button>
+          <button class="gain-cat" data-cat="工作" onclick="selectCat(this,'sb')">💼 工作</button>
+          <button class="gain-cat" data-cat="其他" onclick="selectCat(this,'sb')">✨ 其他</button>
+        </div>
+        <div class="gain-input-row" style="margin-top:10px;">
+          <input type="text" id="gainInputSb" placeholder="写下你释放后的收获…" maxlength="80"
+                 onkeydown="if(event.key==='Enter')submitGainSb()" />
+          <button onclick="submitGainSb()">记录</button>
+        </div>
+        <div class="gain-filter-row">
+          <span class="gain-filter-label">筛选：</span>
+          <button class="gain-filter active" data-filter="all" onclick="selectFilterSb(this)">全部</button>
+          <button class="gain-filter" data-filter="健康" onclick="selectFilterSb(this)">🌿</button>
+          <button class="gain-filter" data-filter="财富" onclick="selectFilterSb(this)">💰</button>
+          <button class="gain-filter" data-filter="SP" onclick="selectFilterSb(this)">💞</button>
+          <button class="gain-filter" data-filter="人际关系" onclick="selectFilterSb(this)">🤝</button>
+          <button class="gain-filter" data-filter="学业" onclick="selectFilterSb(this)">📚</button>
+          <button class="gain-filter" data-filter="工作" onclick="selectFilterSb(this)">💼</button>
+          <button class="gain-filter" data-filter="其他" onclick="selectFilterSb(this)">✨</button>
+        </div>
+        <div class="gain-section-title" id="myGainTitleSb">我的记录</div>
+        <ul class="gain-list" id="myGainListSb"><li class="gain-loading">加载中…</li></ul>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;">
+          <div class="gain-section-title" id="sharedGainTitleSb" style="margin:0;">所有人的收获</div>
+          <div style="display:flex;gap:6px;">
+            <button class="gain-sort-btn active" id="sortLikesSb" onclick="setSortSb('likes')">❤️ 最多赞</button>
+            <button class="gain-sort-btn" id="sortTimeSb" onclick="setSortSb('time')">🕐 最新</button>
+          </div>
+        </div>
+        <ul class="gain-list" id="sharedGainListSb"><li class="gain-loading">加载中…</li></ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Assistant Modal (独立弹窗) -->
+<div class="modal-overlay" id="asstOverlay" onclick="closeModalOnBg(event,'asstOverlay')">
+  <div class="modal-box" id="asstModalBox">
+    <div class="modal-header">
+      <span class="modal-title">🫧 释放助手</span>
+      <button class="modal-close" onclick="closeAsst()">✕</button>
+    </div>
+    <div class="asst-panel">
+      <p class="asst-subtitle">写下你对这个目标的感受、担忧或执着，释放助手会帮你看见背后的欲望模式。</p>
+      <textarea class="asst-textarea" id="asstInput"
+        placeholder="例如：我很担心项目做不好，害怕别人觉得我能力不足……"></textarea>
+      <button class="asst-submit" id="asstSubmit" onclick="runAssistant()">✨ 分析</button>
+
+      <div class="asst-loading" id="asstLoading" style="display:none;">
+        <div class="asst-dot"></div><div class="asst-dot"></div><div class="asst-dot"></div>
+        <span>正在感受你的文字…</span>
+      </div>
+
+      <div class="asst-result" id="asstResult">
+        <div class="asst-desire-badges" id="asstBadges"></div>
+        <div class="asst-analysis"      id="asstAnalysis"></div>
+        <button class="asst-go-btn" id="asstGoBtn" onclick="startReleaseQueue()">🫧 去释放这些想要</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ═══════════════════════════════════════════════════
+//  i18n — bilingual support
+// ═══════════════════════════════════════════════════
+const STRINGS = {
+  zh: {
+    title:'圣多纳释放法', subtitle:'觉察 · 允许 · 释放',
+    instr_idle:'点击水下的欲望泡泡，让它浮上水面（最多同时3个）',
+    instr_active:'允许 — 随它去；不允许 — 承认它在',
+    deny:'不允许', allow:'允许',
+    toast_allow:'✨ 已允许，随它去吧', toast_deny:'🌊 已承认，随它去吧',
+    toast_max:'最多同时觉察 3 个欲望',
+    nav_goals:'目标表', nav_gainbook:'收获本', nav_asst:'释放助手', nav_music:'背景音', nav_lang:'语言',
+    sidebar_title:'📋 目录', tab_goals:'🎯 目标表', tab_gainbook:'📒 收获本',
+    goal_ph:'写下想要释放的目标…', goal_add:'添加',
+    goal_release:'🫧 释放', goal_drop:'✨ 掉落',
+    goal_empty:'还没有目标，写下你想释放的吧 🌊',
+    gain_ph:'写下你释放后的收获…', gain_submit:'记录',
+    asst_title:'🫧 释放助手',
+    asst_sub:'写下你对这个目标的感受、担忧或执着，释放助手会帮你看见背后的欲望模式。',
+    asst_ph:'例如：我很担心项目做不好，害怕别人觉得我能力不足……',
+    asst_submit:'✨ 分析', asst_loading:'正在感受你的文字…',
+    asst_go:'🫧 去释放这些想要',
+    queue_done:'✨ 所有想要已释放完毕',
+    toast_goal_set:'🌊 目标已设定，开始释放吧',
+    toast_dropped:'✨ 目标已掉落并记录到收获本',
+    toast_no_result:'还没有分析结果', toast_no_input:'请先写下你的感受',
+    banner_label:'当前正在释放的目标',
+    d_control:'想要\n控制', d_approval:'想要被\n认同', d_safety:'想要\n安全',
+    counter: function(n){ return '已释放 ' + n + ' 个欲望'; },
+    my_gains: function(n){ return '我的记录（' + n + ' 条）'; },
+    shared_gains: function(n){ return '所有人的收获（' + n + ' 条）'; },
+    gain_recorded: function(cat){ return (CAT_ICONS[cat]||'🌸') + ' 收获已记录'; },
+    gain_subtitle: '记录每一次释放后的收获与领悟，与所有人共享',
+    filter_all: '全部',
+    sort_likes: '❤️ 最多赞',
+    sort_time: '🕐 最新',
+    cat_health:'🌿 健康', cat_wealth:'💰 财富', cat_sp:'💞 SP',
+    cat_relations:'🤝 人际关系', cat_study:'📚 学业', cat_work:'💼 工作', cat_other:'✨ 其他',
+    goal_add_btn: '添加',
+  },
+  en: {
+    title:'Sedona Method', subtitle:'Awareness · Allow · Release',
+    instr_idle:'Tap a desire bubble to bring it to the surface (max 3 at once)',
+    instr_active:'Allow — let it go；Deny — acknowledge it',
+    deny:'Deny', allow:'Allow',
+    toast_allow:'✨ Allowed — let it go', toast_deny:'🌊 Acknowledged — let it go',
+    toast_max:'Max 3 desires at once',
+    nav_goals:'Goals', nav_gainbook:'Gain Book', nav_asst:'Releasing\nAssistant', nav_music:'Music', nav_lang:'Language',
+    sidebar_title:'📋 Menu', tab_goals:'🎯 Goals', tab_gainbook:'📒 Gain Book',
+    goal_ph:'Write a goal to release…', goal_add:'Add',
+    goal_release:'🫧 Go Release', goal_drop:'✨ Dropped',
+    goal_empty:'No goals yet — write one you wish to release 🌊',
+    gain_ph:'Write your insight after releasing…', gain_submit:'Save',
+    asst_title:'🫧 Releasing Assistant',
+    asst_sub:'Describe your feelings or attachments. The AI will reveal the desire patterns beneath.',
+    asst_ph:"e.g. I'm worried I'll fail the project and people will think I'm incompetent…",
+    asst_submit:'✨ Analyse', asst_loading:'Reading your words…',
+    asst_go:'🫧 Release these desires',
+    queue_done:'✨ All desires released',
+    toast_goal_set:'🌊 Goal set — start releasing',
+    toast_dropped:'✨ Goal dropped and saved to Insights',
+    toast_no_result:'No analysis yet', toast_no_input:'Please write your feelings first',
+    banner_label:'Currently releasing',
+    d_control:'Wanting to\nControl', d_approval:'Wanting\nApproval', d_safety:'Wanting\nSecurity',
+    counter: function(n){ return n + (n===1?' desire':' desires') + ' released'; },
+    my_gains: function(n){ return 'My Gains (' + n + ')'; },
+    shared_gains: function(n){ return "Everyone's Gains (" + n + ')'; },
+    gain_recorded: function(cat){ return (CAT_ICONS[cat]||'🌸') + ' Insight saved'; },
+    gain_subtitle: 'Record your insights after each release and share with everyone',
+    filter_all: 'All',
+    sort_likes: '❤️ Most liked',
+    sort_time: '🕐 Latest',
+    cat_health:'🌿 Health', cat_wealth:'💰 Wealth', cat_sp:'💞 SP',
+    cat_relations:'🤝 Relations', cat_study:'📚 Study', cat_work:'💼 Work', cat_other:'✨ Other',
+    goal_add_btn: 'Add',
+  },
+};
+
+let currentLang = 'zh';
+
+function t(key) {
+  var v = STRINGS[currentLang][key];
+  if (v === undefined) v = STRINGS['zh'][key];
+  return v !== undefined ? v : key;
+}
+function tf(key) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  var fn = STRINGS[currentLang][key] || STRINGS['zh'][key];
+  return typeof fn === 'function' ? fn.apply(null, args) : key;
+}
+
+function getLangSystemPrompt() {
+  if (currentLang === 'en') {
+    return 'You are a deep psychological insight guide, expert in the Sedona Method.\n\n'
+      + 'The three core desires:\n'
+      + '- control: craving to control situations, outcomes, others; fear of losing control\n'
+      + '- approval: craving acceptance, validation, love; fear of rejection, criticism, abandonment\n'
+      + '- safety: craving stability, certainty, permanence; fear of loss, change, harm\n\n'
+      + 'Tasks:\n'
+      + '1. Read deeply — sense emotional structure beneath surface words\n'
+      + '2. Map each distinct thought/feeling to its underlying desire\n'
+      + '3. Prioritise desires the user hasn\'t consciously noticed\n'
+      + '4. Note how desires intertwine\n\n'
+      + 'Principles:\n'
+      + '- Explain WHY each thought reveals this desire\n'
+      + '- Write like a warm but perceptive counselor\n'
+      + '- If user expressed A but B hides beneath, name B\n'
+      + '- 40-60 words per reason\n\n'
+      + 'Reply ONLY in this JSON format:\n'
+      + '{"points":[{"quote":"brief phrase max 20 words","desire":"control|approval|safety","reason":"insight 40-60 words"}]}\n\n'
+      + 'No limit on number of points. List every insight. Same desire can appear multiple times.';
+  }
+  return '你是一位深度心理洞察师，精通圣多纳释放法（Sedona Method）。\n\n'
+    + '三种核心欲望：\n'
+    + '- control（想要控制）：渴望掌控局面、结果、他人；害怕失控、混乱、不确定\n'
+    + '- approval（想要被认同）：渴望被接受、肯定、爱；害怕被拒绝、批评、抛弃\n'
+    + '- safety（想要安全）：渴望稳定、保障、确定；害怕失去、改变、受伤\n\n'
+    + '任务：\n'
+    + '1. 感受文字背后的情绪结构，不只看表面词汇\n'
+    + '2. 找出每个独立想法或情绪点，识别背后的欲望类型\n'
+    + '3. 重点洞察用户没有意识到的深层欲望\n'
+    + '4. 注意欲望之间的交织\n\n'
+    + '原则：\n'
+    + '- 解释为什么这个想法背后是这种欲望\n'
+    + '- 像温柔而犀利的咨询师说话，让人感到被看见又能揭示盲点\n'
+    + '- 如果用户表达了A但背后藏着B，要指出来\n'
+    + '- 每条reason控制在40-60字\n\n'
+    + '严格用以下JSON格式回复，不要任何其他内容：\n'
+    + '{"points":[{"quote":"从用户原文提炼的短句不超过20字","desire":"control或approval或safety","reason":"深度洞察40-60字"}]}\n\n'
+    + '重要：不要限制条数。每个值得洞察的点都单独列出，同一种欲望可以多次出现。';
+}
+
+function toggleLang() {
+  var panel = document.getElementById('langPanel');
+  panel.classList.toggle('open');
+}
+
+function selectLang(lang) {
+  currentLang = lang;
+  document.getElementById('lang-opt-zh').classList.toggle('active', lang === 'zh');
+  document.getElementById('lang-opt-en').classList.toggle('active', lang === 'en');
+  document.getElementById('lang-check-zh').style.opacity = lang === 'zh' ? '1' : '0';
+  document.getElementById('lang-check-en').style.opacity = lang === 'en' ? '1' : '0';
+  var lb = document.getElementById('langBtn');
+  if (lb) lb.textContent = lang === 'zh' ? 'EN' : '中文';
+  applyLang();
+  setTimeout(function(){ document.getElementById('langPanel').classList.remove('open'); }, 400);
+}
+
+function applyLang() {
+  var L = STRINGS[currentLang];
+
+  document.querySelector('.header h1').textContent = L.title;
+  document.querySelector('.header p').textContent  = L.subtitle;
+
+  var atSurface = risingSlots.filter(function(s){ return s && s.el.classList.contains('at-surface'); });
+  document.getElementById('instr').textContent = atSurface.length > 0 ? L.instr_active : L.instr_idle;
+  document.getElementById('counter').textContent = tf('counter', released);
+
+  document.getElementById('sharedDeny').textContent  = L.deny;
+  document.getElementById('sharedAllow').textContent = L.allow;
+
+  var st = document.querySelector('.sidebar-title');
+  if (st) st.textContent = L.sidebar_title;
+  var ng = document.getElementById('nav-goals');
+  if (ng) ng.querySelectorAll('span')[1].textContent = L.nav_goals;
+  var ngb = document.getElementById('nav-gainbook');
+  if (ngb) ngb.querySelectorAll('span')[1].textContent = L.nav_gainbook;
+  var na = document.getElementById('nav-asst');
+  if (na) na.querySelectorAll('span')[1].textContent = L.nav_asst;
+
+  var tg = document.getElementById('tab-btn-goals');
+  if (tg) tg.textContent = L.tab_goals;
+  var tgb = document.getElementById('tab-btn-gainbook');
+  if (tgb) tgb.textContent = L.tab_gainbook;
+
+  var gi = document.getElementById('goalInput');
+  if (gi) gi.placeholder = L.goal_ph;
+  var gis = document.getElementById('gainInputSb');
+  if (gis) gis.placeholder = L.gain_ph;
+
+  var at = document.querySelector('#asstModalBox .modal-title');
+  if (at) at.textContent = L.asst_title;
+  var as = document.querySelector('.asst-subtitle');
+  if (as) as.textContent = L.asst_sub;
+  var ai = document.getElementById('asstInput');
+  if (ai) ai.placeholder = L.asst_ph;
+  var asub = document.getElementById('asstSubmit');
+  if (asub) asub.textContent = L.asst_submit;
+  var al = document.querySelector('#asstLoading span');
+  if (al) al.textContent = L.asst_loading;
+
+  var bl = document.querySelector('.active-goal-label');
+  if (bl) bl.textContent = L.banner_label;
+
+  DESIRES[0].label = L.d_control;
+  DESIRES[1].label = L.d_approval;
+  DESIRES[2].label = L.d_safety;
+  for (var b of idleBubbles) {
+    b.el.innerHTML = b.desire.label.replace('\n', '<br>');
+  }
+
+  // Goal category buttons
+  var catBtns = [
+    ['健康','Health','cat_health'],['财富','Wealth','cat_wealth'],['SP','SP','cat_sp'],
+    ['人际关系','Relations','cat_relations'],['学业','Study','cat_study'],
+    ['工作','Work','cat_work'],['其他','Other','cat_other']
+  ];
+  var goalCatEls = document.querySelectorAll('#goalCats .gain-cat');
+  goalCatEls.forEach(function(btn, i) {
+    if (catBtns[i]) btn.textContent = t(catBtns[i][2]);
+  });
+  var gainCatEls = document.querySelectorAll('#gainCatsSb .gain-cat');
+  gainCatEls.forEach(function(btn, i) {
+    if (catBtns[i]) btn.textContent = t(catBtns[i][2]);
+  });
+
+  // Goal add button
+  var addBtns = document.querySelectorAll('.goals-add-row button, .gain-input-row button');
+  addBtns.forEach(function(btn) {
+    if (btn.textContent === '添加' || btn.textContent === 'Add') btn.textContent = t('goal_add_btn');
+    if (btn.textContent === '记录' || btn.textContent === 'Save') btn.textContent = t('gain_submit');
+  });
+
+  // Gain subtitle
+  var gainSub = document.getElementById('gainSubtitle');
+  if (gainSub) gainSub.textContent = t('gain_subtitle');
+
+  // Filter all button
+  var filterAll = document.querySelector('.gain-filter[data-filter="all"]');
+  if (filterAll) filterAll.textContent = t('filter_all');
+
+  // Sort buttons
+  var sortLikes = document.getElementById('sortLikesSb');
+  if (sortLikes) sortLikes.textContent = t('sort_likes');
+  var sortTime = document.getElementById('sortTimeSb');
+  if (sortTime) sortTime.textContent = t('sort_time');
+
+  // Goal item buttons (release/drop) — re-render
+  renderGoals();
+  if (document.getElementById('tab-gainbook') && document.getElementById('tab-gainbook').classList.contains('active')) {
+    loadGainsSb();
+  }
+}
+
+
+// ═══════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════
+const DESIRES = [
+  { key:'control',  label:'想要\n控制', cls:'bc' },
+  { key:'approval', label:'想要被\n认同', cls:'ba' },
+  { key:'safety',   label:'想要\n安全', cls:'bs' },
+];
+const RISE_SPEED  = 240;
+const MAX_RISING  = 3;
+const WATER_Y_PCT = 0.52;
+const IDLE_COUNT  = Math.max(10, Math.min(22, Math.floor(
+  (window.innerWidth * window.innerHeight * (1 - WATER_Y_PCT)) / 12000
+)));
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let idleBubbles  = [];
+let risingSlots  = [null, null, null];
+let released     = 0;
+let physicsRaf   = null;
+let mergedBubble = null;
+
+// ═══════════════════════════════════════════════════
+//  LAYOUT
+// ═══════════════════════════════════════════════════
+function waterY() { return window.innerHeight * WATER_Y_PCT; }
+function vw()     { return window.innerWidth; }
+function vh()     { return window.innerHeight; }
+
+// ═══════════════════════════════════════════════════
+//  PHYSICS ENGINE
+// ═══════════════════════════════════════════════════
+// All physics constants are defined per 60fps frame.
+// Delta-time scaling normalises them to actual elapsed time,
+// so behaviour is identical on 60 / 90 / 120 / 144 Hz screens.
+const BUOYANCY    = 0.006;   // per 60fps frame
+const DAMPING     = 0.92;    // per 60fps frame (converted to per-dt below)
+const REPULSION   = 120;     // per 60fps frame
+const WALL_REP    = 80;      // per 60fps frame
+const WALL_MARGIN = 6;
+const TARGET_FPS  = 60;
+const TARGET_DT   = 1000 / TARGET_FPS;  // 16.667 ms
+// Max speed in px per 60fps-equivalent frame
+const MAX_SPD     = 0.8;
+
+let   frameCount  = 0;
+let   lastPhysicsTime = null;
+
+function physicsTick(now) {
+  // --- delta time, clamped to avoid huge jumps after tab switch ---
+  if (lastPhysicsTime === null) lastPhysicsTime = now;
+  const rawDt = now - lastPhysicsTime;
+  lastPhysicsTime = now;
+  // Clamp: ignore frames longer than 100 ms (tab was hidden, etc.)
+  const dt = Math.min(rawDt, 100);
+  // Scale factor relative to a 60fps frame
+  const t  = dt / TARGET_DT;
+
+  const wy = waterY();
+  const W  = vw();
+  const H  = vh();
+  const active = idleBubbles;
+
+  frameCount++;
+  // Always update DOM every real frame (dt-based, so we don't skip on fast screens)
+  const doDOM = true;
+
+  // Per-frame damping → per-dt damping: DAMPING^t
+  const dampT = Math.pow(DAMPING, t);
+
+  const CELL = 72;
+  const grid = new Map();
+  for (const b of active) {
+    const cx = (b.px / CELL) | 0;
+    const cy = (b.py / CELL) | 0;
+    const key = cx * 1000 + cy;
+    if (!grid.has(key)) grid.set(key, []);
+    grid.get(key).push(b);
+  }
+
+  for (const b of active) {
+    const r = b.sz / 2;
+    const depth = (b.py - wy) / (H - wy);
+    // Scale impulse by t so deeper frames don't add more buoyancy
+    b.vy -= BUOYANCY * (0.3 + depth * 1.4) * t;
+
+    const cx = (b.px / CELL) | 0;
+    const cy = (b.py / CELL) | 0;
+    for (let nx = cx - 1; nx <= cx + 1; nx++) {
+      for (let ny = cy - 1; ny <= cy + 1; ny++) {
+        const neighbours = grid.get(nx * 1000 + ny);
+        if (!neighbours) continue;
+        for (const o of neighbours) {
+          if (o === b) continue;
+          const dx = b.px - o.px;
+          const dy = b.py - o.py;
+          const dist2 = dx * dx + dy * dy;
+          const minDist = r + o.sz / 2 + 4;
+          if (dist2 < minDist * minDist && dist2 > 0.001) {
+            const dist = Math.sqrt(dist2);
+            const force = REPULSION * (minDist - dist) / (minDist * dist) * t;
+            b.vx += dx * force;
+            b.vy += dy * force;
+          }
+        }
+      }
+    }
+
+    const left = r + WALL_MARGIN, right = W - r - WALL_MARGIN;
+    const top  = wy + r + 2,     bot   = H - r - WALL_MARGIN;
+    if (b.px < left  + 40) b.vx += WALL_REP / Math.max(1, b.px - left)  * t;
+    if (b.px > right - 40) b.vx -= WALL_REP / Math.max(1, right - b.px) * t;
+    if (b.py < top   + 40) b.vy += WALL_REP * 2 / Math.max(1, b.py - top) * t;
+    if (b.py > bot   - 40) b.vy -= WALL_REP / Math.max(1, bot - b.py)   * t;
+
+    b.vx *= dampT;
+    b.vy *= dampT;
+
+    // Speed cap in px/frame-equivalent — convert to px/dt
+    const maxSpd = MAX_SPD * t;
+    const spd2 = b.vx * b.vx + b.vy * b.vy;
+    if (spd2 > maxSpd * maxSpd) {
+      const s = maxSpd / Math.sqrt(spd2);
+      b.vx *= s;
+      b.vy *= s;
+    }
+
+    b.px += b.vx;
+    b.py += b.vy;
+    b.px = Math.max(left, Math.min(right, b.px));
+    b.py = Math.max(top,  Math.min(bot,   b.py));
+    if (b.py <= top && b.vy < 0) b.vy = 0;
+
+    if (doDOM) {
+      b.el.style.left = `${b.px - r}px`;
+      b.el.style.top  = `${b.py - r}px`;
+    }
+  }
+  physicsRaf = requestAnimationFrame(physicsTick);
+}
+
+// Place bubble avoiding overlap
+function placeInitial(sz, allBubbles) {
+  const wy = waterY();
+  const W  = vw();
+  const H  = vh();
+  const r  = sz / 2;
+  const pad = 5;
+
+  for (let attempt = 0; attempt < 200; attempt++) {
+    const tRand = Math.random();
+    const depth = tRand * tRand;
+    const py = wy + r + pad + depth * (H - wy - r * 2 - pad * 2);
+    const px = r + pad + Math.random() * (W - r * 2 - pad * 2);
+    let ok = true;
+    for (const b of allBubbles) {
+      if (Math.hypot(px - b.px, py - b.py) < r + b.sz / 2 + pad) { ok = false; break; }
+    }
+    if (ok) return { px, py };
+  }
+  const depth = Math.random() * Math.random();
+  return {
+    px: r + pad + Math.random() * (W - r * 2 - pad * 2),
+    py: wy + r + pad + depth * (H - wy - r * 2 - pad * 2),
+  };
+}
+
+// ═══════════════════════════════════════════════════
+//  SURFACE SLOT — all bubbles merge at center
+// ═══════════════════════════════════════════════════
+const TSZ = 88;
+
+function surfaceSlotPos() {
+  return { x: vw() * 0.50, y: waterY() - TSZ * 0.55 };
+}
+
+// ═══════════════════════════════════════════════════
+//  MERGE BUBBLE — all at-surface bubbles become one
+// ═══════════════════════════════════════════════════
+function tryMerge() {
+  const atSurface = risingSlots
+    .map((s, i) => s && s.el.classList.contains('at-surface') ? { ...s, idx: i } : null)
+    .filter(Boolean);
+
+  if (atSurface.length === 0) return;
+
+  if (mergedBubble) { mergedBubble.el.remove(); mergedBubble = null; }
+
+  const desires = atSurface.map(e => e.desire);
+
+  for (const e of atSurface) {
+    e.el.style.opacity = '0';
+    e.el.style.pointerEvents = 'none';
+  }
+
+  const count = desires.length;
+  const mSz = 92 + (count - 1) * 28;
+
+  const seen = new Set();
+  const lines = desires.map(d => d.label.replace('\n', '')).filter(l => !seen.has(l) && seen.add(l));
+  const labelHtml = lines.join('<br>');
+
+  const cls = count === 1 ? desires[0].cls
+    : count === 2 ? (desires[0].cls === desires[1].cls ? desires[0].cls : 'bm')
+    : 'bm3';
+
+  const wy = waterY();
+  const cx = vw() * 0.50;
+  const cy = wy - mSz * 0.55;
+
+  const el = document.createElement('div');
+  el.className = `bubble at-surface merged ${cls}`;
+  el.innerHTML = labelHtml;
+  el.style.cssText = `
+    width:${mSz}px; height:${mSz}px;
+    left:${cx - mSz/2}px; top:${cy - mSz/2}px;
+    font-size:${count > 1 ? 0.72 : 0.82}rem;
+    position:fixed; z-index:15;
+    opacity:0;
+    transition: opacity 0.4s ease;
+    pointer-events:none;
+  `;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+
+  mergedBubble = { el, desires, sz: mSz, atSurface };
+  updateSharedButtons(cx, cy, mSz);
+}
+
+function updateSharedButtons(cx, cy, sz) {
+  const denyEl  = document.getElementById('sharedDeny');
+  const allowEl = document.getElementById('sharedAllow');
+  const gap = 16;
+  denyEl.style.left  = `${cx - sz/2 - 62 - gap}px`;
+  denyEl.style.top   = `${cy - 30}px`;
+  allowEl.style.left = `${cx + sz/2 + gap}px`;
+  allowEl.style.top  = `${cy - 30}px`;
+  denyEl.classList.add('show');
+  allowEl.classList.add('show');
+
+  // Show queue guidance precisely above the buttons — coordinates are exact here
+  if (queueActive) {
+    const guidance = document.getElementById('queueGuidance');
+    guidance.style.top = `${cy - 30 - 90}px`;
+    guidance.classList.add('show');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  ANIMATED WAVE SURFACE
+// ═══════════════════════════════════════════════════
+let waveOffset = 0;
+
+function drawWaves() {
+  const w    = vw();
+  const wy   = waterY();
+  const amp  = 10;
+  const amp2 = 6;
+  waveOffset += 0.012;
+
+  let d = `M 0 ${wy + amp}`;
+  for (let x = 0; x <= w; x += 6) {
+    const y = wy + Math.sin((x / w) * Math.PI * 4 + waveOffset) * amp
+                  + Math.sin((x / w) * Math.PI * 2.5 + waveOffset * 1.3) * (amp * 0.4);
+    d += ` L ${x} ${y}`;
+  }
+  d += ` L ${w} ${vh()} L 0 ${vh()} Z`;
+  document.getElementById('wavePath').setAttribute('d', d);
+
+  let d2 = `M 0 ${wy + amp2}`;
+  for (let x = 0; x <= w; x += 8) {
+    const y = wy + Math.sin((x / w) * Math.PI * 5 + waveOffset * 1.6 + 1) * amp2
+                  + Math.cos((x / w) * Math.PI * 3 + waveOffset * 0.9) * (amp2 * 0.5);
+    d2 += ` L ${x} ${y}`;
+  }
+  d2 += ` L ${w} ${wy + 18} L 0 ${wy + 18} Z`;
+  document.getElementById('wavePath2').setAttribute('d', d2);
+
+  const svg = document.getElementById('waterSvg');
+  svg.setAttribute('height', `${vh()}px`);
+  svg.style.top = '0px';
+
+  requestAnimationFrame(drawWaves);
+}
+
+// ═══════════════════════════════════════════════════
+//  SKY CLOUDS
+// ═══════════════════════════════════════════════════
+function spawnCloud() {
+  const el = document.createElement('div');
+  el.className = 'cloud';
+  const h = 18 + Math.random() * 28;
+  const w = 60 + Math.random() * 120;
+  const top = 8 + Math.random() * (waterY() * 0.55);
+  const dur = 28 + Math.random() * 30;
+  el.style.cssText = `width:${w}px;height:${h}px;top:${top}px;animation-duration:${dur}s;animation-delay:${-Math.random()*dur}s;`;
+  document.getElementById('skyClouds').appendChild(el);
+}
+for (let i = 0; i < 4; i++) spawnCloud();
+
+// ═══════════════════════════════════════════════════
+//  UNDERWATER RAYS & AMBIENT PARTICLES
+// ═══════════════════════════════════════════════════
+const sceneEl = document.getElementById('scene');
+
+function spawnUwParticle() {
+  const p = document.createElement('div');
+  p.className = 'uw-particle';
+  const sz = 3 + Math.random() * 8;
+  const x = Math.random() * vw();
+  const dur = 4 + Math.random() * 6;
+  const wy = waterY();
+  const startY = vh() - 20;
+  p.style.cssText = `
+    position:fixed;
+    width:${sz}px; height:${sz}px;
+    left:${x}px; top:${startY}px;
+    animation-duration:${dur}s;
+    z-index:6;
+  `;
+  document.body.appendChild(p);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    p.style.transform = `translateY(-${vh() - wy + 20}px)`;
+    p.style.opacity = '0';
+  }));
+  setTimeout(() => p.remove(), dur * 1000 + 200);
+}
+setInterval(spawnUwParticle, 300);
+
+// ═══════════════════════════════════════════════════
+//  SPAWN IDLE BUBBLE
+// ═══════════════════════════════════════════════════
+function spawnIdleBubble() {
+  // 选当前数量最少的欲望类型，保持三种平衡
+  const counts = DESIRES.map(d => idleBubbles.filter(b => b.desire.key === d.key).length);
+  const minCount = Math.min(...counts);
+  // 在数量最少的类型中随机选一个
+  const candidates = DESIRES.filter((_, i) => counts[i] === minCount);
+  const desire = candidates[Math.floor(Math.random() * candidates.length)];
+
+  const sz  = Math.round((44 + Math.floor(Math.random() * 20)) * 1.5);
+  const pos = placeInitial(sz, idleBubbles);
+
+  const el = document.createElement('div');
+  el.className = `bubble ${desire.cls} idle`;
+  el.innerHTML = desire.label.replace('\n', '<br>');
+  el.style.cssText = `
+    width:${sz}px; height:${sz}px;
+    left:${pos.px - sz/2}px; top:${pos.py - sz/2}px;
+    font-size:${sz > 58 ? 0.78 : 0.70}rem;
+    opacity:0;
+    pointer-events:auto;
+    transition:opacity 0.6s ease;
+    z-index:8;
+  `;
+  sceneEl.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+
+  const entry = {
+    el, desire, sz,
+    px: pos.px, py: pos.py,
+    vx: (Math.random() - 0.5) * 0.08,
+    vy: (Math.random() - 0.5) * 0.08,
+  };
+  el.onclick = () => onBubbleClick(entry);
+  idleBubbles.push(entry);
+  return entry;
+}
+
+// ═══════════════════════════════════════════════════
+//  CLICK → RISE TO SURFACE
+// ═══════════════════════════════════════════════════
+function onBubbleClick(entry) {
+  if (entry.clicked) return;
+  entry.clicked = true;
+
+  const slotIdx = risingSlots.findIndex(s => s === null);
+  if (slotIdx === -1) {
+    entry.clicked = false;
+    showToast(t('toast_max'));
+    return;
+  }
+
+  idleBubbles = idleBubbles.filter(b => b !== entry);
+
+  const { el, desire, sz } = entry;
+
+  el.style.left = `${entry.px - sz/2}px`;
+  el.style.top  = `${entry.py - sz/2}px`;
+  el.style.transition = 'none';
+  el.classList.remove('idle');
+  el.classList.add('rising');
+  el.style.animation    = 'none';
+  el.style.pointerEvents = 'none';
+  el.style.zIndex = '12';
+
+  const tSz    = TSZ;
+  const target = surfaceSlotPos();
+  const cLeft  = entry.px - sz / 2;
+  const cTop   = entry.py - sz / 2;
+  const dist   = Math.hypot(target.x - entry.px, target.y - entry.py);
+  const dur    = Math.max(0.7, dist / 240);
+
+  requestAnimationFrame(() => {
+    el.style.transition = `left ${dur.toFixed(2)}s cubic-bezier(0.3,1.2,0.6,1), top ${dur.toFixed(2)}s cubic-bezier(0.3,1.2,0.6,1), width ${dur.toFixed(2)}s ease, height ${dur.toFixed(2)}s ease`;
+    el.style.left   = `${target.x - tSz/2}px`;
+    el.style.top    = `${target.y - tSz/2}px`;
+    el.style.width  = `${tSz}px`;
+    el.style.height = `${tSz}px`;
+  });
+
+  const slotEntry = { el, desire, slotIdx, tSz };
+  risingSlots[slotIdx] = slotEntry;
+
+  setTimeout(() => {
+    el.classList.remove('rising');
+    el.classList.add('at-surface');
+    el.style.transition = '';
+    tryMerge();
+    updateInstruction();
+  }, dur * 1000 + 60);
+
+  setTimeout(() => {
+    const missing = IDLE_COUNT - idleBubbles.length;
+    for (let i = 0; i < missing; i++) {
+      setTimeout(() => spawnIdleBubble(), i * 80);
+    }
+  }, 1200);
+}
+
+// ═══════════════════════════════════════════════════
+//  DECISION — releases all at-surface bubbles
+// ═══════════════════════════════════════════════════
+function handleDecision(allow) {
+  if (!mergedBubble) return;
+
+  document.getElementById('sharedDeny').classList.remove('show');
+  document.getElementById('sharedAllow').classList.remove('show');
+
+  const { el: mEl, atSurface, sz: mSz } = mergedBubble;
+  mergedBubble = null;
+
+  if (allow) {
+    mEl.classList.add('go-sky');
+    setTimeout(() => mEl.remove(), 2100);
+    released += atSurface.length;
+    document.getElementById('counter').textContent = tf('counter', released);
+    showToast(t('toast_allow'));
+  } else {
+    mEl.classList.add('go-sky');
+    setTimeout(() => mEl.remove(), 2100);
+    showToast(t('toast_deny'));
+  }
+
+  for (const e of atSurface) {
+    e.el.remove();
+    risingSlots[e.slotIdx] = null;
+  }
+
+  updateInstruction();
+
+  const missing = IDLE_COUNT - idleBubbles.length;
+  for (let i = 0; i < missing; i++) {
+    setTimeout(() => spawnIdleBubble(), 2200 + i * 80);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  INSTRUCTION
+// ═══════════════════════════════════════════════════
+function updateInstruction() {
+  const atSurface = risingSlots.filter(s => s && s.el.classList.contains('at-surface'));
+  const instr = document.getElementById('instr');
+  if (atSurface.length > 0) {
+    instr.textContent = t('instr_active');
+  } else {
+    instr.textContent = t('instr_idle');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+drawWaves();
+requestAnimationFrame(physicsTick);
+
+(function spawnAll() {
+  for (let i = 0; i < IDLE_COUNT; i++) {
+    setTimeout(() => spawnIdleBubble(), i * 60);
+  }
+})();
+
+// ═══════════════════════════════════════════════════
+//  SIDEBAR
+// ═══════════════════════════════════════════════════
+//  SIDEBAR + TABBED MODAL NAVIGATION
+// ═══════════════════════════════════════════════════
+function toggleSidebar() {
+  const isOpen = document.getElementById('sidebar').classList.contains('open');
+  if (isOpen) {
+    closeSidebar();
+  } else {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+    document.querySelector('.menu-btn').style.display = 'none';
+  }
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+  document.querySelector('.menu-btn').style.display = 'flex';
+}
+
+function openTab(tab) {
+  closeSidebar();
+  document.querySelectorAll('.sidebar-menu-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + tab);
+  if (navEl) navEl.classList.add('active');
+  document.getElementById('mainOverlay').classList.add('open');
+  switchTab(tab);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
+  const tabBtn = document.getElementById('tab-btn-' + tab);
+  if (tabBtn) tabBtn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('tab-' + tab);
+  if (panel) panel.classList.add('active');
+  if (tab === 'gainbook') loadGainsSb();
+  const box = document.getElementById('mainModalBox');
+  if (box) box.scrollTop = 0;
+}
+
+function closeNav() {
+  document.getElementById('mainOverlay').classList.remove('open');
+  document.querySelectorAll('.sidebar-menu-item').forEach(el => el.classList.remove('active'));
+}
+function closeModalOnBg(e, id) {
+  if (e.target === document.getElementById(id)) {
+    if (id === 'asstOverlay') closeAsst(); else closeNav();
+  }
+}
+
+// Assistant — separate modal
+function openAsst() {
+  closeSidebar();
+  document.querySelectorAll('.sidebar-menu-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById('nav-asst');
+  if (navEl) navEl.classList.add('active');
+  document.getElementById('asstOverlay').classList.add('open');
+  const box = document.getElementById('asstModalBox');
+  if (box) box.scrollTop = 0;
+}
+function closeAsst() {
+  document.getElementById('asstOverlay').classList.remove('open');
+  document.querySelectorAll('.sidebar-menu-item').forEach(el => el.classList.remove('active'));
+}
+
+// ═══════════════════════════════════════════════════
+//  GOALS — stored in localStorage
+// ═══════════════════════════════════════════════════
+let activeGoalText = null; // currently releasing goal
+
+function getGoals() {
+  try { return JSON.parse(localStorage.getItem('goals') || '[]'); } catch(_) { return []; }
+}
+function saveGoals(goals) {
+  try { localStorage.setItem('goals', JSON.stringify(goals)); } catch(_) {}
+}
+
+let goalSelectedCat = '健康';
+
+function selectGoalCat(btn) {
+  document.querySelectorAll('#goalCats .gain-cat').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  goalSelectedCat = btn.dataset.cat;
+}
+
+function renderGoals() {
+  const goals = getGoals();
+  const list  = document.getElementById('goalsList');
+  if (!goals.length) {
+    list.innerHTML = '<li class="goals-empty">' + t('goal_empty') + '</li>';
+    return;
+  }
+  list.innerHTML = goals.map((g, i) => {
+    const icon  = CAT_ICONS[g.cat] || '✨';
+    const CAT_DISPLAY = {'健康':'Health','财富':'Wealth','SP':'SP','人际关系':'Relations','学业':'Study','工作':'Work','其他':'Other'};
+    const catLabel = currentLang === 'en' ? (CAT_DISPLAY[g.cat] || g.cat) : g.cat;
+    const badge = g.cat ? `<span class="gain-badge" style="margin-bottom:2px;">${icon} ${catLabel}</span>` : '';
+    return `
+    <li class="goal-item" id="goal-item-${i}">
+      ${badge}
+      <span class="goal-item-text">${escapeHtml(g.text)}</span>
+      <div class="goal-item-actions">
+        <button class="goal-btn-release" onclick="releaseGoal(${i})">${typeof t==='function'?t('goal_release'):'🫧 释放'}</button>
+        <button class="goal-btn-drop"    onclick="dropGoal(${i})">${typeof t==='function'?t('goal_drop'):'✨ 掉落'}</button>
+        <button class="goal-btn-del"     onclick="deleteGoal(${i})">✕</button>
+      </div>
+    </li>`;
+  }).join('');
+}
+
+function addGoal() {
+  const input = document.getElementById('goalInput');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const goals = getGoals();
+  goals.unshift({ text, cat: goalSelectedCat, ts: Date.now() });
+  saveGoals(goals);
+  renderGoals();
+}
+
+function deleteGoal(i) {
+  const goals = getGoals();
+  goals.splice(i, 1);
+  saveGoals(goals);
+  renderGoals();
+}
+
+function releaseGoal(i) {
+  const goals = getGoals();
+  const goal  = goals[i];
+  if (!goal) return;
+  activeGoalText = goal.text;
+  document.getElementById('activeGoalText').textContent = goal.text;
+  document.getElementById('activeGoalBanner').classList.add('show');
+  closeNav();
+  showToast(t('toast_goal_set'));
+}
+
+function dropGoal(i) {
+  const goals = getGoals();
+  const goal  = goals[i];
+  if (!goal) return;
+  _submitGainEntry(goal.text, goal.cat || '其他');
+  goals.splice(i, 1);
+  saveGoals(goals);
+  renderGoals();
+  showToast(t('toast_dropped'));
+}
+
+// Init goals render on load — called after CAT_ICONS defined below
+// (moved to end of script)
+
+// ═══════════════════════════════════════════════════
+//  GAIN BOOK — Supabase backend
+// ═══════════════════════════════════════════════════
+const SUPA_URL  = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
+const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
+const GAIN_MAX  = 10000;
+const CAT_ICONS = { '健康':'🌿', '财富':'💰', 'SP':'💞', '人际关系':'🤝', '学业':'📚', '工作':'💼', '其他':'✨' };
+
+let gainSelectedCat    = '健康';
+let gainSelectedFilterSb = 'all';
+let gainSortSb           = 'likes';
+const likedKeys          = new Set();
+
+function getMyItems() {
+  try { return JSON.parse(sessionStorage.getItem('gainMy') || '[]'); } catch(_) { return []; }
+}
+function saveMyItems(items) {
+  try { sessionStorage.setItem('gainMy', JSON.stringify(items)); } catch(_) {}
+}
+
+async function supaFetch(path, opts = {}) {
+  const res = await fetch(SUPA_URL + path, {
+    ...opts,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || '',
+      ...opts.headers,
+    },
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+function selectCat(btn, ctx) {
+  const scopeId = ctx === 'sb' ? 'gainCatsSb' : 'gainCats';
+  const scope = document.getElementById(scopeId);
+  if (scope) scope.querySelectorAll('.gain-cat').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  gainSelectedCat = btn.dataset.cat;
+}
+
+function selectFilterSb(btn) {
+  document.querySelectorAll('#tab-gainbook .gain-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  gainSelectedFilterSb = btn.dataset.filter;
+  loadGainsSb();
+}
+
+function setSortSb(s) {
+  gainSortSb = s;
+  document.getElementById('sortLikesSb').classList.toggle('active', s === 'likes');
+  document.getElementById('sortTimeSb').classList.toggle('active', s === 'time');
+  loadGainsSb();
+}
+
+function formatRelTime(ts) {
+  const diff = Date.now() - ts;
+  if (currentLang === 'en') {
+    if (diff < 60000)    return 'just now';
+    if (diff < 3600000)  return Math.floor(diff/60000) + 'm ago';
+    if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
+    return Math.floor(diff/86400000) + 'd ago';
+  }
+  if (diff < 60000)    return '刚刚';
+  if (diff < 3600000)  return Math.floor(diff/60000) + ' 分钟前';
+  if (diff < 86400000) return Math.floor(diff/3600000) + ' 小时前';
+  return Math.floor(diff/86400000) + ' 天前';
+}
+
+async function loadGainsSb() {
+  const myEl     = document.getElementById('myGainListSb');
+  const sharedEl = document.getElementById('sharedGainListSb');
+  const titleEl  = document.getElementById('sharedGainTitleSb');
+  sharedEl.innerHTML = '<li class="gain-loading">加载中…</li>';
+
+  let myItems = getMyItems();
+  if (gainSelectedFilterSb !== 'all') myItems = myItems.filter(i => i.cat === gainSelectedFilterSb);
+  const myTitleEl = document.getElementById('myGainTitleSb');
+  if (myTitleEl) myTitleEl.textContent = tf('my_gains', myItems.length);
+  renderGainList(myEl, myItems, false);
+
+  try {
+    const order = gainSortSb === 'likes' ? 'likes.desc,ts.desc' : 'ts.desc';
+    let url = `/rest/v1/gain_entries?select=*&order=${order}`;
+    if (gainSelectedFilterSb !== 'all') url += `&cat=eq.${encodeURIComponent(gainSelectedFilterSb)}`;
+    const items = await supaFetch(url);
+    if (titleEl) titleEl.textContent = tf('shared_gains', (items||[]).length);
+    renderGainList(sharedEl, items || [], true);
+  } catch(e) {
+    console.error('Supabase error:', e.message);
+    sharedEl.innerHTML = `<li class="gain-empty">加载失败：${escapeHtml(e.message.slice(0,80))}</li>`;
+  }
+}
+
+function renderGainList(el, items, isShared) {
+  if (!items.length) {
+    const emptyText = isShared
+      ? (currentLang==='en' ? 'No one has shared yet — be the first 🌸' : '还没有人分享，成为第一个吧 🌸')
+      : (currentLang==='en' ? 'No gains yet' : '暂无记录');
+    el.innerHTML = `<li class="gain-empty">${emptyText}</li>`;
+    return;
+  }
+  el.innerHTML = items.map(item => {
+    const icon    = CAT_ICONS[item.cat] || '🌸';
+    const CAT_EN = {'健康':'Health','财富':'Wealth','SP':'SP','人际关系':'Relations','学业':'Study','工作':'Work','其他':'Other'};
+    const catDisp = currentLang === 'en' ? (CAT_EN[item.cat] || item.cat) : item.cat;
+    const badge   = item.cat ? `<span class="gain-badge">${icon} ${catDisp}</span>` : '';
+    const likes   = item.likes || 0;
+    const itemId  = isShared ? (item.id + '') : (item.ts + '');
+    const liked   = likedKeys.has(itemId);
+    const likeBtn = isShared
+      ? `<button class="gain-like-btn ${liked ? 'liked' : ''}" onclick="likeGain('${item.id}', this)">
+           ${liked ? '❤️' : '🤍'} <span class="gain-like-count">${likes > 0 ? likes : '赞'}</span>
+         </button>`
+      : `<span class="gain-meta">${likes > 0 ? '❤️ ' + likes : ''}</span>`;
+    return `
+    <li class="gain-item ${isShared ? 'shared' : ''}">
+      <span class="gain-text">${escapeHtml(item.text)}</span>
+      <div class="gain-footer">
+        <div style="display:flex;align-items:center;gap:6px;">
+          ${badge}
+          <span class="gain-meta">${formatRelTime(item.ts)}</span>
+        </div>
+        ${likeBtn}
+      </div>
+    </li>`;
+  }).join('');
+}
+
+async function likeGain(id, btn) {
+  if (likedKeys.has(id + '')) return;
+  likedKeys.add(id + '');
+  btn.classList.add('liked');
+  btn.innerHTML = '❤️ <span class="gain-like-count">…</span>';
+  try {
+    const rows = await supaFetch(`/rest/v1/gain_entries?id=eq.${id}&select=likes`);
+    const current = (rows && rows[0]) ? (rows[0].likes || 0) : 0;
+    const newLikes = current + 1;
+    await supaFetch(`/rest/v1/gain_entries?id=eq.${id}`, {
+      method: 'PATCH',
+      prefer: 'return=minimal',
+      body: JSON.stringify({ likes: newLikes }),
+    });
+    btn.querySelector('.gain-like-count').textContent = newLikes;
+  } catch(e) {
+    btn.querySelector('.gain-like-count').textContent = '赞';
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Core gain submit used by both sidebar form and dropGoal
+async function _submitGainEntry(text, cat) {
+  const entry = { text, cat, ts: Date.now(), likes: 0 };
+  const myItems = getMyItems();
+  myItems.unshift(entry);
+  if (myItems.length > 30) myItems.splice(30);
+  saveMyItems(myItems);
+  try {
+    await supaFetch('/rest/v1/gain_entries', {
+      method: 'POST',
+      prefer: 'return=minimal',
+      body: JSON.stringify(entry),
+    });
+  } catch(_) {}
+}
+
+async function submitGainSb() {
+  const input = document.getElementById('gainInputSb');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  await _submitGainEntry(text, gainSelectedCat);
+  showToast(tf('gain_recorded', gainSelectedCat));
+  loadGainsSb();
+}
+
+// Init goals list (needs CAT_ICONS, so runs last)
+renderGoals();
+
+// ═══════════════════════════════════════════════════
+//  RELEASE ASSISTANT — AI desire analysis
+// ═══════════════════════════════════════════════════
+const DESIRE_INFO = {
+  control:  { get label(){ return typeof currentLang!=='undefined'&&currentLang==='en'?'Wanting to Control':'想要控制'; }, cls: 'bc' },
+  approval: { get label(){ return typeof currentLang!=='undefined'&&currentLang==='en'?'Wanting Approval':'想要被认同'; }, cls: 'ba' },
+  safety:   { get label(){ return typeof currentLang!=='undefined'&&currentLang==='en'?'Wanting Security':'想要安全'; }, cls: 'bs' },
+};
+
+let asstPoints = []; // results from last analysis
+
+async function runAssistant() {
+  const text = document.getElementById('asstInput').value.trim();
+  if (!text) { showToast(t('toast_no_input')); return; }
+
+  const loadingEl = document.getElementById('asstLoading');
+  const resultEl  = document.getElementById('asstResult');
+
+  loadingEl.style.display = 'flex';
+  resultEl.classList.remove('show');
+
+  try {
+    const SYSTEM_PROMPT = getLangSystemPrompt();
+
+    const res = await fetch('https://sedona-proxy.fionajiafu1223.workers.dev/api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        max_tokens: 1200,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user',   content: text },
+        ],
+      }),
+    });
+
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const raw = data.choices?.[0]?.message?.content || '';
+    if (!raw) throw new Error('empty response');
+
+    let json = { points: [] };
+    try {
+      const start = raw.indexOf('{');
+      const end = raw.lastIndexOf('}');
+      json = JSON.parse(raw.slice(start, end + 1));
+    } catch(_) {}
+
+    asstPoints = (json.points || []).filter(p => DESIRE_INFO[p.desire]);
+    if (!asstPoints.length) throw new Error('parse failed');
+
+    // 重置结果区结构（防止被错误信息替换掉）
+    resultEl.innerHTML = '<div class="asst-desire-badges" id="asstBadges"></div>'
+      + '<div class="asst-analysis" id="asstAnalysis"></div>'
+      + '<button class="asst-go-btn" id="asstGoBtn" onclick="startReleaseQueue()">' + t('asst_go') + '</button>';
+
+    const seenBadge = new Set();
+    document.getElementById('asstBadges').innerHTML = asstPoints
+      .filter(p => !seenBadge.has(p.desire) && seenBadge.add(p.desire))
+      .map(p => `<span class="asst-badge ${DESIRE_INFO[p.desire].cls}">${DESIRE_INFO[p.desire].label}</span>`)
+      .join('');
+
+    document.getElementById('asstAnalysis').innerHTML = asstPoints.map(p => `
+      <div class="asst-point">
+        <span class="asst-point-badge ${DESIRE_INFO[p.desire].cls}">${DESIRE_INFO[p.desire].label}</span>
+        <div class="asst-point-body">
+          <span class="asst-point-quote">「${escapeHtml(p.quote)}」</span>
+          <span class="asst-point-reason">${escapeHtml(p.reason)}</span>
+        </div>
+      </div>
+    `).join('');
+
+    resultEl.classList.add('show');
+  } catch(e) {
+    const msg = (e && e.message) ? e.message : String(e);
+    showToast('❌ ' + msg.slice(0, 80));
+    // 同时在结果区显示完整错误
+    resultEl.innerHTML = '<div style="padding:12px;color:#c04040;font-size:0.78rem;line-height:1.6;font-family:monospace;word-break:break-all;">错误：' + msg + '</div>';
+    resultEl.classList.add('show');
+    console.error('Assistant error:', e);
+  } finally {
+    loadingEl.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  RELEASE QUEUE — drive bubbles from analysis points
+// ═══════════════════════════════════════════════════
+let releaseQueue    = [];   // remaining points to release
+let queueActive     = false;
+let awaitingDecision = false;
+
+function startReleaseQueue() {
+  if (!asstPoints.length) { showToast(t('toast_no_result')); return; }
+  releaseQueue    = [...asstPoints];
+  queueActive     = true;
+  awaitingDecision = false;
+  closeAsst();
+  advanceQueue();
+}
+
+function advanceQueue() {
+  if (!queueActive || !releaseQueue.length) {
+    endQueue();
+    return;
+  }
+  if (mergedBubble) { awaitingDecision = true; return; }
+
+  const point = releaseQueue.shift();
+  showQueueGuidance(point, asstPoints.length - releaseQueue.length, asstPoints.length);
+  launchQueueBubble(point);
+}
+
+function showQueueGuidance(point, current, total) {
+  const info = DESIRE_INFO[point.desire];
+  document.getElementById('queueStep').textContent = currentLang==='en'
+    ? ('Step ' + current + ' / ' + total)
+    : ('第 ' + current + ' / ' + total + ' 条');
+  document.getElementById('queueText').textContent = currentLang==='en'
+    ? ('Can you release the ' + info.label + ' behind 「' + point.quote + '」?')
+    : ('你能释放「' + point.quote + '」背后的' + info.label + '吗？');
+  // Don't show yet — wait for updateSharedButtons which knows the exact button position
+}
+
+function launchQueueBubble(point) {
+  // Find matching desire from DESIRES config
+  const desire = DESIRES.find(d => d.key === point.desire);
+  if (!desire) { advanceQueue(); return; }
+
+  // Find or spawn a bubble of the right type
+  let entry = idleBubbles.find(b => b.desire.key === desire.key);
+  if (!entry) {
+    // Spawn one immediately at bottom center
+    const sz = Math.round(60 * 1.5);
+    const pos = { px: vw() * 0.5, py: waterY() + sz };
+    const el = document.createElement('div');
+    el.className = `bubble ${desire.cls} idle`;
+    el.innerHTML = desire.label.replace('\n', '<br>');
+    el.style.cssText = `width:${sz}px;height:${sz}px;left:${pos.px-sz/2}px;top:${pos.py-sz/2}px;font-size:0.78rem;opacity:0;pointer-events:auto;transition:opacity 0.4s ease;z-index:8;`;
+    sceneEl.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+    entry = { el, desire, sz, px: pos.px, py: pos.py, vx: 0, vy: 0 };
+    idleBubbles.push(entry);
+  }
+
+  // Trigger click after brief delay so bubble is visible
+  setTimeout(() => onBubbleClick(entry), 400);
+}
+
+function endQueue() {
+  queueActive = false;
+  awaitingDecision = false;
+  releaseQueue = [];
+  document.getElementById('queueGuidance').classList.remove('show');
+  showToast(t('queue_done'));
+}
+
+// ── Hook into handleDecision to advance queue after each choice ──
+const _origHandleDecision = handleDecision;
+handleDecision = function(allow) {
+  _origHandleDecision(allow);
+  if (queueActive) {
+    // Wait for bubble animation to finish then advance
+    setTimeout(() => {
+      awaitingDecision = false;
+      advanceQueue();
+    }, 2300);
+  }
+};
+
+// ═══════════════════════════════════════════════════
+//  MUSIC ENGINE — Web Audio API synthesizer
+// ═══════════════════════════════════════════════════
+let audioCtx     = null;
+let masterGain   = null;
+let currentTrack = null;
+let musicStopFns = [];
+let musicPlaying = false;
+let musicPanelOpen = false;
+
+function unlockAudio() {
+  if (!audioCtx) return;
+  // iOS Safari: must start a real (even silent) buffer in the click handler
+  const buf = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+  src.connect(audioCtx.destination);
+  src.start(0);
+}
+
+function stopAllMusic() {
+  musicStopFns.forEach(fn => { try { fn(); } catch(_){} });
+  musicStopFns = [];
+  musicPlaying = false;
+  const btn = document.getElementById('musicBtn');
+  if (btn) btn.classList.remove('playing');
+  document.querySelectorAll('.music-track').forEach(t => {
+    t.classList.remove('active');
+    const pb2 = t.querySelector('.music-play-btn');
+    if (pb2) { pb2.textContent = '▶'; pb2.classList.remove('playing'); }
+  });
+}
+
+function setMusicVolume(v) {
+  if (masterGain && audioCtx) masterGain.gain.setTargetAtTime(v / 100, audioCtx.currentTime, 0.05);
+  const slider = document.getElementById('musicVolume');
+  if (slider) slider.style.background = `linear-gradient(to right,rgba(140,210,255,0.85) 0%,rgba(140,210,255,0.85) ${v}%,rgba(255,255,255,0.18) ${v}%)`;
+}
+
+// ── 宇宙频率常量（Solfeggio + Schumann）──
+// 所有音轨经过 DynamicsCompressor 统一响度
+function makeMasterChain(ctx, dest, preGain) {
+  // preGain: per-track normalisation factor (default 1.0)
+  const pre = ctx.createGain();
+  pre.gain.value = preGain || 1.0;
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -20;
+  comp.knee.value      = 10;
+  comp.ratio.value     = 6;
+  comp.attack.value    = 0.003;
+  comp.release.value   = 0.3;
+  const g = ctx.createGain();
+  g.gain.value = 0.65;
+  pre.connect(comp); comp.connect(g); g.connect(dest);
+  return pre; // everything connects to pre
+}
+
+// ── Track 1: 冥想钵 396Hz（Solfeggio · 释放恐惧）──
+function playBowl() {
+  const ctx = audioCtx;
+  const chain = makeMasterChain(ctx, masterGain, 1.2);
+  // Solfeggio 396 基频及其八度
+  const freqs = [99, 132, 198, 264, 396, 528, 396*1.5];
+  let stopped = false, idx = 0;
+  const timers = [];
+  function strike(freq) {
+    const now = ctx.currentTime;
+    [[1,0.42],[2.756,0.12],[5.04,0.04]].forEach(([mult,vol]) => {
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = 'sine'; osc.frequency.value = freq * mult;
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(vol, now + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + (mult===1 ? 7 : mult<3 ? 4 : 2));
+      osc.connect(g); g.connect(chain);
+      osc.start(now); osc.stop(now + (mult===1 ? 7.2 : 4.5));
+    });
+  }
+  function schedule() {
+    if (stopped) return;
+    strike(freqs[idx++ % freqs.length]);
+    timers.push(setTimeout(schedule, 3800 + Math.random() * 2200));
+  }
+  schedule();
+  musicStopFns.push(() => { stopped=true; timers.forEach(clearTimeout); try{chain.disconnect();}catch(_){} });
+}
+
+// ── Track 2: 528Hz 爱与疗愈（Solfeggio · DNA修复频率）──
+function play528() {
+  const ctx = audioCtx;
+  const chain = makeMasterChain(ctx, masterGain, 0.55);
+  const nodes = [];
+  // 528Hz 基频 + 纯五度 + 泛音
+  [[528,0.28],[1056,0.08],[264,0.12],[792,0.06]].forEach(([freq,vol]) => {
+    const osc = ctx.createOscillator(), g = ctx.createGain();
+    osc.type = 'sine'; osc.frequency.value = freq;
+    g.gain.value = vol;
+    // 极缓LFO造成轻微颤动感
+    const lfo = ctx.createOscillator(), lfoG = ctx.createGain();
+    lfo.type='sine'; lfo.frequency.value = 0.06 + Math.random()*0.04;
+    lfoG.gain.value = vol * 0.12;
+    lfo.connect(lfoG); lfoG.connect(g.gain);
+    lfo.start(); osc.start();
+    osc.connect(g); g.connect(chain);
+    nodes.push(osc,g,lfo,lfoG);
+  });
+  musicStopFns.push(() => {
+    nodes.forEach(n=>{try{if(n.stop)n.stop();}catch(_){} try{n.disconnect();}catch(_){}});
+    try{chain.disconnect();}catch(_){}
+  });
+}
+
+// ── Track 3: 流水声（粉噪声 + 高频泛音）──
+function playWater() {
+  const ctx = audioCtx;
+  const chain = makeMasterChain(ctx, masterGain, 1.0);
+  const sr = ctx.sampleRate;
+  const buf = ctx.createBuffer(2, sr*4, sr);
+  for (let ch=0; ch<2; ch++) {
+    const d = buf.getChannelData(ch);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i=0; i<d.length; i++) {
+      const w = Math.random()*2-1;
+      b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+      b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+      b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+      d[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362) * 0.18;
+      b6 = w*0.115926;
+    }
+  }
+  const src = ctx.createBufferSource();
+  src.buffer=buf; src.loop=true;
+  const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2800;
+  const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=220;
+  src.connect(lp); lp.connect(hp); hp.connect(chain);
+  src.start();
+  musicStopFns.push(()=>{ try{src.stop();}catch(_){} try{chain.disconnect();}catch(_){} });
+}
+
+// ── Track 4: 轻柔钢琴（五声音阶 + Solfeggio调式）──
+function playPiano() {
+  const ctx = audioCtx;
+  const chain = makeMasterChain(ctx, masterGain, 0.8);
+  // 以 528Hz 为中心的五声音阶
+  const scales = [
+    [264,330,396,528,660],
+    [220,275,330,440,550],
+    [198,247.5,297,396,495],
+    [176,220,264,352,440],
+  ];
+  let stopped=false, ci=0;
+  const timers=[];
+  function playChord() {
+    if (stopped) return;
+    const now = ctx.currentTime;
+    const notes = scales[ci++ % scales.length];
+    // 只弹 2-3 个音，稀疏感
+    const pick = notes.filter((_,i)=>[0,2,4].includes(i));
+    pick.forEach((freq,i) => {
+      const osc=ctx.createOscillator(), g=ctx.createGain();
+      osc.type='triangle'; osc.frequency.value=freq;
+      const t = now + i*0.4;
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.3,t+0.25);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+7);
+      osc.connect(g); g.connect(chain);
+      osc.start(t); osc.stop(t+7.5);
+    });
+    timers.push(setTimeout(playChord, 8000+Math.random()*3000));
+  }
+  playChord();
+  musicStopFns.push(()=>{ stopped=true; timers.forEach(clearTimeout); try{chain.disconnect();}catch(_){} });
+}
+
+// ── Track 5: 地球共振 7.83Hz Schumann（脑波同步·θ波）──
+function playSchumann() {
+  const ctx = audioCtx;
+  const chain = makeMasterChain(ctx, masterGain, 0.65);
+  const nodes = [];
+  // 二进制节拍：左耳 200Hz，右耳 207.83Hz → 差频 7.83Hz（Schumann共振）
+  // 用立体声buffer模拟
+  const sr = ctx.sampleRate, dur = 30;
+  const buf = ctx.createBuffer(2, sr*dur, sr);
+  const freqL=200, freqR=207.83;
+  for (let i=0; i<sr*dur; i++) {
+    buf.getChannelData(0)[i] = Math.sin(2*Math.PI*freqL*i/sr) * 0.32;
+    buf.getChannelData(1)[i] = Math.sin(2*Math.PI*freqR*i/sr) * 0.32;
+  }
+  const src=ctx.createBufferSource(); src.buffer=buf; src.loop=true;
+  // 低频包络 LFO at 7.83Hz 叠加质感
+  const lfoOsc=ctx.createOscillator(), lfoG=ctx.createGain();
+  lfoOsc.type='sine'; lfoOsc.frequency.value=7.83;
+  lfoG.gain.value=0.08;
+  lfoOsc.connect(lfoG);
+  const mainG=ctx.createGain(); mainG.gain.value=0.55;
+  lfoG.connect(mainG.gain);
+  src.connect(mainG); mainG.connect(chain);
+  src.start(); lfoOsc.start();
+  nodes.push(lfoOsc,lfoG,mainG);
+  musicStopFns.push(()=>{
+    try{src.stop();}catch(_){}
+    nodes.forEach(n=>{try{if(n.stop)n.stop();}catch(_){} try{n.disconnect();}catch(_){}});
+    try{chain.disconnect();}catch(_){}
+  });
+}
+
+// ── Track 6: 宇宙深空（低频嗡鸣 432Hz·自然音）──
+function playDeep() {
+  const ctx = audioCtx;
+  const chain = makeMasterChain(ctx, masterGain, 0.42);
+  const nodes = [];
+  // 432Hz（自然律 A音）及其泛音列
+  [[432,0.22],[216,0.16],[108,0.12],[864,0.06],[54,0.08]].forEach(([freq,vol],i)=>{
+    const osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine'; osc.frequency.value=freq;
+    g.gain.value=vol;
+    const lfo=ctx.createOscillator(), lfoG=ctx.createGain();
+    lfo.type='sine'; lfo.frequency.value=0.04+i*0.015;
+    lfoG.gain.value=vol*0.15;
+    lfo.connect(lfoG); lfoG.connect(g.gain);
+    lfo.start(); osc.start();
+    osc.connect(g); g.connect(chain);
+    nodes.push(osc,g,lfo,lfoG);
+  });
+  // 细噪声层增加质感
+  const sr=ctx.sampleRate;
+  const nbuf=ctx.createBuffer(1,sr*3,sr);
+  const nd=nbuf.getChannelData(0);
+  for(let i=0;i<nd.length;i++) nd[i]=(Math.random()*2-1);
+  const nsrc=ctx.createBufferSource(); nsrc.buffer=nbuf; nsrc.loop=true;
+  const nf=ctx.createBiquadFilter(); nf.type='lowpass'; nf.frequency.value=180; nf.Q.value=4;
+  const ng=ctx.createGain(); ng.gain.value=0.08;
+  nsrc.connect(nf); nf.connect(ng); ng.connect(chain); nsrc.start();
+  nodes.push(nsrc,nf,ng);
+  musicStopFns.push(()=>{
+    nodes.forEach(n=>{try{if(n.stop)n.stop();}catch(_){} try{n.disconnect();}catch(_){}});
+    try{chain.disconnect();}catch(_){}
+  });
+}
+
+// ── Track 7: 963Hz 觉醒（Solfeggio · 松果体激活）──
+function playAwaken() {
+  const ctx = audioCtx;
+  const chain = makeMasterChain(ctx, masterGain, 0.58);
+  const nodes=[];
+  [[963,0.18],[481.5,0.14],[1926,0.05],[321,0.10]].forEach(([freq,vol])=>{
+    const osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine'; osc.frequency.value=freq;
+    g.gain.value=vol;
+    const lfo=ctx.createOscillator(), lfoG=ctx.createGain();
+    lfo.type='sine'; lfo.frequency.value=0.05+Math.random()*0.05;
+    lfoG.gain.value=vol*0.1;
+    lfo.connect(lfoG); lfoG.connect(g.gain);
+    lfo.start(); osc.start();
+    osc.connect(g); g.connect(chain);
+    nodes.push(osc,g,lfo,lfoG);
+  });
+  // 轻柔钵声点缀
+  let stopped=false; const timers=[];
+  function ding() {
+    if(stopped) return;
+    const now=ctx.currentTime;
+    const osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine'; osc.frequency.value=963*(1+Math.random()*0.01);
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(0.22,now+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001,now+5);
+    osc.connect(g); g.connect(chain);
+    osc.start(now); osc.stop(now+5.5);
+    timers.push(setTimeout(ding,5000+Math.random()*4000));
+  }
+  ding();
+  musicStopFns.push(()=>{
+    stopped=true; timers.forEach(clearTimeout);
+    nodes.forEach(n=>{try{if(n.stop)n.stop();}catch(_){} try{n.disconnect();}catch(_){}});
+    try{chain.disconnect();}catch(_){}
+  });
+}
+
+// ── 自然声音（真实录音，用 <audio> 元素）──
+// 使用多个备用URL，任何一个能加载即可
+// ── Track 10: 夜雨（细密雨声+偶尔雷声远鸣）──
+function playRain() {
+  const ctx = audioCtx;
+  const chain = makeMasterChain(ctx, masterGain, 0.95);
+  const nodes = [];
+  const timers = [];
+  let stopped = false;
+
+  // 主雨声：两层滤波粉噪声叠加，形成丰富质感
+  function makeRainLayer(bufDur, lowpassFreq, highpassFreq, vol) {
+    const sr=ctx.sampleRate;
+    const buf=ctx.createBuffer(2,sr*bufDur,sr);
+    for(let ch=0;ch<2;ch++){
+      const d=buf.getChannelData(ch);
+      let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+      for(let i=0;i<d.length;i++){
+        const w=Math.random()*2-1;
+        b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+        b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+        b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+        d[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.22;
+        b6=w*0.115926;
+      }
+    }
+    const src=ctx.createBufferSource(); src.buffer=buf; src.loop=true;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=lowpassFreq;
+    const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=highpassFreq;
+    const g=ctx.createGain(); g.gain.value=vol;
+    src.connect(lp); lp.connect(hp); hp.connect(g); g.connect(chain);
+    src.start();
+    nodes.push(src,lp,hp,g);
+  }
+  makeRainLayer(5, 4000, 400, 0.55);  // 细雨
+  makeRainLayer(7, 1200, 150, 0.3);   // 底层低频雨声
+
+  // 水滴声：个别大雨滴
+  function raindrop() {
+    if(stopped) return;
+    const now=ctx.currentTime;
+    const osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine'; osc.frequency.value=600+Math.random()*400;
+    osc.frequency.exponentialRampToValueAtTime(200+Math.random()*100, now+0.08);
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(0.12+Math.random()*0.08,now+0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001,now+0.12);
+    osc.connect(g); g.connect(chain);
+    osc.start(now); osc.stop(now+0.14);
+    timers.push(setTimeout(raindrop,200+Math.random()*800));
+  }
+  timers.push(setTimeout(raindrop,Math.random()*500));
+
+  musicStopFns.push(()=>{
+    stopped=true; timers.forEach(clearTimeout);
+    nodes.forEach(n=>{try{if(n.stop)n.stop();}catch(_){} try{n.disconnect();}catch(_){}});
+    try{chain.disconnect();}catch(_){}
+  });
+}
+
+// ── Track 11: 海浪（缓慢潮汐，深呼吸节奏）──
+function playOcean() {
+  const ctx = audioCtx;
+  const chain = makeMasterChain(ctx, masterGain, 0.9);
+  const nodes = [];
+
+  // 低频浪潮：带通滤波粉噪声，LFO调制模拟涨退
+  const sr=ctx.sampleRate;
+  const buf=ctx.createBuffer(2,sr*8,sr);
+  for(let ch=0;ch<2;ch++){
+    const d=buf.getChannelData(ch);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for(let i=0;i<d.length;i++){
+      const w=Math.random()*2-1;
+      b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+      b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+      b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+      d[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.28;
+      b6=w*0.115926;
+    }
+  }
+  const src=ctx.createBufferSource(); src.buffer=buf; src.loop=true;
+  const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=800;
+  const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=60;
+  const g=ctx.createGain(); g.gain.value=0.5;
+
+  // 海浪涨退 LFO（约8秒一个周期，模拟深呼吸）
+  const lfo=ctx.createOscillator(), lfoG=ctx.createGain();
+  lfo.type='sine'; lfo.frequency.value=0.12; // ~8秒一浪
+  lfoG.gain.value=0.38;
+  lfo.connect(lfoG); lfoG.connect(g.gain);
+  lfo.start();
+
+  src.connect(lp); lp.connect(hp); hp.connect(g); g.connect(chain);
+  src.start();
+  nodes.push(src,lp,hp,g,lfo,lfoG);
+
+  // 细碎浪花高频层
+  const buf2=ctx.createBuffer(1,sr*3,sr);
+  const d2=buf2.getChannelData(0);
+  for(let i=0;i<d2.length;i++) d2[i]=(Math.random()*2-1)*0.18;
+  const src2=ctx.createBufferSource(); src2.buffer=buf2; src2.loop=true;
+  const hp2=ctx.createBiquadFilter(); hp2.type='highpass'; hp2.frequency.value=2000;
+  const lp2=ctx.createBiquadFilter(); lp2.type='lowpass'; lp2.frequency.value=6000;
+  const g2=ctx.createGain(); g2.gain.value=0.18;
+  const lfo2=ctx.createOscillator(), lfo2G=ctx.createGain();
+  lfo2.type='sine'; lfo2.frequency.value=0.12;
+  lfo2G.gain.value=0.15;
+  lfo2.connect(lfo2G); lfo2G.connect(g2.gain);
+  lfo2.start();
+  src2.connect(hp2); hp2.connect(lp2); lp2.connect(g2); g2.connect(chain);
+  src2.start();
+  nodes.push(src2,hp2,lp2,g2,lfo2,lfo2G);
+
+  musicStopFns.push(()=>{
+    nodes.forEach(n=>{try{if(n.stop)n.stop();}catch(_){} try{n.disconnect();}catch(_){}});
+    try{chain.disconnect();}catch(_){}
+  });
+}
+
+// ── Track 12: 颂钵冥想（长泛音·深度放松）──
+function playDeepBowl() {
+  const ctx = audioCtx;
+  const chain = makeMasterChain(ctx, masterGain, 0.78);
+  const nodes = [];
+  const timers = [];
+  let stopped = false;
+
+  // 三个钵同时响，音程为纯五度+大三度（自然泛音列）
+  const sets = [
+    [174.61, 261.63, 392.00],  // F · C · G
+    [194.18, 291.00, 436.00],  // 接近G调
+    [220.00, 330.00, 440.00],  // A · E · A
+  ];
+  let setIdx = 0;
+
+  function strikeSet() {
+    if (stopped) return;
+    const freqs = sets[setIdx++ % sets.length];
+    const now = ctx.currentTime;
+
+    freqs.forEach((freq, fi) => {
+      [[1,0.36],[2.756,0.10],[4.07,0.04],[5.04,0.02]].forEach(([mult,vol],hi) => {
+        const osc=ctx.createOscillator(), g=ctx.createGain();
+        osc.type='sine'; osc.frequency.value=freq*mult;
+        const t = now + fi*0.6; // 三个钵依次敲
+        g.gain.setValueAtTime(0,t);
+        g.gain.linearRampToValueAtTime(vol,t+0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001,t+(hi===0?10:hi===1?6:3));
+        osc.connect(g); g.connect(chain);
+        osc.start(t); osc.stop(t+(hi===0?10.5:6.5));
+      });
+    });
+
+    timers.push(setTimeout(strikeSet, 12000+Math.random()*4000));
+  }
+
+  strikeSet();
+  musicStopFns.push(()=>{
+    stopped=true; timers.forEach(clearTimeout);
+    try{chain.disconnect();}catch(_){}
+  });
+}
+
+const TRACKS = {
+  bowl:playBowl, hz528:play528, water:playWater, piano:playPiano,
+  schumann:playSchumann, deep:playDeep, awaken:playAwaken,
+  rain:playRain, ocean:playOcean, deepbowl:playDeepBowl
+};
+
+
+
+function selectTrack(id) {
+  if (!audioCtx) {
+    try {
+      audioCtx   = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.45;
+      masterGain.connect(audioCtx.destination);
+    } catch(e) { showToast('❌ 浏览器不支持Web Audio'); return; }
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  unlockAudio(); // iOS Safari unlock
+
+  if (currentTrack === id && musicPlaying) {
+    stopAllMusic(); currentTrack = null; return;
+  }
+  stopAllMusic();
+  currentTrack = id; musicPlaying = true;
+
+  TRACKS[id]();
+  const vol = document.getElementById('musicVolume').value;
+  masterGain.gain.value = vol / 100;
+  setMusicVolume(vol);
+
+  document.getElementById('musicBtn').classList.add('playing');
+  document.querySelectorAll('.music-track').forEach(t => {
+    t.classList.remove('active');
+    const pb = t.querySelector('.music-play-btn');
+    if (pb) { pb.textContent = '▶'; pb.classList.remove('playing'); }
+    if (t.dataset.track === id) {
+      t.classList.add('active');
+      if (pb) { pb.textContent = '⏹'; pb.classList.add('playing'); }
+    }
+  });
+}
+
+function toggleMusicPanel() {
+  if (!audioCtx) {
+    try {
+      audioCtx   = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.45;
+      masterGain.connect(audioCtx.destination);
+    } catch(e) {}
+  }
+  if (audioCtx) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    unlockAudio();
+  }
+  musicPanelOpen = !musicPanelOpen;
+  document.getElementById('musicPanel').classList.toggle('open', musicPanelOpen);
+}
+
+document.addEventListener('click', e => {
+  if (musicPanelOpen && !e.target.closest('#musicPanel') && !e.target.closest('#musicBtn')) {
+    musicPanelOpen = false;
+    document.getElementById('musicPanel').classList.remove('open');
+  }
+});
+
+// init volume slider
+(function(){
+  const s = document.getElementById('musicVolume');
+  if (s) s.style.background = 'linear-gradient(to right,rgba(140,210,255,0.85) 0%,rgba(140,210,255,0.85) 50%,rgba(255,255,255,0.18) 50%)';
+})();
+
+// ═══════════════════════════════════════════════════
+//  MUSIC SOURCE TABS
+// ═══════════════════════════════════════════════════
+let currentMusicSource = 'builtin';
+
+function switchMusicSource(src) {
+  currentMusicSource = src;
+  ['builtin','import','record'].forEach(s => {
+    document.getElementById('msrc-' + s).classList.toggle('active', s === src);
+    document.getElementById('mpanel-' + s).classList.toggle('active', s === src);
+  });
+  // Init waveform bars on first visit
+  if (src === 'record') initRecordWaveform();
+}
+
+// ═══════════════════════════════════════════════════
+//  LOCAL IMPORT — file + URL
+// ═══════════════════════════════════════════════════
+// importedTracks: [{id, name, src, objectUrl?}]
+const importedTracks = [];
+let importAudioEl    = null; // single <audio> element for imported/recorded playback
+let currentImportId  = null;
+
+function ensureImportAudio() {
+  if (!importAudioEl) {
+    importAudioEl = new Audio();
+    importAudioEl.loop = true;
+  }
+  return importAudioEl;
+}
+
+function handleImportDragOver(e) {
+  e.preventDefault();
+  document.getElementById('importDropZone').classList.add('dragover');
+}
+function handleImportDragLeave(e) {
+  document.getElementById('importDropZone').classList.remove('dragover');
+}
+function handleImportDrop(e) {
+  e.preventDefault();
+  document.getElementById('importDropZone').classList.remove('dragover');
+  handleImportFile(e.dataTransfer.files);
+}
+
+function handleImportFile(files) {
+  if (!files || !files.length) return;
+  for (const file of files) {
+    if (!file.type.startsWith('audio/')) { showToast('❌ 请选择音频文件'); continue; }
+    const url = URL.createObjectURL(file);
+    const id  = 'import-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
+    importedTracks.push({ id, name: file.name.replace(/\.[^.]+$/,''), src: url, objectUrl: url });
+    renderImportedList();
+  }
+  // reset input
+  document.getElementById('importFileInput').value = '';
+}
+
+function handleImportUrl() {
+  const input = document.getElementById('importUrlInput');
+  const url   = input.value.trim();
+  if (!url) return;
+  if (!/^https?:\/\//i.test(url)) { showToast('❌ 请输入 http/https 开头的链接'); return; }
+  const name = url.split('/').pop().split('?')[0].replace(/\.[^.]*$/,'') || '链接音乐';
+  const id   = 'import-' + Date.now();
+  importedTracks.push({ id, name, src: url });
+  renderImportedList();
+  input.value = '';
+}
+
+function renderImportedList() {
+  const list = document.getElementById('importedList');
+  if (!importedTracks.length) {
+    list.innerHTML = '<div class="music-import-empty" id="importEmptyHint">还没有导入的音乐</div>';
+    return;
+  }
+  list.innerHTML = importedTracks.map(track => `
+    <div class="music-imported-item ${currentImportId===track.id?'active':''}"
+         id="itrack-${track.id}" onclick="selectImportTrack('${track.id}')">
+      <span style="font-size:1.1rem;flex-shrink:0;">${currentImportId===track.id ? '▶' : '🎵'}</span>
+      <span class="music-imported-name" title="${escapeHtml(track.name)}">${escapeHtml(track.name)}</span>
+      <button class="music-imported-del" onclick="deleteImportTrack(event,'${track.id}')">✕</button>
+    </div>
+  `).join('');
+}
+
+function selectImportTrack(id) {
+  ensureImportAudio();
+  if (currentImportId === id && musicPlaying && currentTrack === '__import__') {
+    // toggle off
+    stopAllMusic();
+    currentImportId = null;
+    renderImportedList();
+    return;
+  }
+  stopAllMusic();
+  const track = importedTracks.find(t => t.id === id);
+  if (!track) return;
+  currentImportId = id;
+  currentTrack    = '__import__';
+  musicPlaying    = true;
+
+  importAudioEl.src = track.src;
+  // sync volume
+  const vol = document.getElementById('musicVolume').value;
+  importAudioEl.volume = vol / 100;
+  importAudioEl.play().catch(e => { showToast('❌ 无法播放：' + e.message.slice(0,40)); });
+
+  // Override stopAllMusic to also pause importAudioEl
+  musicStopFns.push(() => {
+    importAudioEl.pause();
+    importAudioEl.src = '';
+  });
+
+  document.getElementById('musicBtn').classList.add('playing');
+  renderImportedList();
+}
+
+function deleteImportTrack(e, id) {
+  e.stopPropagation();
+  const idx = importedTracks.findIndex(t => t.id === id);
+  if (idx === -1) return;
+  if (currentImportId === id) { stopAllMusic(); currentImportId = null; }
+  const track = importedTracks[idx];
+  if (track.objectUrl) URL.revokeObjectURL(track.objectUrl);
+  importedTracks.splice(idx, 1);
+  renderImportedList();
+}
+
+// Patch setMusicVolume to also update importAudioEl
+const _origSetMusicVolume = setMusicVolume;
+setMusicVolume = function(v) {
+  _origSetMusicVolume(v);
+  if (importAudioEl) importAudioEl.volume = v / 100;
+};
+
+// ═══════════════════════════════════════════════════
+//  MICROPHONE RECORDING (with background mix)
+// ═══════════════════════════════════════════════════
+let mediaRecorder    = null;
+let recordChunks     = [];
+let recordingActive  = false;
+let recordBlob       = null;
+let recordObjectUrl  = null;
+let recordTimerSec   = 0;
+let recordTimerInt   = null;
+let recordAnalyser   = null;
+let recordAnimFrame  = null;
+let recordMicStream  = null;
+let recordBgTrack    = '';       // currently selected bg track key
+let recordBgGainNode = null;     // gain for bg track during recording
+let recordBgStopFn   = null;     // stop fn for bg track nodes
+
+// Select background track for recording
+function selectRecordBg(btn, trackKey) {
+  document.querySelectorAll('.record-bg-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  recordBgTrack = trackKey;
+  const volRow = document.getElementById('recordBgVolRow');
+  volRow.style.display = trackKey ? 'flex' : 'none';
+}
+
+function updateRecordBgVol(v) {
+  document.getElementById('recordBgVolNum').textContent = v + '%';
+  if (recordBgGainNode && audioCtx) {
+    recordBgGainNode.gain.setTargetAtTime(v / 100, audioCtx.currentTime, 0.05);
+  }
+}
+
+// Spawn waveform bars
+function initRecordWaveform() {
+  const wf = document.getElementById('recordWaveform');
+  if (wf.children.length > 0) return;
+  for (let i = 0; i < 28; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'record-wave-bar';
+    bar.style.height = '4px';
+    wf.appendChild(bar);
+  }
+}
+
+function updateRecordTimer() {
+  recordTimerSec++;
+  const m = String(Math.floor(recordTimerSec / 60)).padStart(2,'0');
+  const s = String(recordTimerSec % 60).padStart(2,'0');
+  document.getElementById('recordTimer').textContent = m + ':' + s;
+  if (recordTimerSec >= 300) stopRecord();
+}
+
+function animateWaveform() {
+  if (!recordAnalyser) return;
+  const data = new Uint8Array(recordAnalyser.frequencyBinCount);
+  recordAnalyser.getByteFrequencyData(data);
+  const bars = document.querySelectorAll('.record-wave-bar');
+  const step = Math.floor(data.length / bars.length);
+  bars.forEach((bar, i) => {
+    const v = data[i * step] || 0;
+    const h = 3 + (v / 255) * 34;
+    bar.style.height = h + 'px';
+    bar.style.background = v > 100 ? 'rgba(255,120,120,0.8)' : 'rgba(100,180,255,0.5)';
+  });
+  recordAnimFrame = requestAnimationFrame(animateWaveform);
+}
+
+async function toggleRecord() {
+  if (recordingActive) { stopRecord(); } else { await startRecord(); }
+}
+
+async function startRecord() {
+  // Ensure AudioContext
+  if (!audioCtx) {
+    try {
+      audioCtx   = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = document.getElementById('musicVolume').value / 100;
+      masterGain.connect(audioCtx.destination);
+    } catch(e) { showToast('❌ 浏览器不支持Web Audio'); return; }
+  }
+  if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+  // Get mic
+  try {
+    recordMicStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+  } catch(e) {
+    showToast('❌ 无法访问麦克风：' + (e.message || '权限被拒绝'));
+    return;
+  }
+
+  // Reset state
+  recordChunks = [];
+  recordBlob = null;
+  if (recordObjectUrl) { URL.revokeObjectURL(recordObjectUrl); recordObjectUrl = null; }
+  recordTimerSec = 0;
+  document.getElementById('recordTimer').textContent = '00:00';
+  document.getElementById('recordTimer').classList.add('active');
+  document.getElementById('recordActions').style.display = 'none';
+
+  // ── Build mix graph ──
+  // mixDest: MediaStreamDestination — all audio goes here for recording
+  const mixDest = audioCtx.createMediaStreamDestination();
+
+  // Mic path: mic → analyser (for waveform viz) → micGain → mixDest
+  const micSource = audioCtx.createMediaStreamSource(recordMicStream);
+  recordAnalyser  = audioCtx.createAnalyser();
+  recordAnalyser.fftSize = 64;
+  const micGain   = audioCtx.createGain();
+  micGain.gain.value = 1.0;
+  micSource.connect(recordAnalyser);
+  micSource.connect(micGain);
+  micGain.connect(mixDest);
+
+  // Background path (if selected)
+  recordBgGainNode = null;
+  recordBgStopFn   = null;
+  if (recordBgTrack && TRACKS[recordBgTrack]) {
+    // Create a dedicated gain node for the bg track going into mixDest
+    recordBgGainNode = audioCtx.createGain();
+    const bgVol = document.getElementById('recordBgVol').value / 100;
+    recordBgGainNode.gain.value = bgVol;
+    recordBgGainNode.connect(mixDest);
+    // Also connect bg to masterGain so user can hear it
+    recordBgGainNode.connect(masterGain);
+
+    // We need the bg track to write into recordBgGainNode instead of masterGain.
+    // Strategy: temporarily redirect makeMasterChain output.
+    // We patch by running the track fn with a custom dest.
+    const _origMakeMasterChain = makeMasterChain;
+    // Override makeMasterChain just for this one call
+    const patchedChain = (ctx, dest, preGain) => {
+      // Build same chain but output to recordBgGainNode
+      const pre  = ctx.createGain(); pre.gain.value = preGain || 1.0;
+      const comp = ctx.createDynamicsCompressor();
+      comp.threshold.value=-20; comp.knee.value=10; comp.ratio.value=6;
+      comp.attack.value=0.003; comp.release.value=0.3;
+      const g = ctx.createGain(); g.gain.value = 0.65;
+      pre.connect(comp); comp.connect(g); g.connect(recordBgGainNode);
+      return pre;
+    };
+    // Temporarily replace
+    window._savedMakeMasterChain = makeMasterChain;
+    makeMasterChain = patchedChain;
+    // Capture stop fns before
+    const stopsBefore = musicStopFns.length;
+    TRACKS[recordBgTrack]();
+    // Restore
+    makeMasterChain = window._savedMakeMasterChain;
+    // The newly added stop fns are for this bg track
+    const bgStops = musicStopFns.splice(stopsBefore);
+    recordBgStopFn = () => bgStops.forEach(fn => { try { fn(); } catch(_){} });
+  }
+
+  // Start MediaRecorder on the mix stream
+  let mimeType = '';
+  ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg'].forEach(mt => {
+    if (!mimeType && MediaRecorder.isTypeSupported(mt)) mimeType = mt;
+  });
+  mediaRecorder = mimeType
+    ? new MediaRecorder(mixDest.stream, { mimeType })
+    : new MediaRecorder(mixDest.stream);
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordChunks.push(e.data); };
+  mediaRecorder.onstop = onRecordStop;
+  mediaRecorder.start(100);
+
+  recordingActive = true;
+  recordTimerInt  = setInterval(updateRecordTimer, 1000);
+  animateWaveform();
+
+  const btn = document.getElementById('recordBtn');
+  btn.classList.add('recording');
+  btn.textContent = '⏹';
+  const bgName = recordBgTrack
+    ? document.querySelector(`.record-bg-item[data-track="${recordBgTrack}"] .record-bg-name`)?.textContent
+    : '';
+  document.getElementById('recordStatus').textContent = recordBgTrack
+    ? `录制中（混音：${bgName}）… 再次点击停止`
+    : '录制中… 再次点击停止';
+}
+
+function stopRecord() {
+  if (!mediaRecorder || mediaRecorder.state === 'inactive') return;
+  mediaRecorder.stop();
+  if (recordMicStream) recordMicStream.getTracks().forEach(t => t.stop());
+  if (recordBgStopFn) { recordBgStopFn(); recordBgStopFn = null; }
+  clearInterval(recordTimerInt);
+  cancelAnimationFrame(recordAnimFrame);
+  recordAnimFrame  = null;
+  recordingActive  = false;
+  recordBgGainNode = null;
+
+  const btn = document.getElementById('recordBtn');
+  btn.classList.remove('recording');
+  btn.textContent = '🎙️';
+  document.getElementById('recordTimer').classList.remove('active');
+  document.querySelectorAll('.record-wave-bar').forEach(b => {
+    b.style.height = '4px'; b.style.background = 'rgba(100,180,255,0.3)';
+  });
+}
+
+function onRecordStop() {
+  const mimeType = mediaRecorder.mimeType || 'audio/webm';
+  recordBlob = new Blob(recordChunks, { type: mimeType });
+  recordObjectUrl = URL.createObjectURL(recordBlob);
+  document.getElementById('recordBtn').classList.add('has-recording');
+  document.getElementById('recordStatus').textContent = '录制完成！可以试听或保存使用';
+  document.getElementById('recordActions').style.display = 'flex';
+}
+
+let recordPreviewEl = null;
+
+function playRecording() {
+  if (!recordObjectUrl) return;
+  if (!recordPreviewEl) recordPreviewEl = new Audio();
+  if (!recordPreviewEl.paused) {
+    recordPreviewEl.pause();
+    recordPreviewEl.currentTime = 0;
+    return;
+  }
+  recordPreviewEl.src = recordObjectUrl;
+  recordPreviewEl.play().catch(() => {});
+}
+
+function saveRecording() {
+  if (!recordObjectUrl) return;
+  const id  = 'rec-' + Date.now();
+  const dur = String(Math.floor(recordTimerSec/60)).padStart(2,'0') + ':' + String(recordTimerSec%60).padStart(2,'0');
+  const bgName = recordBgTrack
+    ? document.querySelector(`.record-bg-item[data-track="${recordBgTrack}"] .record-bg-name`)?.textContent
+    : '';
+  const name = bgName ? `🎙️ 录音+${bgName} ${dur}` : `🎙️ 我的录音 ${dur}`;
+  importedTracks.push({ id, name, src: recordObjectUrl });
+  switchMusicSource('import');
+  renderImportedList();
+  selectImportTrack(id);
+
+  // Reset record UI
+  document.getElementById('recordBtn').classList.remove('has-recording');
+  document.getElementById('recordActions').style.display = 'none';
+  document.getElementById('recordStatus').textContent = '已保存，正在播放混音';
+  document.getElementById('recordTimer').textContent = '00:00';
+  recordTimerSec = 0;
+  showToast('🎙️ 混音已保存并开始播放');
+}
+
+function discardRecording() {
+  if (recordObjectUrl) { URL.revokeObjectURL(recordObjectUrl); recordObjectUrl = null; }
+  recordBlob = null; recordChunks = [];
+  document.getElementById('recordBtn').classList.remove('has-recording');
+  document.getElementById('recordActions').style.display = 'none';
+  document.getElementById('recordStatus').textContent = '选好背景后点击开始录制';
+  document.getElementById('recordTimer').textContent = '00:00';
+  recordTimerSec = 0;
+}
+
+</script>
+</body>
+</html>
