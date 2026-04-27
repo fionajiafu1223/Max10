@@ -11,7 +11,7 @@ const _musicStyle = document.createElement('style');
 _musicStyle.textContent = `
   /* ── MUSIC BUTTON & PANEL ── */
   .music-btn {
-    position: fixed; top: 16px; right: 16px; z-index: 9997;
+    position: fixed; top: 12px; right: 12px; z-index: 9999; width: 44px; height: 44px;
     width: 36px; height: 36px; border-radius: 50%;
     background: rgba(255,255,255,0.2); backdrop-filter: blur(12px);
     border: 1.5px solid rgba(255,255,255,0.35);
@@ -148,6 +148,7 @@ document.head.appendChild(_musicStyle);
     '<div class="music-source-tabs">',
     '  <button class="music-source-tab active" id="msrc-builtin" onclick="switchMusicSource(\'builtin\')">🎵 App内置</button>',
     '  <button class="music-source-tab" id="msrc-import" onclick="switchMusicSource(\'import\')">📁 本地导入</button>',
+    '  <button class="music-source-tab" id="msrc-record" onclick="switchMusicSource(\'record\')">🎙️ 录制背景音</button>',
     '</div>',
     '<div class="music-source-panel active" id="mpanel-builtin">',
     '<div class="music-tracks">',
@@ -169,6 +170,9 @@ document.head.appendChild(_musicStyle);
     '</div>',
     '<input type="file" id="importFileInput" accept="audio/*" multiple style="display:none" onchange="handleImportFile(this.files)">',
     '<div class="music-imported-list" id="importedList"><div id="importEmptyHint">还没有导入的音乐</div></div>',
+    '</div>',
+    '<div class="music-source-panel" id="mpanel-record">',
+    '<div style="padding:16px;text-align:center;color:rgba(180,210,255,0.7);font-size:0.8rem;">录制功能请在欲望释放页面使用</div>',
     '</div>',
     '<div class="music-volume-row">',
     '<span class="music-vol-icon">🔈</span>',
