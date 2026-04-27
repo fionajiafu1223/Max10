@@ -57,7 +57,7 @@ canvas { position:fixed; inset:0; display:block; }
   );
   border: 1px solid rgba(255,255,255,0.75);
   box-shadow:
-    inset 0 1.5px 0 rgba(255,255,255,0.95),
+    inset 0 1px 0 rgba(255,255,255,0.45),
     0 6px 40px rgba(80,160,220,0.20);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -69,7 +69,7 @@ canvas { position:fixed; inset:0; display:block; }
 }
 #hero-bubble .line1 {
   font-family:'ITC Bauhaus','Josefin Sans',sans-serif;
-  font-weight:500; font-size:0.62rem;
+  font-weight:500; font-size:0.55rem;
   letter-spacing:0.10em; font-style:normal;
   color:rgba(255,255,255,0.92);
   line-height:1.5;
@@ -77,17 +77,20 @@ canvas { position:fixed; inset:0; display:block; }
 }
 #hero-bubble .line2 {
   font-family:'ITC Bauhaus','Josefin Sans',sans-serif;
-  font-weight:500; font-size:0.62rem;
+  font-weight:500; font-size:0.55rem;
   letter-spacing:0.20em; font-style:normal;
   color:rgba(255,255,255,0.92);
   line-height:1.5;
 }
 #hero-bubble h1 {
   font-family:'ITC Bauhaus','Josefin Sans',sans-serif;
-  font-weight:900; font-size:2.0rem;
+  font-weight:900; font-size:1.8rem;
   letter-spacing:0.12em;
   color:rgba(235,250,255,0.97);
-  margin-top:4px; line-height:1;
+  margin-top:3px; line-height:1;
+}
+#hero-bubble .text-wrap {
+  margin-top:-8%;
 }
 
 
@@ -131,9 +134,11 @@ canvas { position:fixed; inset:0; display:block; }
 <body>
 <canvas id="c"></canvas>
 <div id="hero-bubble">
-  <div class="line1">Releasing is part of life</div>
-  <div class="line2">until</div>
-  <h1>Freed</h1>
+  <div class="text-wrap">
+    <div class="line1">Releasing is part of life</div>
+    <div class="line2">until</div>
+    <h1>Freed</h1>
+  </div>
 </div>
 
 
