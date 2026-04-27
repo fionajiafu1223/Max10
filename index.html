@@ -156,13 +156,13 @@ canvas { position:fixed; inset:0; display:block; }
   </div>
   <!-- layer 2: tools — strict 2x4 grid center -->
   <div id="nav-tools" style="display:none;">
-    <div class="nav-bubble" data-href="Emotions.html"            style="--bob-dur:4.0s;--bob-delay:0.0s;--glow-idx:1;width:80px;height:80px;font-size:0.60rem;left:30%;top:20%;">情绪<br>释放</div>
+    <div class="nav-bubble" id="tool-emotions" data-href="Emotions.html" style="--bob-dur:4.0s;--bob-delay:0.0s;--glow-idx:1;width:80px;height:80px;font-size:0.60rem;left:30%;top:20%;">情绪<br>释放</div>
     <div class="nav-bubble" data-href="index.html"               style="--bob-dur:3.4s;--bob-delay:0.3s;--glow-idx:0;width:80px;height:80px;font-size:0.60rem;left:70%;top:20%;">欲望<br>释放</div>
-    <div class="nav-bubble" data-href="Whole_process.html"       style="--bob-dur:3.5s;--bob-delay:0.6s;--glow-idx:4;width:80px;height:80px;font-size:0.60rem;left:30%;top:38%;">识别即<br>释放</div>
+    <div class="nav-bubble" id="tool-whole" data-href="Whole_process.html" style="--bob-dur:3.5s;--bob-delay:0.6s;--glow-idx:4;width:80px;height:80px;font-size:0.60rem;left:30%;top:38%;">识别即<br>释放</div>
     <div class="nav-bubble" id="tool-sedona" data-href="Sedona2.html" style="--bob-dur:3.7s;--bob-delay:0.9s;--glow-idx:5;width:80px;height:80px;font-size:0.60rem;left:70%;top:38%;">情绪欲望<br>释放</div>
     <div class="nav-bubble" id="tool-doublesides" data-href="Doublesides.html" style="--bob-dur:3.9s;--bob-delay:0.2s;--glow-idx:5;width:80px;height:80px;font-size:0.60rem;left:30%;top:56%;">好处坏处<br>释放</div>
-    <div class="nav-bubble" data-href="financial-freedom.html"   style="--bob-dur:4.2s;--bob-delay:0.7s;--glow-idx:6;width:80px;height:80px;font-size:0.60rem;left:70%;top:56%;">财富<br>释放</div>
-    <div class="nav-bubble" data-href="Relationship.html"        style="--bob-dur:3.6s;--bob-delay:0.4s;--glow-idx:3;width:80px;height:80px;font-size:0.60rem;left:30%;top:74%;">人际关系<br>释放</div>
+    <div class="nav-bubble" id="tool-financial" data-href="financial-freedom.html" style="--bob-dur:4.2s;--bob-delay:0.7s;--glow-idx:6;width:80px;height:80px;font-size:0.60rem;left:70%;top:56%;">财富<br>释放</div>
+    <div class="nav-bubble" id="tool-relationship" data-href="Relationship.html" style="--bob-dur:3.6s;--bob-delay:0.4s;--glow-idx:3;width:80px;height:80px;font-size:0.60rem;left:30%;top:74%;">人际关系<br>释放</div>
     <div class="nav-bubble" id="tool-body" data-href="body_release.html" style="--bob-dur:3.3s;--bob-delay:1.0s;--glow-idx:2;width:80px;height:80px;font-size:0.60rem;left:70%;top:74%;">身体健康<br>释放</div>
   </div>
 </div>
@@ -450,9 +450,13 @@ const BUBBLE_GLOWS = [
 
 // Fixed colors for main 4 nav bubbles
 const NAV_MAIN_COLORS = {
-  'tool-doublesides': 'rgba(20,195,190,0.55)',
+  'tool-doublesides': 'rgba(240,220,180,0.55)',  // 好处坏处 奶油色
   'tool-sedona':      'rgba(20,195,190,0.55)',
   'tool-body':        'rgba(40,190,140,0.55)',
+  'tool-whole':       'rgba(255,165,100,0.42)',   // 识别即释放 中橘
+  'tool-relationship':'rgba(255,130,155,0.40)',   // 人际关系 中玫瑰
+  'tool-emotions':    'rgba(190,140,255,0.35)',   // 情绪释放 更浅紫
+  'tool-financial':   'rgba(225,195,80,0.35)',    // 财富释放 更浅金
   'nb-tools': 'rgba(80,150,255,0.55)',   // 释放工具 蓝
   'nb-ai':    'rgba(60,200,120,0.50)',   // 释放助手 绿
   'nb-goals': 'rgba(220,80,80,0.48)',    // 目标表 红
