@@ -1,13 +1,423 @@
-// ── INJECT CSS ──
+// music-btn.js - extracted from desire page
 (function() {
+
+// ── INJECT CSS ──
 const _s = document.createElement('style');
-_s.textContent = "  /* ── MUSIC BUTTON & PANEL ── */\n  .music-btn {\n    position: fixed; top: 16px; right: 16px; z-index: 600;\n    width: 36px; height: 36px; border-radius: 50%;\n    background: rgba(255,255,255,0.2); backdrop-filter: blur(12px);\n    border: 1.5px solid rgba(255,255,255,0.35);\n    color: #fff; font-size: 1rem; cursor: pointer;\n    display: flex; align-items: center; justify-content: center;\n    box-shadow: 0 2px 14px rgba(0,40,100,0.18);\n    transition: transform 0.2s, background 0.2s;\n  }\n  .music-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.32); }\n  .music-btn.playing {\n    background: rgba(100,190,255,0.28);\n    border-color: rgba(160,225,255,0.55);\n  }\n  .music-btn.playing .music-icon {\n    display: inline-block;\n    animation: musicRotate 4s linear infinite;\n  }\n  @keyframes musicRotate {\n    from { transform: rotate(0deg); }\n    to   { transform: rotate(360deg); }\n  }\n  .music-panel {\n    position: fixed; top: 64px; right: 12px; z-index: 590;\n    width: min(390px, 90vw);\n    background: rgba(22,48,100,0.93); backdrop-filter: blur(24px);\n    -webkit-backdrop-filter: blur(24px);\n    border: 1px solid rgba(255,255,255,0.14);\n    border-radius: 20px;\n    box-shadow: 0 12px 40px rgba(0,20,70,0.55);\n    padding: 16px 14px 14px;\n    max-height: min(75vh, 560px); overflow-y: auto;\n    -webkit-overflow-scrolling: touch;\n    opacity: 0; pointer-events: none; visibility: hidden;\n    transform: translateY(-8px) scale(0.97);\n    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;\n  }\n  .music-panel.open { opacity: 1; pointer-events: auto; visibility: visible; transform: translateY(0) scale(1); }\n  .music-panel-title {\n    display: block;\n    font-family: 'Noto Serif SC', serif; font-size: 0.8rem;\n    color: rgba(200,220,255,0.65); letter-spacing: 0.22em;\n    text-align: center; margin-bottom: 12px;\n  }\n  .music-tracks { display: flex; flex-direction: column; gap: 8px; }\n  .music-track {\n    display: flex; align-items: center; gap: 14px;\n    padding: 13px 14px; border-radius: 12px; cursor: pointer;\n    background: rgba(255,255,255,0.07);\n    border: 1px solid rgba(255,255,255,0.1);\n    transition: background 0.18s, border-color 0.18s;\n  }\n  .music-track:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.18); }\n  .music-track.active { background: rgba(60,120,220,0.3); border-color: rgba(120,180,255,0.4); }\n  .music-track-icon { font-size: 1.5rem; width: 36px; text-align: center; flex-shrink: 0; }\n  .music-track-info { flex: 1; min-width: 0; }\n  .music-play-btn {\n    flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; border: none;\n    background: rgba(255,255,255,0.14); color: rgba(220,240,255,0.9);\n    font-size: 0.8rem; cursor: pointer;\n    display: flex; align-items: center; justify-content: center;\n    transition: background 0.18s, transform 0.12s;\n  }\n  .music-play-btn:hover { background: rgba(255,255,255,0.26); transform: scale(1.1); }\n  .music-play-btn.playing { background: rgba(60,120,220,0.55); color: rgba(200,230,255,1); }\n  .music-track-name {\n    font-family: 'Noto Sans SC', sans-serif; font-size: 0.9rem;\n    font-weight: 400; color: rgba(230,245,255,0.95);\n    letter-spacing: 0.03em;\n  }\n  .music-track-desc {\n    display: block; font-size: 0.68rem;\n    color: rgba(170,200,255,0.55); margin-top: 2px; letter-spacing: 0.02em;\n  }\n  .music-playing-dot {\n    width: 5px; height: 5px; border-radius: 50%;\n    background: rgba(140,220,255,0.9);\n    animation: dotPulse 1.4s ease-in-out infinite; flex-shrink: 0;\n  }\n  @keyframes dotPulse {\n    0%,100% { opacity: 0.3; transform: scale(0.8); }\n    50%      { opacity: 1;   transform: scale(1.2); }\n  }\n  .music-volume-row {\n    display: flex; align-items: center; gap: 10px;\n    margin-top: 12px; padding-top: 12px;\n    border-top: 1px solid rgba(255,255,255,0.12);\n  }\n  .music-vol-icon { font-size: 1.1rem; color: rgba(180,220,255,0.6); }\n  .music-volume {\n    flex: 1; -webkit-appearance: none; appearance: none;\n    height: 3px; border-radius: 2px; outline: none; cursor: pointer;\n    background: rgba(255,255,255,0.2);\n  }\n  .music-volume::-webkit-slider-thumb {\n    -webkit-appearance: none; width: 13px; height: 13px;\n    border-radius: 50%; background: rgba(220,240,255,0.9);\n    box-shadow: 0 1px 5px rgba(0,40,100,0.35); cursor: pointer;\n  }\n\n  /* ── MUSIC SOURCE TABS ── */\n  .music-source-tabs {\n    display: flex; gap: 4px;\n    background: rgba(0,0,0,0.18); border-radius: 12px;\n    padding: 4px; margin-bottom: 14px;\n  }\n  .music-source-tab {\n    flex: 1; padding: 7px 4px; border-radius: 9px; border: none;\n    font-family: 'Noto Sans SC', sans-serif; font-size: 0.7rem;\n    color: rgba(170,200,255,0.65); cursor: pointer;\n    background: none; transition: all 0.18s ease;\n    letter-spacing: 0.02em; text-align: center; line-height: 1.3;\n  }\n  .music-source-tab.active {\n    background: rgba(60,120,220,0.42);\n    color: rgba(220,240,255,0.95);\n    box-shadow: 0 1px 6px rgba(0,20,80,0.3);\n  }\n  .music-source-tab:hover:not(.active) { color: rgba(200,230,255,0.85); }\n\n  .music-source-panel { display: none; }\n  .music-source-panel.active { display: block; animation: pageFadeIn 0.18s ease; }\n\n  /* ── LOCAL IMPORT ── */\n  .music-import-zone {\n    border: 1.5px dashed rgba(100,160,220,0.35);\n    border-radius: 14px; padding: 18px 14px;\n    text-align: center; cursor: pointer;\n    transition: all 0.2s ease; margin-bottom: 10px;\n    background: rgba(255,255,255,0.04);\n  }\n  .music-import-zone:hover { border-color: rgba(140,200,255,0.6); background: rgba(255,255,255,0.08); }\n  .music-import-zone.dragover { border-color: rgba(140,200,255,0.8); background: rgba(60,120,220,0.15); }\n  .music-import-icon { font-size: 1.6rem; margin-bottom: 6px; }\n  .music-import-text { font-size: 0.76rem; color: rgba(170,200,255,0.7); line-height: 1.5; }\n  .music-import-sub  { font-size: 0.65rem; color: rgba(120,160,210,0.5); margin-top: 3px; }\n\n  .music-url-row {\n    display: flex; gap: 6px; margin-bottom: 10px;\n  }\n  .music-url-input {\n    flex: 1; padding: 8px 12px; border-radius: 10px;\n    background: rgba(255,255,255,0.07);\n    border: 1px solid rgba(255,255,255,0.12);\n    color: rgba(220,240,255,0.9); font-size: 0.76rem;\n    font-family: 'Noto Sans SC', sans-serif; outline: none;\n    transition: border-color 0.18s;\n  }\n  .music-url-input::placeholder { color: rgba(120,160,210,0.45); }\n  .music-url-input:focus { border-color: rgba(100,180,255,0.45); }\n  .music-url-btn {\n    padding: 8px 14px; border-radius: 10px; border: none;\n    background: rgba(60,120,220,0.45); color: rgba(220,240,255,0.92);\n    font-size: 0.74rem; font-family: 'Noto Sans SC', sans-serif;\n    cursor: pointer; transition: background 0.18s; white-space: nowrap;\n  }\n  .music-url-btn:hover { background: rgba(80,140,240,0.6); }\n\n  .music-imported-list { display: flex; flex-direction: column; gap: 7px; }\n  .music-imported-item {\n    display: flex; align-items: center; gap: 10px;\n    padding: 9px 12px; border-radius: 10px;\n    background: rgba(255,255,255,0.06);\n    border: 1px solid rgba(255,255,255,0.09);\n    cursor: pointer; transition: background 0.16s;\n  }\n  .music-imported-item:hover { background: rgba(255,255,255,0.11); }\n  .music-imported-item.active { background: rgba(60,120,220,0.28); border-color: rgba(100,180,255,0.35); }\n  .music-imported-name {\n    flex: 1; font-size: 0.8rem; color: rgba(210,235,255,0.88);\n    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;\n    font-family: 'Noto Sans SC', sans-serif;\n  }\n  .music-imported-del {\n    background: none; border: none; color: rgba(180,200,230,0.4);\n    font-size: 0.9rem; cursor: pointer; padding: 2px 4px;\n    transition: color 0.15s; flex-shrink: 0; line-height: 1;\n  }\n  .music-imported-del:hover { color: rgba(255,120,120,0.8); }\n  .music-import-empty {\n    font-size: 0.74rem; color: rgba(120,160,200,0.5);\n    text-align: center; padding: 8px 0;\n    font-family: 'Noto Sans SC', sans-serif;\n  }\n\n  /* ── RECORD TAB ── */\n  .music-record-panel {\n    display: flex; flex-direction: column; align-items: center;\n    gap: 14px; padding: 8px 0 4px;\n  }\n  .record-btn-wrap { position: relative; }\n  .record-btn {\n    width: 68px; height: 68px; border-radius: 50%; border: none;\n    cursor: pointer;\n    display: flex; align-items: center; justify-content: center;\n    font-size: 1.8rem;\n    background: radial-gradient(circle at 38% 35%, rgba(255,120,120,0.85), rgba(180,30,30,0.75));\n    box-shadow: 0 4px 18px rgba(180,30,30,0.4), 0 0 0 0 rgba(220,60,60,0.35);\n    transition: transform 0.18s, box-shadow 0.18s;\n  }\n  .record-btn:hover { transform: scale(1.06); }\n  .record-btn.recording {\n    background: radial-gradient(circle at 38% 35%, rgba(255,60,60,0.9), rgba(160,10,10,0.85));\n    animation: recordPulse 1.4s ease-in-out infinite;\n  }\n  @keyframes recordPulse {\n    0%,100% { box-shadow: 0 4px 18px rgba(180,30,30,0.4), 0 0 0 0 rgba(220,60,60,0.35); }\n    50%      { box-shadow: 0 4px 24px rgba(220,30,30,0.6), 0 0 0 14px rgba(220,60,60,0); }\n  }\n  .record-btn.has-recording {\n    background: radial-gradient(circle at 38% 35%, rgba(80,180,120,0.88), rgba(20,100,60,0.78));\n    box-shadow: 0 4px 18px rgba(20,120,70,0.4);\n  }\n  .record-status {\n    font-size: 0.76rem; color: rgba(180,220,255,0.7);\n    font-family: 'Noto Sans SC', sans-serif; text-align: center; letter-spacing: 0.04em;\n  }\n  .record-timer {\n    font-size: 1.5rem; font-family: 'Noto Serif SC', serif;\n    color: rgba(220,240,255,0.9); letter-spacing: 0.1em;\n    min-height: 2rem; display: flex; align-items: center; justify-content: center;\n  }\n  .record-timer.active { color: rgba(255,140,140,0.95); }\n  .record-waveform {\n    width: 100%; height: 40px;\n    display: flex; align-items: center; justify-content: center; gap: 2px;\n  }\n  .record-wave-bar {\n    width: 3px; background: rgba(100,180,255,0.45);\n    border-radius: 2px; transition: height 0.06s ease;\n    min-height: 3px;\n  }\n  .record-actions {\n    display: flex; gap: 10px; width: 100%;\n  }\n  .record-action-btn {\n    flex: 1; padding: 9px; border-radius: 12px; border: none;\n    font-family: 'Noto Serif SC', serif; font-size: 0.8rem;\n    cursor: pointer; transition: opacity 0.18s, transform 0.12s;\n  }\n  .record-action-btn:hover { opacity: 0.85; transform: scale(1.03); }\n  .record-play-btn {\n    background: rgba(60,120,220,0.45); color: rgba(220,240,255,0.92);\n    border: 1px solid rgba(100,180,255,0.25);\n  }\n  .record-save-btn {\n    background: linear-gradient(135deg, rgba(60,180,120,0.8), rgba(20,120,70,0.8));\n    color: rgba(220,255,235,0.95);\n  }\n  .record-discard-btn {\n    background: rgba(255,255,255,0.06); color: rgba(180,200,230,0.6);\n    border: 1px solid rgba(255,255,255,0.1);\n  }\n  .record-hint {\n    font-size: 0.66rem; color: rgba(100,150,200,0.5);\n    font-family: 'Noto Sans SC', sans-serif; text-align: center;\n    line-height: 1.6;\n  }\n\n  /* ── RECORD BG PICKER ── */\n  .record-bg-section {\n    width: 100%; margin-bottom: 6px;\n  }\n  .record-bg-label {\n    font-size: 0.68rem; color: rgba(140,180,220,0.7);\n    font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.06em;\n    margin-bottom: 8px;\n  }\n  .record-bg-grid {\n    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;\n    margin-bottom: 8px;\n  }\n  .record-bg-item {\n    display: flex; flex-direction: column; align-items: center; gap: 3px;\n    padding: 7px 4px; border-radius: 10px; cursor: pointer;\n    background: rgba(255,255,255,0.06);\n    border: 1px solid rgba(255,255,255,0.09);\n    transition: all 0.16s ease;\n  }\n  .record-bg-item:hover { background: rgba(255,255,255,0.11); }\n  .record-bg-item.active {\n    background: rgba(60,120,220,0.35);\n    border-color: rgba(100,180,255,0.45);\n  }\n  .record-bg-icon { font-size: 1.2rem; }\n  .record-bg-name {\n    font-size: 0.62rem; color: rgba(180,210,255,0.75);\n    font-family: 'Noto Sans SC', sans-serif; text-align: center;\n  }\n  .record-bg-vol-row {\n    display: flex; align-items: center; gap: 8px;\n    padding: 6px 2px;\n  }\n\n";
+_s.textContent = `  /* ── MUSIC BUTTON & PANEL ── */
+  .music-btn {
+    position: fixed; top: 16px; right: 16px; z-index: 600;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    color: #fff; font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 14px rgba(0,40,100,0.18);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .music-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.32); }
+  .music-btn.playing {
+    background: rgba(100,190,255,0.28);
+    border-color: rgba(160,225,255,0.55);
+  }
+  .music-btn.playing .music-icon {
+    display: inline-block;
+    animation: musicRotate 4s linear infinite;
+  }
+  @keyframes musicRotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .music-panel {
+    position: fixed; top: 64px; right: 12px; z-index: 590;
+    width: min(390px, 90vw);
+    background: rgba(22,48,100,0.93); backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(0,20,70,0.55);
+    padding: 16px 14px 14px;
+    max-height: min(75vh, 560px); overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    opacity: 0; pointer-events: none; visibility: hidden;
+    transform: translateY(-8px) scale(0.97);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  .music-panel.open { opacity: 1; pointer-events: auto; visibility: visible; transform: translateY(0) scale(1); }
+  .music-panel-title {
+    display: block;
+    font-family: 'Noto Serif SC', serif; font-size: 0.8rem;
+    color: rgba(200,220,255,0.65); letter-spacing: 0.22em;
+    text-align: center; margin-bottom: 12px;
+  }
+  .music-tracks { display: flex; flex-direction: column; gap: 8px; }
+  .music-track {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 14px; border-radius: 12px; cursor: pointer;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: background 0.18s, border-color 0.18s;
+  }
+  .music-track:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.18); }
+  .music-track.active { background: rgba(60,120,220,0.3); border-color: rgba(120,180,255,0.4); }
+  .music-track-icon { font-size: 1.5rem; width: 36px; text-align: center; flex-shrink: 0; }
+  .music-track-info { flex: 1; min-width: 0; }
+  .music-play-btn {
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.14); color: rgba(220,240,255,0.9);
+    font-size: 0.8rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.18s, transform 0.12s;
+  }
+  .music-play-btn:hover { background: rgba(255,255,255,0.26); transform: scale(1.1); }
+  .music-play-btn.playing { background: rgba(60,120,220,0.55); color: rgba(200,230,255,1); }
+  .music-track-name {
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.9rem;
+    font-weight: 400; color: rgba(230,245,255,0.95);
+    letter-spacing: 0.03em;
+  }
+  .music-track-desc {
+    display: block; font-size: 0.68rem;
+    color: rgba(170,200,255,0.55); margin-top: 2px; letter-spacing: 0.02em;
+  }
+  .music-playing-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(140,220,255,0.9);
+    animation: dotPulse 1.4s ease-in-out infinite; flex-shrink: 0;
+  }
+  @keyframes dotPulse {
+    0%,100% { opacity: 0.3; transform: scale(0.8); }
+    50%      { opacity: 1;   transform: scale(1.2); }
+  }
+  .music-volume-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .music-vol-icon { font-size: 1.1rem; color: rgba(180,220,255,0.6); }
+  .music-volume {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 3px; border-radius: 2px; outline: none; cursor: pointer;
+    background: rgba(255,255,255,0.2);
+  }
+  .music-volume::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 13px; height: 13px;
+    border-radius: 50%; background: rgba(220,240,255,0.9);
+    box-shadow: 0 1px 5px rgba(0,40,100,0.35); cursor: pointer;
+  }
+
+  /* ── MUSIC SOURCE TABS ── */
+  .music-source-tabs {
+    display: flex; gap: 4px;
+    background: rgba(0,0,0,0.18); border-radius: 12px;
+    padding: 4px; margin-bottom: 14px;
+  }
+  .music-source-tab {
+    flex: 1; padding: 7px 4px; border-radius: 9px; border: none;
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.7rem;
+    color: rgba(170,200,255,0.65); cursor: pointer;
+    background: none; transition: all 0.18s ease;
+    letter-spacing: 0.02em; text-align: center; line-height: 1.3;
+  }
+  .music-source-tab.active {
+    background: rgba(60,120,220,0.42);
+    color: rgba(220,240,255,0.95);
+    box-shadow: 0 1px 6px rgba(0,20,80,0.3);
+  }
+  .music-source-tab:hover:not(.active) { color: rgba(200,230,255,0.85); }
+
+  .music-source-panel { display: none; }
+  .music-source-panel.active { display: block; animation: pageFadeIn 0.18s ease; }
+
+  /* ── LOCAL IMPORT ── */
+  .music-import-zone {
+    border: 1.5px dashed rgba(100,160,220,0.35);
+    border-radius: 14px; padding: 18px 14px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s ease; margin-bottom: 10px;
+    background: rgba(255,255,255,0.04);
+  }
+  .music-import-zone:hover { border-color: rgba(140,200,255,0.6); background: rgba(255,255,255,0.08); }
+  .music-import-zone.dragover { border-color: rgba(140,200,255,0.8); background: rgba(60,120,220,0.15); }
+  .music-import-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .music-import-text { font-size: 0.76rem; color: rgba(170,200,255,0.7); line-height: 1.5; }
+  .music-import-sub  { font-size: 0.65rem; color: rgba(120,160,210,0.5); margin-top: 3px; }
+
+  .music-url-row {
+    display: flex; gap: 6px; margin-bottom: 10px;
+  }
+  .music-url-input {
+    flex: 1; padding: 8px 12px; border-radius: 10px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(220,240,255,0.9); font-size: 0.76rem;
+    font-family: 'Noto Sans SC', sans-serif; outline: none;
+    transition: border-color 0.18s;
+  }
+  .music-url-input::placeholder { color: rgba(120,160,210,0.45); }
+  .music-url-input:focus { border-color: rgba(100,180,255,0.45); }
+  .music-url-btn {
+    padding: 8px 14px; border-radius: 10px; border: none;
+    background: rgba(60,120,220,0.45); color: rgba(220,240,255,0.92);
+    font-size: 0.74rem; font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer; transition: background 0.18s; white-space: nowrap;
+  }
+  .music-url-btn:hover { background: rgba(80,140,240,0.6); }
+
+  .music-imported-list { display: flex; flex-direction: column; gap: 7px; }
+  .music-imported-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.09);
+    cursor: pointer; transition: background 0.16s;
+  }
+  .music-imported-item:hover { background: rgba(255,255,255,0.11); }
+  .music-imported-item.active { background: rgba(60,120,220,0.28); border-color: rgba(100,180,255,0.35); }
+  .music-imported-name {
+    flex: 1; font-size: 0.8rem; color: rgba(210,235,255,0.88);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  .music-imported-del {
+    background: none; border: none; color: rgba(180,200,230,0.4);
+    font-size: 0.9rem; cursor: pointer; padding: 2px 4px;
+    transition: color 0.15s; flex-shrink: 0; line-height: 1;
+  }
+  .music-imported-del:hover { color: rgba(255,120,120,0.8); }
+  .music-import-empty {
+    font-size: 0.74rem; color: rgba(120,160,200,0.5);
+    text-align: center; padding: 8px 0;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+
+  /* ── RECORD TAB ── */
+  .music-record-panel {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 14px; padding: 8px 0 4px;
+  }
+  .record-btn-wrap { position: relative; }
+  .record-btn {
+    width: 68px; height: 68px; border-radius: 50%; border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    background: radial-gradient(circle at 38% 35%, rgba(255,120,120,0.85), rgba(180,30,30,0.75));
+    box-shadow: 0 4px 18px rgba(180,30,30,0.4), 0 0 0 0 rgba(220,60,60,0.35);
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .record-btn:hover { transform: scale(1.06); }
+  .record-btn.recording {
+    background: radial-gradient(circle at 38% 35%, rgba(255,60,60,0.9), rgba(160,10,10,0.85));
+    animation: recordPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes recordPulse {
+    0%,100% { box-shadow: 0 4px 18px rgba(180,30,30,0.4), 0 0 0 0 rgba(220,60,60,0.35); }
+    50%      { box-shadow: 0 4px 24px rgba(220,30,30,0.6), 0 0 0 14px rgba(220,60,60,0); }
+  }
+  .record-btn.has-recording {
+    background: radial-gradient(circle at 38% 35%, rgba(80,180,120,0.88), rgba(20,100,60,0.78));
+    box-shadow: 0 4px 18px rgba(20,120,70,0.4);
+  }
+  .record-status {
+    font-size: 0.76rem; color: rgba(180,220,255,0.7);
+    font-family: 'Noto Sans SC', sans-serif; text-align: center; letter-spacing: 0.04em;
+  }
+  .record-timer {
+    font-size: 1.5rem; font-family: 'Noto Serif SC', serif;
+    color: rgba(220,240,255,0.9); letter-spacing: 0.1em;
+    min-height: 2rem; display: flex; align-items: center; justify-content: center;
+  }
+  .record-timer.active { color: rgba(255,140,140,0.95); }
+  .record-waveform {
+    width: 100%; height: 40px;
+    display: flex; align-items: center; justify-content: center; gap: 2px;
+  }
+  .record-wave-bar {
+    width: 3px; background: rgba(100,180,255,0.45);
+    border-radius: 2px; transition: height 0.06s ease;
+    min-height: 3px;
+  }
+  .record-actions {
+    display: flex; gap: 10px; width: 100%;
+  }
+  .record-action-btn {
+    flex: 1; padding: 9px; border-radius: 12px; border: none;
+    font-family: 'Noto Serif SC', serif; font-size: 0.8rem;
+    cursor: pointer; transition: opacity 0.18s, transform 0.12s;
+  }
+  .record-action-btn:hover { opacity: 0.85; transform: scale(1.03); }
+  .record-play-btn {
+    background: rgba(60,120,220,0.45); color: rgba(220,240,255,0.92);
+    border: 1px solid rgba(100,180,255,0.25);
+  }
+  .record-save-btn {
+    background: linear-gradient(135deg, rgba(60,180,120,0.8), rgba(20,120,70,0.8));
+    color: rgba(220,255,235,0.95);
+  }
+  .record-discard-btn {
+    background: rgba(255,255,255,0.06); color: rgba(180,200,230,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .record-hint {
+    font-size: 0.66rem; color: rgba(100,150,200,0.5);
+    font-family: 'Noto Sans SC', sans-serif; text-align: center;
+    line-height: 1.6;
+  }
+
+  /* ── RECORD BG PICKER ── */
+  .record-bg-section {
+    width: 100%; margin-bottom: 6px;
+  }
+  .record-bg-label {
+    font-size: 0.68rem; color: rgba(140,180,220,0.7);
+    font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .record-bg-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+    margin-bottom: 8px;
+  }
+  .record-bg-item {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 7px 4px; border-radius: 10px; cursor: pointer;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.09);
+    transition: all 0.16s ease;
+  }
+  .record-bg-item:hover { background: rgba(255,255,255,0.11); }
+  .record-bg-item.active {
+    background: rgba(60,120,220,0.35);
+    border-color: rgba(100,180,255,0.45);
+  }
+  .record-bg-icon { font-size: 1.2rem; }
+  .record-bg-name {
+    font-size: 0.62rem; color: rgba(180,210,255,0.75);
+    font-family: 'Noto Sans SC', sans-serif; text-align: center;
+  }
+  .record-bg-vol-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 2px;
+  }
+
+`;
 document.head.appendChild(_s);
 
 // ── INJECT HTML ──
 const _w = document.createElement('div');
-_w.innerHTML = '<button class="music-btn" id="musicBtn" onclick="toggleMusicPanel()" title="背景音乐">\n  <svg class="music-icon" viewBox="0 0 20 22" width="16" height="18" fill="rgba(255,255,255,0.78)" xmlns="http://www.w3.org/2000/svg">\n    <path d="M7 17.5c0 1.38-1.12 2.5-2.5 2.5S2 18.88 2 17.5 3.12 15 4.5 15c.56 0 1.08.19 1.5.5V6.5l9-2v8.5c-.42-.31-.94-.5-1.5-.5-1.38 0-2.5 1.12-2.5 2.5S12.12 17 13.5 17 16 15.88 16 14.5V3L7 5.2V17.5z"/>\n  </svg>\n</button>\n\n<!-- Music Panel -->\n<div class="music-panel" id="musicPanel">\n  <div class="music-panel-title">背 景 音 乐</div>\n\n  <!-- Source tabs -->\n  <div class="music-source-tabs">\n    <button class="music-source-tab active" id="msrc-builtin" onclick="switchMusicSource(\'builtin\')">🎵 App内置</button>\n    <button class="music-source-tab" id="msrc-import" onclick="switchMusicSource(\'import\')">📁 本地导入</button>\n    <button class="music-source-tab" id="msrc-record" onclick="switchMusicSource(\'record\')">🎙️ 录制背景音</button>\n  </div>\n\n  <!-- Tab 1: Built-in tracks -->\n  <div class="music-source-panel active" id="mpanel-builtin">\n  <div class="music-tracks">\n    <div class="music-track" data-track="bowl"><span class="music-track-icon">🔔</span><div class="music-track-info"><div class="music-track-name">冥想钵</div><span class="music-track-desc">396Hz · 释放恐惧</span></div><button class="music-play-btn" onclick="selectTrack(\'bowl\')">▶</button></div>\n    <div class="music-track" data-track="deepbowl"><span class="music-track-icon">🎐</span><div class="music-track-info"><div class="music-track-name">颂钵冥想</div><span class="music-track-desc">三钵共鸣 · 深度放松</span></div><button class="music-play-btn" onclick="selectTrack(\'deepbowl\')">▶</button></div>\n    <div class="music-track" data-track="hz528"><span class="music-track-icon">💚</span><div class="music-track-info"><div class="music-track-name">528Hz 疗愈</div><span class="music-track-desc">爱的频率 · DNA修复</span></div><button class="music-play-btn" onclick="selectTrack(\'hz528\')">▶</button></div>\n    <div class="music-track" data-track="awaken"><span class="music-track-icon">✨</span><div class="music-track-info"><div class="music-track-name">963Hz 觉醒</div><span class="music-track-desc">松果体 · 灵性连接</span></div><button class="music-play-btn" onclick="selectTrack(\'awaken\')">▶</button></div>\n    <div class="music-track" data-track="schumann"><span class="music-track-icon">🌍</span><div class="music-track-info"><div class="music-track-name">舒曼共振</div><span class="music-track-desc">7.83Hz · 地球脑波</span></div><button class="music-play-btn" onclick="selectTrack(\'schumann\')">▶</button></div>\n    <div class="music-track" data-track="deep"><span class="music-track-icon">🌌</span><div class="music-track-info"><div class="music-track-name">432Hz 深空</div><span class="music-track-desc">自然律 · 宇宙共鸣</span></div><button class="music-play-btn" onclick="selectTrack(\'deep\')">▶</button></div>\n    <div class="music-track" data-track="piano"><span class="music-track-icon">🎹</span><div class="music-track-info"><div class="music-track-name">528调式钢琴</div><span class="music-track-desc">五声音阶 · 宁静</span></div><button class="music-play-btn" onclick="selectTrack(\'piano\')">▶</button></div>\n    <div class="music-track" data-track="rain"><span class="music-track-icon">🌧️</span><div class="music-track-info"><div class="music-track-name">夜雨</div><span class="music-track-desc">细密雨声 · 静谧</span></div><button class="music-play-btn" onclick="selectTrack(\'rain\')">▶</button></div>\n    <div class="music-track" data-track="ocean"><span class="music-track-icon">🌊</span><div class="music-track-info"><div class="music-track-name">海浪</div><span class="music-track-desc">潮汐呼吸 · 放松</span></div><button class="music-play-btn" onclick="selectTrack(\'ocean\')">▶</button></div>\n    <div class="music-track" data-track="water"><span class="music-track-icon">💧</span><div class="music-track-info"><div class="music-track-name">山涧流水</div><span class="music-track-desc">溪流 · 清澈</span></div><button class="music-play-btn" onclick="selectTrack(\'water\')">▶</button></div>\n    </div>\n  </div>\n\n  <!-- Tab 2: Local import -->\n  <div class="music-source-panel" id="mpanel-import">\n    <div class="music-import-zone" id="importDropZone"\n         onclick="document.getElementById(\'importFileInput\').click()"\n         ondragover="handleImportDragOver(event)"\n         ondragleave="handleImportDragLeave(event)"\n         ondrop="handleImportDrop(event)">\n      <div class="music-import-icon">🎵</div>\n      <div class="music-import-text">点击选择音乐文件<br>或将文件拖拽至此</div>\n      <div class="music-import-sub">支持 MP3 · WAV · AAC · OGG · FLAC</div>\n    </div>\n    <input type="file" id="importFileInput" accept="audio/*" multiple style="display:none" onchange="handleImportFile(this.files)">\n    <div class="music-imported-list" id="importedList">\n      <div class="music-import-empty" id="importEmptyHint">还没有导入的音乐</div>\n    </div>\n  </div>\n\n  <!-- Tab 3: Record -->\n  <div class="music-source-panel" id="mpanel-record">\n    <div class="music-record-panel">\n\n      <!-- Step 1: pick background (optional) -->\n      <div class="record-bg-section" id="recordBgSection">\n        <div class="record-bg-label">① 选择混音背景（可跳过）</div>\n        <div class="record-bg-grid" id="recordBgGrid">\n          <div class="record-bg-item" data-track="" onclick="selectRecordBg(this,\'\')">\n            <span class="record-bg-icon">🔇</span>\n            <span class="record-bg-name">纯人声</span>\n          </div>\n          <div class="record-bg-item" data-track="bowl" onclick="selectRecordBg(this,\'bowl\')">\n            <span class="record-bg-icon">🔔</span>\n            <span class="record-bg-name">冥想钵</span>\n          </div>\n          <div class="record-bg-item" data-track="deepbowl" onclick="selectRecordBg(this,\'deepbowl\')">\n            <span class="record-bg-icon">🎐</span>\n            <span class="record-bg-name">颂钵</span>\n          </div>\n          <div class="record-bg-item" data-track="hz528" onclick="selectRecordBg(this,\'hz528\')">\n            <span class="record-bg-icon">💚</span>\n            <span class="record-bg-name">528Hz</span>\n          </div>\n          <div class="record-bg-item" data-track="awaken" onclick="selectRecordBg(this,\'awaken\')">\n            <span class="record-bg-icon">✨</span>\n            <span class="record-bg-name">963Hz</span>\n          </div>\n          <div class="record-bg-item" data-track="schumann" onclick="selectRecordBg(this,\'schumann\')">\n            <span class="record-bg-icon">🌍</span>\n            <span class="record-bg-name">舒曼</span>\n          </div>\n          <div class="record-bg-item" data-track="deep" onclick="selectRecordBg(this,\'deep\')">\n            <span class="record-bg-icon">🌌</span>\n            <span class="record-bg-name">432Hz</span>\n          </div>\n          <div class="record-bg-item" data-track="piano" onclick="selectRecordBg(this,\'piano\')">\n            <span class="record-bg-icon">🎹</span>\n            <span class="record-bg-name">钢琴</span>\n          </div>\n          <div class="record-bg-item" data-track="rain" onclick="selectRecordBg(this,\'rain\')">\n            <span class="record-bg-icon">🌧️</span>\n            <span class="record-bg-name">夜雨</span>\n          </div>\n          <div class="record-bg-item" data-track="ocean" onclick="selectRecordBg(this,\'ocean\')">\n            <span class="record-bg-icon">🌊</span>\n            <span class="record-bg-name">海浪</span>\n          </div>\n          <div class="record-bg-item" data-track="water" onclick="selectRecordBg(this,\'water\')">\n            <span class="record-bg-icon">💧</span>\n            <span class="record-bg-name">流水</span>\n          </div>\n        </div>\n        <!-- bg volume -->\n        <div class="record-bg-vol-row" id="recordBgVolRow" style="display:none;">\n          <span style="font-size:0.68rem;color:rgba(140,180,220,0.7);">背景音量</span>\n          <input type="range" class="music-volume" id="recordBgVol" min="0" max="100" value="40"\n                 oninput="updateRecordBgVol(this.value)" style="flex:1;">\n          <span style="font-size:0.68rem;color:rgba(140,180,220,0.7);" id="recordBgVolNum">40%</span>\n        </div>\n      </div>\n';
+_w.innerHTML = `<button class="music-btn" id="musicBtn" onclick="toggleMusicPanel()" title="背景音乐">
+  <svg class="music-icon" viewBox="0 0 20 22" width="16" height="18" fill="rgba(255,255,255,0.78)" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7 17.5c0 1.38-1.12 2.5-2.5 2.5S2 18.88 2 17.5 3.12 15 4.5 15c.56 0 1.08.19 1.5.5V6.5l9-2v8.5c-.42-.31-.94-.5-1.5-.5-1.38 0-2.5 1.12-2.5 2.5S12.12 17 13.5 17 16 15.88 16 14.5V3L7 5.2V17.5z"/>
+  </svg>
+</button>
+
+<!-- Music Panel -->
+<div class="music-panel" id="musicPanel">
+  <div class="music-panel-title">背 景 音 乐</div>
+
+  <!-- Source tabs -->
+  <div class="music-source-tabs">
+    <button class="music-source-tab active" id="msrc-builtin" onclick="switchMusicSource('builtin')">🎵 App内置</button>
+    <button class="music-source-tab" id="msrc-import" onclick="switchMusicSource('import')">📁 本地导入</button>
+    <button class="music-source-tab" id="msrc-record" onclick="switchMusicSource('record')">🎙️ 录制背景音</button>
+  </div>
+
+  <!-- Tab 1: Built-in tracks -->
+  <div class="music-source-panel active" id="mpanel-builtin">
+  <div class="music-tracks">
+    <div class="music-track" data-track="bowl"><span class="music-track-icon">🔔</span><div class="music-track-info"><div class="music-track-name">冥想钵</div><span class="music-track-desc">396Hz · 释放恐惧</span></div><button class="music-play-btn" onclick="selectTrack('bowl')">▶</button></div>
+    <div class="music-track" data-track="deepbowl"><span class="music-track-icon">🎐</span><div class="music-track-info"><div class="music-track-name">颂钵冥想</div><span class="music-track-desc">三钵共鸣 · 深度放松</span></div><button class="music-play-btn" onclick="selectTrack('deepbowl')">▶</button></div>
+    <div class="music-track" data-track="hz528"><span class="music-track-icon">💚</span><div class="music-track-info"><div class="music-track-name">528Hz 疗愈</div><span class="music-track-desc">爱的频率 · DNA修复</span></div><button class="music-play-btn" onclick="selectTrack('hz528')">▶</button></div>
+    <div class="music-track" data-track="awaken"><span class="music-track-icon">✨</span><div class="music-track-info"><div class="music-track-name">963Hz 觉醒</div><span class="music-track-desc">松果体 · 灵性连接</span></div><button class="music-play-btn" onclick="selectTrack('awaken')">▶</button></div>
+    <div class="music-track" data-track="schumann"><span class="music-track-icon">🌍</span><div class="music-track-info"><div class="music-track-name">舒曼共振</div><span class="music-track-desc">7.83Hz · 地球脑波</span></div><button class="music-play-btn" onclick="selectTrack('schumann')">▶</button></div>
+    <div class="music-track" data-track="deep"><span class="music-track-icon">🌌</span><div class="music-track-info"><div class="music-track-name">432Hz 深空</div><span class="music-track-desc">自然律 · 宇宙共鸣</span></div><button class="music-play-btn" onclick="selectTrack('deep')">▶</button></div>
+    <div class="music-track" data-track="piano"><span class="music-track-icon">🎹</span><div class="music-track-info"><div class="music-track-name">528调式钢琴</div><span class="music-track-desc">五声音阶 · 宁静</span></div><button class="music-play-btn" onclick="selectTrack('piano')">▶</button></div>
+    <div class="music-track" data-track="rain"><span class="music-track-icon">🌧️</span><div class="music-track-info"><div class="music-track-name">夜雨</div><span class="music-track-desc">细密雨声 · 静谧</span></div><button class="music-play-btn" onclick="selectTrack('rain')">▶</button></div>
+    <div class="music-track" data-track="ocean"><span class="music-track-icon">🌊</span><div class="music-track-info"><div class="music-track-name">海浪</div><span class="music-track-desc">潮汐呼吸 · 放松</span></div><button class="music-play-btn" onclick="selectTrack('ocean')">▶</button></div>
+    <div class="music-track" data-track="water"><span class="music-track-icon">💧</span><div class="music-track-info"><div class="music-track-name">山涧流水</div><span class="music-track-desc">溪流 · 清澈</span></div><button class="music-play-btn" onclick="selectTrack('water')">▶</button></div>
+    </div>
+  </div>
+
+  <!-- Tab 2: Local import -->
+  <div class="music-source-panel" id="mpanel-import">
+    <div class="music-import-zone" id="importDropZone"
+         onclick="document.getElementById('importFileInput').click()"
+         ondragover="handleImportDragOver(event)"
+         ondragleave="handleImportDragLeave(event)"
+         ondrop="handleImportDrop(event)">
+      <div class="music-import-icon">🎵</div>
+      <div class="music-import-text">点击选择音乐文件<br>或将文件拖拽至此</div>
+      <div class="music-import-sub">支持 MP3 · WAV · AAC · OGG · FLAC</div>
+    </div>
+    <input type="file" id="importFileInput" accept="audio/*" multiple style="display:none" onchange="handleImportFile(this.files)">
+    <div class="music-imported-list" id="importedList">
+      <div class="music-import-empty" id="importEmptyHint">还没有导入的音乐</div>
+    </div>
+  </div>
+
+  <!-- Tab 3: Record -->
+  <div class="music-source-panel" id="mpanel-record">
+    <div class="music-record-panel">
+
+      <!-- Step 1: pick background (optional) -->
+      <div class="record-bg-section" id="recordBgSection">
+        <div class="record-bg-label">① 选择混音背景（可跳过）</div>
+        <div class="record-bg-grid" id="recordBgGrid">
+          <div class="record-bg-item" data-track="" onclick="selectRecordBg(this,'')">
+            <span class="record-bg-icon">🔇</span>
+            <span class="record-bg-name">纯人声</span>
+          </div>
+          <div class="record-bg-item" data-track="bowl" onclick="selectRecordBg(this,'bowl')">
+            <span class="record-bg-icon">🔔</span>
+            <span class="record-bg-name">冥想钵</span>
+          </div>
+          <div class="record-bg-item" data-track="deepbowl" onclick="selectRecordBg(this,'deepbowl')">
+            <span class="record-bg-icon">🎐</span>
+            <span class="record-bg-name">颂钵</span>
+          </div>
+          <div class="record-bg-item" data-track="hz528" onclick="selectRecordBg(this,'hz528')">
+            <span class="record-bg-icon">💚</span>
+            <span class="record-bg-name">528Hz</span>
+          </div>
+          <div class="record-bg-item" data-track="awaken" onclick="selectRecordBg(this,'awaken')">
+            <span class="record-bg-icon">✨</span>
+            <span class="record-bg-name">963Hz</span>
+          </div>
+          <div class="record-bg-item" data-track="schumann" onclick="selectRecordBg(this,'schumann')">
+            <span class="record-bg-icon">🌍</span>
+            <span class="record-bg-name">舒曼</span>
+          </div>
+          <div class="record-bg-item" data-track="deep" onclick="selectRecordBg(this,'deep')">
+            <span class="record-bg-icon">🌌</span>
+            <span class="record-bg-name">432Hz</span>
+          </div>
+          <div class="record-bg-item" data-track="piano" onclick="selectRecordBg(this,'piano')">
+            <span class="record-bg-icon">🎹</span>
+            <span class="record-bg-name">钢琴</span>
+          </div>
+          <div class="record-bg-item" data-track="rain" onclick="selectRecordBg(this,'rain')">
+            <span class="record-bg-icon">🌧️</span>
+            <span class="record-bg-name">夜雨</span>
+          </div>
+          <div class="record-bg-item" data-track="ocean" onclick="selectRecordBg(this,'ocean')">
+            <span class="record-bg-icon">🌊</span>
+            <span class="record-bg-name">海浪</span>
+          </div>
+          <div class="record-bg-item" data-track="water" onclick="selectRecordBg(this,'water')">
+            <span class="record-bg-icon">💧</span>
+            <span class="record-bg-name">流水</span>
+          </div>
+        </div>
+        <!-- bg volume -->
+        <div class="record-bg-vol-row" id="recordBgVolRow" style="display:none;">
+          <span style="font-size:0.68rem;color:rgba(140,180,220,0.7);">背景音量</span>
+          <input type="range" class="music-volume" id="recordBgVol" min="0" max="100" value="40"
+                 oninput="updateRecordBgVol(this.value)" style="flex:1;">
+          <span style="font-size:0.68rem;color:rgba(140,180,220,0.7);" id="recordBgVolNum">40%</span>
+        </div>
+      </div>
+`;
 document.body.appendChild(_w);
+
 })();
 
 // ── MUSIC SYSTEM ──
