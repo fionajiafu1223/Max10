@@ -20,7 +20,7 @@ style.textContent = `
     top: 18px; left: 18px;
     width: 68px; height: 68px;
     border-radius: 50%;
-    z-index: 1000;
+    z-index: 9999;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     font-family: 'ITC Bauhaus', sans-serif;
@@ -56,7 +56,7 @@ style.textContent = `
 
   #nav-orb-layer {
     position: fixed; inset: 0;
-    z-index: 999;
+    z-index: 9998;
     pointer-events: none;
     display: none;
   }
