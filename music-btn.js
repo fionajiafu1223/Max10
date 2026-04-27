@@ -1,9 +1,3 @@
-// ── TEST: confirm file loads ──
-document.addEventListener('DOMContentLoaded', function() {
-  const testBtn = document.getElementById('musicBtn');
-  if (testBtn) testBtn.style.outline = '2px solid red';
-});
-
 // ── INJECT CSS ──
 const _musicStyle = document.createElement('style');
 _musicStyle.textContent = `
@@ -121,7 +115,20 @@ document.head.appendChild(_musicStyle);
   btn.id = 'musicBtn';
   btn.title = '背景音乐';
   btn.innerHTML = '<svg class="music-icon" viewBox="0 0 20 22" width="16" height="18" fill="rgba(255,255,255,0.78)"><path d="M7 17.5c0 1.38-1.12 2.5-2.5 2.5S2 18.88 2 17.5 3.12 15 4.5 15c.56 0 1.08.19 1.5.5V6.5l9-2v8.5c-.42-.31-.94-.5-1.5-.5-1.38 0-2.5 1.12-2.5 2.5S12.12 17 13.5 17 16 15.88 16 14.5V3L7 5.2V17.5z"/></svg>';
-  btn.addEventListener('click', function() { toggleMusicPanel(); });
+  btn.addEventListener('click', function() {
+    if (!audioCtx) {
+      try {
+        audioCtx   = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.45;
+        masterGain.connect(audioCtx.destination);
+      } catch(e) {}
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    musicPanelOpen = !musicPanelOpen;
+    const panel = document.getElementById('musicPanel');
+    if (panel) panel.classList.toggle('open', musicPanelOpen);
+  });
   document.body.appendChild(btn);
 
   // Music panel - use fetch from template
