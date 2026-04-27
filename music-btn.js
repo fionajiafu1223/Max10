@@ -1,3 +1,9 @@
+// ── TEST: confirm file loads ──
+document.addEventListener('DOMContentLoaded', function() {
+  const testBtn = document.getElementById('musicBtn');
+  if (testBtn) testBtn.style.outline = '2px solid red';
+});
+
 // ── INJECT CSS ──
 const _musicStyle = document.createElement('style');
 _musicStyle.textContent = `
