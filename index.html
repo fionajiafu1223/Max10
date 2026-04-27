@@ -296,6 +296,29 @@ let t = 0;
 let showHero = true;
 let navState = 'hero';
 
+function drawHeroText(x, y, r) {
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const sz1 = Math.max(11, r * 0.13);
+  ctx.font = 'italic ' + sz1 + 'px "ITC Bauhaus", sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.90)';
+  ctx.shadowColor = 'rgba(0,60,120,0.5)';
+  ctx.shadowBlur = 6;
+  ctx.fillText('Releasing is part of life', x, y - r*0.18);
+  ctx.fillText('until', x, y - r*0.04);
+
+  const sz2 = Math.max(28, r * 0.40);
+  ctx.font = '900 ' + sz2 + 'px "ITC Bauhaus", sans-serif';
+  ctx.fillStyle = 'rgba(235,250,255,0.96)';
+  ctx.shadowColor = 'rgba(0,120,220,0.5)';
+  ctx.shadowBlur = 20;
+  ctx.fillText('Freed', x, y + r*0.22);
+
+  ctx.restore();
+}
+
 function draw() {
   requestAnimationFrame(draw);
   t += 0.012;
