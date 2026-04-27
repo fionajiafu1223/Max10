@@ -182,6 +182,25 @@ document.head.appendChild(_musicStyle);
   ].join('\n');
   document.body.appendChild(panel);
 
+  // Attach event listeners
+  panel.querySelectorAll('[data-src]').forEach(function(tab) {
+    tab.addEventListener('click', function() { switchMusicSource(tab.dataset.src); });
+  });
+  panel.querySelectorAll('[data-track-play]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      selectTrack(btn.dataset.trackPlay);
+    });
+  });
+  var volSlider = panel.querySelector('#musicVolume');
+  if (volSlider) volSlider.addEventListener('input', function() { setMusicVolume(this.value); });
+  var importZone = panel.querySelector('#importDropZone');
+  var importInput = panel.querySelector('#importFileInput');
+  if (importZone && importInput) {
+    importZone.addEventListener('click', function() { importInput.click(); });
+    importInput.addEventListener('change', function() { handleImportFile(this.files); });
+  }
+
   // Close panel on outside click
   document.addEventListener('click', function(e) {
     if (typeof musicPanelOpen !== 'undefined' && musicPanelOpen &&
