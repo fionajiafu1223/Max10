@@ -160,7 +160,7 @@ layer.innerHTML = `
   </div>
   <div id="nav-orb-tools" style="display:none;">
     <div class="nav-orb-bubble" id="orb-emotions"     data-href="Emotions.html"            style="--bob-dur:4.0s;--bob-delay:0.0s;width:68px;height:68px;left:30%;top:20%;">情绪<br>释放</div>
-    <div class="nav-orb-bubble" id="orb-desire"       data-href="index.html"               style="--bob-dur:3.4s;--bob-delay:0.3s;width:68px;height:68px;left:70%;top:20%;">欲望<br>释放</div>
+    <div class="nav-orb-bubble" id="orb-desire"       data-href="desire.html"               style="--bob-dur:3.4s;--bob-delay:0.3s;width:68px;height:68px;left:70%;top:20%;">欲望<br>释放</div>
     <div class="nav-orb-bubble" id="orb-whole"        data-href="Whole_process.html"       style="--bob-dur:3.5s;--bob-delay:0.6s;width:68px;height:68px;left:30%;top:38%;">识别即<br>释放</div>
     <div class="nav-orb-bubble" id="orb-sedona"       data-href="Sedona2.html"             style="--bob-dur:3.7s;--bob-delay:0.9s;width:68px;height:68px;left:70%;top:38%;">情绪欲望<br>释放</div>
     <div class="nav-orb-bubble" id="orb-doublesides"  data-href="Doublesides.html"         style="--bob-dur:3.9s;--bob-delay:0.2s;width:68px;height:68px;left:30%;top:56%;">好处坏处<br>释放</div>
