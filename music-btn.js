@@ -1,5 +1,3 @@
-(function() {
-
 // ── INJECT CSS ──
 const _musicStyle = document.createElement('style');
 _musicStyle.textContent = `
@@ -1147,24 +1145,4 @@ function discardRecording() {
   recordTimerSec = 0;
 }
 
-// ── EXPOSE GLOBALS ──
-window.toggleMusicPanel  = toggleMusicPanel;
-window.switchMusicSource = switchMusicSource;
-window.selectTrack       = selectTrack;
-window.setMusicVolume    = setMusicVolume;
-window.handleImportFile  = handleImportFile;
-window.handleImportDragOver  = handleImportDragOver;
-window.handleImportDragLeave = handleImportDragLeave;
-window.handleImportDrop  = handleImportDrop;
-window.handleImportUrl   = handleImportUrl;
-window.selectImportTrack = selectImportTrack;
-window.deleteImportTrack = deleteImportTrack;
-window.selectRecordBg    = selectRecordBg;
-window.updateRecordBgVol = updateRecordBgVol;
-window.stopRecord        = stopRecord;
-window.playRecording     = playRecording;
-window.saveRecording     = saveRecording;
-window.discardRecording  = discardRecording;
 
-
-})();
