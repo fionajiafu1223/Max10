@@ -222,8 +222,7 @@ function closeNav() {
 
 // ── EVENTS ──
 btn.addEventListener('click', () => {
-  if (navState === 'closed') openMain();
-  else closeNav();
+  window.location.href = 'index.html?nav=open';
 });
 
 document.getElementById('orb-tools').addEventListener('click', openTools);
