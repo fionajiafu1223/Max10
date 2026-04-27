@@ -1,3 +1,11 @@
+// ── VARIABLES ──
+let audioCtx     = null;
+let masterGain   = null;
+let currentTrack = null;
+let musicStopFns = [];
+let musicPlaying = false;
+let musicPanelOpen = false;
+
 // ── INJECT CSS ──
 const _musicStyle = document.createElement('style');
 _musicStyle.textContent = `
