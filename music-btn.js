@@ -108,143 +108,64 @@ _musicStyle.textContent = `
 document.head.appendChild(_musicStyle);
 
 // ── INJECT HTML ──
-const _musicHTML = document.createElement('div');
-_musicHTML.innerHTML = `<!-- Music Button -->
-<button class="music-btn" id="musicBtn" onclick="toggleMusicPanel()" title="背景音乐">
-  <svg class="music-icon" viewBox="0 0 20 22" width="16" height="18" fill="rgba(255,255,255,0.78)" xmlns="http://www.w3.org/2000/svg">
-    <path d="M7 17.5c0 1.38-1.12 2.5-2.5 2.5S2 18.88 2 17.5 3.12 15 4.5 15c.56 0 1.08.19 1.5.5V6.5l9-2v8.5c-.42-.31-.94-.5-1.5-.5-1.38 0-2.5 1.12-2.5 2.5S12.12 17 13.5 17 16 15.88 16 14.5V3L7 5.2V17.5z"/>
-  </svg>
-</button>
+(function() {
+  // Music button
+  const btn = document.createElement('button');
+  btn.className = 'music-btn';
+  btn.id = 'musicBtn';
+  btn.title = '背景音乐';
+  btn.innerHTML = '<svg class="music-icon" viewBox="0 0 20 22" width="16" height="18" fill="rgba(255,255,255,0.78)"><path d="M7 17.5c0 1.38-1.12 2.5-2.5 2.5S2 18.88 2 17.5 3.12 15 4.5 15c.56 0 1.08.19 1.5.5V6.5l9-2v8.5c-.42-.31-.94-.5-1.5-.5-1.38 0-2.5 1.12-2.5 2.5S12.12 17 13.5 17 16 15.88 16 14.5V3L7 5.2V17.5z"/></svg>';
+  btn.addEventListener('click', function() { toggleMusicPanel(); });
+  document.body.appendChild(btn);
 
-<!-- Music Panel -->
-<div class="music-panel" id="musicPanel">
-  <div class="music-panel-title">背 景 音 乐</div>
+  // Music panel - use fetch from template
+  const panel = document.createElement('div');
+  panel.id = 'musicPanel';
+  panel.className = 'music-panel';
+  panel.innerHTML = [
+    '<div class="music-panel-title">背 景 音 乐</div>',
+    '<div class="music-source-tabs">',
+    '  <button class="music-source-tab active" id="msrc-builtin" onclick="switchMusicSource(\'builtin\')">🎵 App内置</button>',
+    '  <button class="music-source-tab" id="msrc-import" onclick="switchMusicSource(\'import\')">📁 本地导入</button>',
+    '</div>',
+    '<div class="music-source-panel active" id="mpanel-builtin">',
+    '<div class="music-tracks">',
+    '<div class="music-track" data-track="bowl"><span class="music-track-icon">🔔</span><div class="music-track-info"><div class="music-track-name">冥想钵</div><span class="music-track-desc">396Hz · 释放恐惧</span></div><button class="music-play-btn" onclick="selectTrack(\'bowl\')">▶</button></div>',
+    '<div class="music-track" data-track="deepbowl"><span class="music-track-icon">🎐</span><div class="music-track-info"><div class="music-track-name">颂钵冥想</div><span class="music-track-desc">三钵共鸣 · 深度放松</span></div><button class="music-play-btn" onclick="selectTrack(\'deepbowl\')">▶</button></div>',
+    '<div class="music-track" data-track="hz528"><span class="music-track-icon">💚</span><div class="music-track-info"><div class="music-track-name">528Hz 疗愈</div><span class="music-track-desc">爱的频率 · DNA修复</span></div><button class="music-play-btn" onclick="selectTrack(\'hz528\')">▶</button></div>',
+    '<div class="music-track" data-track="awaken"><span class="music-track-icon">✨</span><div class="music-track-info"><div class="music-track-name">963Hz 觉醒</div><span class="music-track-desc">松果体 · 灵性连接</span></div><button class="music-play-btn" onclick="selectTrack(\'awaken\')">▶</button></div>',
+    '<div class="music-track" data-track="schumann"><span class="music-track-icon">🌍</span><div class="music-track-info"><div class="music-track-name">舒曼共振</div><span class="music-track-desc">7.83Hz · 地球脑波</span></div><button class="music-play-btn" onclick="selectTrack(\'schumann\')">▶</button></div>',
+    '<div class="music-track" data-track="deep"><span class="music-track-icon">🌌</span><div class="music-track-info"><div class="music-track-name">432Hz 深空</div><span class="music-track-desc">自然律 · 宇宙共鸣</span></div><button class="music-play-btn" onclick="selectTrack(\'deep\')">▶</button></div>',
+    '<div class="music-track" data-track="piano"><span class="music-track-icon">🎹</span><div class="music-track-info"><div class="music-track-name">528调式钢琴</div><span class="music-track-desc">五声音阶 · 宁静</span></div><button class="music-play-btn" onclick="selectTrack(\'piano\')">▶</button></div>',
+    '<div class="music-track" data-track="rain"><span class="music-track-icon">🌧️</span><div class="music-track-info"><div class="music-track-name">夜雨</div><span class="music-track-desc">细密雨声 · 静谧</span></div><button class="music-play-btn" onclick="selectTrack(\'rain\')">▶</button></div>',
+    '<div class="music-track" data-track="ocean"><span class="music-track-icon">🌊</span><div class="music-track-info"><div class="music-track-name">海浪</div><span class="music-track-desc">潮汐呼吸 · 放松</span></div><button class="music-play-btn" onclick="selectTrack(\'ocean\')">▶</button></div>',
+    '<div class="music-track" data-track="water"><span class="music-track-icon">💧</span><div class="music-track-info"><div class="music-track-name">山涧流水</div><span class="music-track-desc">溪流 · 清澈</span></div><button class="music-play-btn" onclick="selectTrack(\'water\')">▶</button></div>',
+    '</div></div>',
+    '<div class="music-source-panel" id="mpanel-import">',
+    '<div class="music-import-zone" id="importDropZone" onclick="document.getElementById(\'importFileInput\').click()">',
+    '<div class="music-import-icon">🎵</div>',
+    '<div class="music-import-text">点击选择音乐文件</div>',
+    '</div>',
+    '<input type="file" id="importFileInput" accept="audio/*" multiple style="display:none" onchange="handleImportFile(this.files)">',
+    '<div class="music-imported-list" id="importedList"><div id="importEmptyHint">还没有导入的音乐</div></div>',
+    '</div>',
+    '<div class="music-volume-row">',
+    '<span class="music-vol-icon">🔈</span>',
+    '<input type="range" class="music-volume" id="musicVolume" min="0" max="100" value="45" oninput="setMusicVolume(this.value)">',
+    '<span class="music-vol-icon">🔊</span>',
+    '</div>',
+  ].join('\n');
+  document.body.appendChild(panel);
 
-  <!-- Source tabs -->
-  <div class="music-source-tabs">
-    <button class="music-source-tab active" id="msrc-builtin" onclick="switchMusicSource('builtin')">🎵 App内置</button>
-    <button class="music-source-tab" id="msrc-import" onclick="switchMusicSource('import')">📁 本地导入</button>
-    <button class="music-source-tab" id="msrc-record" onclick="switchMusicSource('record')">🎙️ 录制背景音</button>
-  </div>
-
-  <!-- Tab 1: Built-in tracks -->
-  <div class="music-source-panel active" id="mpanel-builtin">
-  <div class="music-tracks">
-    <div class="music-track" data-track="bowl"><span class="music-track-icon">🔔</span><div class="music-track-info"><div class="music-track-name">冥想钵</div><span class="music-track-desc">396Hz · 释放恐惧</span></div><button class="music-play-btn" onclick="selectTrack('bowl')">▶</button></div>
-    <div class="music-track" data-track="deepbowl"><span class="music-track-icon">🎐</span><div class="music-track-info"><div class="music-track-name">颂钵冥想</div><span class="music-track-desc">三钵共鸣 · 深度放松</span></div><button class="music-play-btn" onclick="selectTrack('deepbowl')">▶</button></div>
-    <div class="music-track" data-track="hz528"><span class="music-track-icon">💚</span><div class="music-track-info"><div class="music-track-name">528Hz 疗愈</div><span class="music-track-desc">爱的频率 · DNA修复</span></div><button class="music-play-btn" onclick="selectTrack('hz528')">▶</button></div>
-    <div class="music-track" data-track="awaken"><span class="music-track-icon">✨</span><div class="music-track-info"><div class="music-track-name">963Hz 觉醒</div><span class="music-track-desc">松果体 · 灵性连接</span></div><button class="music-play-btn" onclick="selectTrack('awaken')">▶</button></div>
-    <div class="music-track" data-track="schumann"><span class="music-track-icon">🌍</span><div class="music-track-info"><div class="music-track-name">舒曼共振</div><span class="music-track-desc">7.83Hz · 地球脑波</span></div><button class="music-play-btn" onclick="selectTrack('schumann')">▶</button></div>
-    <div class="music-track" data-track="deep"><span class="music-track-icon">🌌</span><div class="music-track-info"><div class="music-track-name">432Hz 深空</div><span class="music-track-desc">自然律 · 宇宙共鸣</span></div><button class="music-play-btn" onclick="selectTrack('deep')">▶</button></div>
-    <div class="music-track" data-track="piano"><span class="music-track-icon">🎹</span><div class="music-track-info"><div class="music-track-name">528调式钢琴</div><span class="music-track-desc">五声音阶 · 宁静</span></div><button class="music-play-btn" onclick="selectTrack('piano')">▶</button></div>
-    <div class="music-track" data-track="rain"><span class="music-track-icon">🌧️</span><div class="music-track-info"><div class="music-track-name">夜雨</div><span class="music-track-desc">细密雨声 · 静谧</span></div><button class="music-play-btn" onclick="selectTrack('rain')">▶</button></div>
-    <div class="music-track" data-track="ocean"><span class="music-track-icon">🌊</span><div class="music-track-info"><div class="music-track-name">海浪</div><span class="music-track-desc">潮汐呼吸 · 放松</span></div><button class="music-play-btn" onclick="selectTrack('ocean')">▶</button></div>
-    <div class="music-track" data-track="water"><span class="music-track-icon">💧</span><div class="music-track-info"><div class="music-track-name">山涧流水</div><span class="music-track-desc">溪流 · 清澈</span></div><button class="music-play-btn" onclick="selectTrack('water')">▶</button></div>
-    </div>
-  </div>
-
-  <!-- Tab 2: Local import -->
-  <div class="music-source-panel" id="mpanel-import">
-    <div class="music-import-zone" id="importDropZone"
-         onclick="document.getElementById('importFileInput').click()"
-         ondragover="handleImportDragOver(event)"
-         ondragleave="handleImportDragLeave(event)"
-         ondrop="handleImportDrop(event)">
-      <div class="music-import-icon">🎵</div>
-      <div class="music-import-text">点击选择音乐文件<br>或将文件拖拽至此</div>
-      <div class="music-import-sub">支持 MP3 · WAV · AAC · OGG · FLAC</div>
-    </div>
-    <input type="file" id="importFileInput" accept="audio/*" multiple style="display:none" onchange="handleImportFile(this.files)">
-    <div class="music-imported-list" id="importedList">
-      <div class="music-import-empty" id="importEmptyHint">还没有导入的音乐</div>
-    </div>
-  </div>
-
-  <!-- Tab 3: Record -->
-  <div class="music-source-panel" id="mpanel-record">
-    <div class="music-record-panel">
-
-      <!-- Step 1: pick background (optional) -->
-      <div class="record-bg-section" id="recordBgSection">
-        <div class="record-bg-label">① 选择混音背景（可跳过）</div>
-        <div class="record-bg-grid" id="recordBgGrid">
-          <div class="record-bg-item" data-track="" onclick="selectRecordBg(this,'')">
-            <span class="record-bg-icon">🔇</span>
-            <span class="record-bg-name">纯人声</span>
-          </div>
-          <div class="record-bg-item" data-track="bowl" onclick="selectRecordBg(this,'bowl')">
-            <span class="record-bg-icon">🔔</span>
-            <span class="record-bg-name">冥想钵</span>
-          </div>
-          <div class="record-bg-item" data-track="deepbowl" onclick="selectRecordBg(this,'deepbowl')">
-            <span class="record-bg-icon">🎐</span>
-            <span class="record-bg-name">颂钵</span>
-          </div>
-          <div class="record-bg-item" data-track="hz528" onclick="selectRecordBg(this,'hz528')">
-            <span class="record-bg-icon">💚</span>
-            <span class="record-bg-name">528Hz</span>
-          </div>
-          <div class="record-bg-item" data-track="awaken" onclick="selectRecordBg(this,'awaken')">
-            <span class="record-bg-icon">✨</span>
-            <span class="record-bg-name">963Hz</span>
-          </div>
-          <div class="record-bg-item" data-track="schumann" onclick="selectRecordBg(this,'schumann')">
-            <span class="record-bg-icon">🌍</span>
-            <span class="record-bg-name">舒曼</span>
-          </div>
-          <div class="record-bg-item" data-track="deep" onclick="selectRecordBg(this,'deep')">
-            <span class="record-bg-icon">🌌</span>
-            <span class="record-bg-name">432Hz</span>
-          </div>
-          <div class="record-bg-item" data-track="piano" onclick="selectRecordBg(this,'piano')">
-            <span class="record-bg-icon">🎹</span>
-            <span class="record-bg-name">钢琴</span>
-          </div>
-          <div class="record-bg-item" data-track="rain" onclick="selectRecordBg(this,'rain')">
-            <span class="record-bg-icon">🌧️</span>
-            <span class="record-bg-name">夜雨</span>
-          </div>
-          <div class="record-bg-item" data-track="ocean" onclick="selectRecordBg(this,'ocean')">
-            <span class="record-bg-icon">🌊</span>
-            <span class="record-bg-name">海浪</span>
-          </div>
-          <div class="record-bg-item" data-track="water" onclick="selectRecordBg(this,'water')">
-            <span class="record-bg-icon">💧</span>
-            <span class="record-bg-name">流水</span>
-          </div>
-        </div>
-        <!-- bg volume -->
-        <div class="record-bg-vol-row" id="recordBgVolRow" style="display:none;">
-          <span style="font-size:0.68rem;color:rgba(140,180,220,0.7);">背景音量</span>
-          <input type="range" class="music-volume" id="recordBgVol" min="0" max="100" value="40"
-                 oninput="updateRecordBgVol(this.value)" style="flex:1;">
-          <span style="font-size:0.68rem;color:rgba(140,180,220,0.7);" id="recordBgVolNum">40%</span>
-        </div>
-      </div>
-
-      <!-- Step 2: record -->
-      <div class="record-bg-label">② 录制</div>
-      <div class="record-waveform" id="recordWaveform"></div>
-      <div class="record-timer" id="recordTimer">00:00</div>
-      <div class="record-btn-wrap">
-        <button class="record-btn" id="recordBtn" onclick="toggleRecord()">🎙️</button>
-      </div>
-      <div class="record-status" id="recordStatus">选好背景后点击开始录制</div>
-      <div class="record-actions" id="recordActions" style="display:none;">
-        <button class="record-action-btn record-play-btn" onclick="playRecording()">▶ 试听</button>
-        <button class="record-action-btn record-save-btn" onclick="saveRecording()">💾 保存使用</button>
-        <button class="record-action-btn record-discard-btn" onclick="discardRecording()">✕ 丢弃</button>
-      </div>
-      <div class="record-hint">录制时麦克风声音与背景音将混合为一个文件</div>
-    </div>
-  </div>
-
-  <div class="music-volume-row">
-    <span class="music-vol-icon">🔉</span>
-    <input type="range" class="music-volume" id="musicVolume" min="0" max="100" value="50" oninput="setMusicVolume(this.value)">
-    <span class="music-vol-icon">🔊</span>
-`;
-document.body.appendChild(_musicHTML);
+  // Close panel on outside click
+  document.addEventListener('click', function(e) {
+    if (typeof musicPanelOpen !== 'undefined' && musicPanelOpen &&
+        !e.target.closest('#musicPanel') && !e.target.closest('#musicBtn')) {
+      musicPanelOpen = false;
+      panel.classList.remove('open');
+    }
+  });
+})();
 
 // ── MUSIC SYSTEM ──
 
