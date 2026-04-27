@@ -5,6 +5,7 @@ let currentTrack = null;
 let musicStopFns = [];
 let musicPlaying = false;
 let musicPanelOpen = false;
+let currentMusicSource = 'builtin';
 
 // ── INJECT CSS ──
 const _musicStyle = document.createElement('style');
@@ -146,9 +147,9 @@ document.head.appendChild(_musicStyle);
   panel.innerHTML = [
     '<div class="music-panel-title">背 景 音 乐</div>',
     '<div class="music-source-tabs">',
-    '  <button class="music-source-tab active" id="msrc-builtin" onclick="switchMusicSource(\'builtin\')">🎵 App内置</button>',
-    '  <button class="music-source-tab" id="msrc-import" onclick="switchMusicSource(\'import\')">📁 本地导入</button>',
-    '  <button class="music-source-tab" id="msrc-record" onclick="switchMusicSource(\'record\')">🎙️ 录制背景音</button>',
+    '  <button class="music-source-tab active" id="msrc-builtin" data-src="builtin">🎵 App内置</button>',
+    '  <button class="music-source-tab" id="msrc-import" data-src="import">📁 本地导入</button>',
+    '  <button class="music-source-tab" id="msrc-record" data-src="record">🎙️ 录制背景音</button>',
     '</div>',
     '<div class="music-source-panel active" id="mpanel-builtin">',
     '<div class="music-tracks">',
@@ -182,9 +183,21 @@ document.head.appendChild(_musicStyle);
   ].join('\n');
   document.body.appendChild(panel);
 
-  // Attach event listeners
+  // Attach tab listeners - fully inlined
   panel.querySelectorAll('[data-src]').forEach(function(tab) {
-    tab.addEventListener('click', function() { switchMusicSource(tab.dataset.src); });
+    tab.addEventListener('click', function() {
+      var src = tab.dataset.src;
+      currentMusicSource = src;
+      // update tab active states
+      panel.querySelectorAll('.music-source-tab').forEach(function(t) {
+        t.classList.toggle('active', t.dataset.src === src);
+      });
+      // update panel active states
+      ['builtin','import','record'].forEach(function(s) {
+        var p = panel.querySelector('#mpanel-' + s);
+        if (p) p.classList.toggle('active', s === src);
+      });
+    });
   });
   panel.querySelectorAll('[data-track-play]').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
@@ -721,7 +734,6 @@ document.addEventListener('click', e => {
 // ═══════════════════════════════════════════════════
 //  MUSIC SOURCE TABS
 // ═══════════════════════════════════════════════════
-let currentMusicSource = 'builtin';
 
 function switchMusicSource(src) {
   currentMusicSource = src;
