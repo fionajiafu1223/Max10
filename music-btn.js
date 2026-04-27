@@ -1147,10 +1147,5 @@ function discardRecording() {
   recordTimerSec = 0;
 }
 
-</script>
-</body>
-</html>
-<script src="nav-orb.js"></script>
-
 
 })();
