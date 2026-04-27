@@ -471,17 +471,19 @@ function setNavBubbleColors() {
     // same glass gradient as hero bubble — transparent, white highlight top-left
     b.style.background = [
       'radial-gradient(circle at 32% 28%,',
-      '  rgba(255,255,255,0.60) 0%,',
-      '  rgba(255,255,255,0.18) 20%,',
-      '  ' + glow.replace('0.35','0.50') + ' 48%,',
-      '  ' + glow.replace('0.35','0.40') + ' 72%,',
-      '  ' + glow.replace('0.35','0.20') + ' 100%)',
+      '  rgba(255,255,255,0.75) 0%,',
+      '  rgba(220,225,230,0.45) 22%,',
+      '  ' + glow.replace('0.35','0.30') + ' 50%,',
+      '  ' + glow.replace('0.35','0.22') + ' 75%,',
+      '  ' + glow.replace('0.35','0.10') + ' 100%)',
     ].join('');
     b.style.border = '0.5px solid rgba(255,255,255,0.55)';
     b.style.boxShadow = [
       'inset 0 1px 0 rgba(255,255,255,0.50)',
-      '0 3px 14px ' + glow.replace('0.35','0.70'),
-      '0 0 18px ' + glow.replace('0.35','0.35'),
+      'inset 0 0 22px ' + glow.replace('0.35','0.65'),
+      'inset 0 0 8px ' + glow.replace('0.35','0.55'),
+      '0 4px 22px ' + glow.replace('0.35','0.80'),
+      '0 0 32px ' + glow.replace('0.35','0.45'),
     ].join(', ');
   });
 }
