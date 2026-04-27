@@ -222,7 +222,7 @@ function closeNav() {
 
 // ── EVENTS ──
 btn.addEventListener('click', () => {
-  window.location.href = 'index.html?nav=open';
+  window.location.href = 'index.html';
 });
 
 document.getElementById('orb-tools').addEventListener('click', openTools);
