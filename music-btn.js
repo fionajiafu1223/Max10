@@ -5,7 +5,7 @@ const _musicStyle = document.createElement('style');
 _musicStyle.textContent = `
   /* ── MUSIC BUTTON & PANEL ── */
   .music-btn {
-    position: fixed; top: 16px; right: 16px; z-index: 600;
+    position: fixed; top: 16px; right: 16px; z-index: 9997;
     width: 36px; height: 36px; border-radius: 50%;
     background: rgba(255,255,255,0.2); backdrop-filter: blur(12px);
     border: 1.5px solid rgba(255,255,255,0.35);
@@ -28,7 +28,7 @@ _musicStyle.textContent = `
     to   { transform: rotate(360deg); }
   }
   .music-panel {
-    position: fixed; top: 64px; right: 12px; z-index: 590;
+    position: fixed; top: 64px; right: 12px; z-index: 9996;
     width: min(390px, 90vw);
     background: rgba(22,48,100,0.93); backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
