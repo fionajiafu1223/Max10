@@ -429,13 +429,7 @@ function draw() {
   }
 }
 
-document.fonts.ready.then(() => {
-  draw();
-  // auto-open nav if coming from a tool page
-  if (new URLSearchParams(window.location.search).get('nav') === 'open') {
-    setTimeout(() => { showNavMain(); }, 600);
-  }
-});
+document.fonts.ready.then(() => { draw(); });
 
 // ── NAV STATE ──
 // glow colors per bubble
