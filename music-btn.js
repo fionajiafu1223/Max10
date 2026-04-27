@@ -1147,5 +1147,21 @@ function discardRecording() {
   recordTimerSec = 0;
 }
 
+// ── EXPOSE GLOBALS (called from onclick attributes) ──
+window.toggleMusicPanel = toggleMusicPanel;
+window.switchMusicSource = switchMusicSource;
+window.selectTrack = selectTrack;
+window.setMusicVolume = setMusicVolume;
+window.handleImportFile = handleImportFile;
+window.handleImportDragOver = handleImportDragOver;
+window.handleImportDragLeave = handleImportDragLeave;
+window.handleImportDrop = handleImportDrop;
+window.loadMusicFromUrl = loadMusicFromUrl;
+window.selectImportTrack = selectImportTrack;
+window.deleteImportTrack = deleteImportTrack;
+window.selectRecordBg = selectRecordBg;
+window.startRecording = startRecording;
+window.stopRecording = stopRecording;
+
 
 })();
