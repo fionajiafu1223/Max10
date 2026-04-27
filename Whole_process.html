@@ -116,47 +116,76 @@ body::before {
 /* ── Emotion table ── */
 #ecBtn {
   position: fixed; top: 16px; right: 68px; z-index: 100;
-  padding: 7px 16px; border-radius: 99px;
+  padding: 6px 14px; border-radius: 99px;
   border: 1px solid rgba(255,255,255,0.85);
   background: rgba(255,255,255,0.45); backdrop-filter: blur(12px);
-  font-family: 'ZCOOL XiaoWei', serif; font-size: 13px;
+  font-family: 'ZCOOL XiaoWei', serif; font-size: 12px;
   letter-spacing: 2px; color: rgba(3,105,161,0.85);
   cursor: pointer;
 }
 #ecPanel {
   position: fixed; inset: 0; z-index: 200;
-  background: rgba(186,230,253,0.55); backdrop-filter: blur(18px);
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; padding: 24px 16px 16px;
+  background: rgba(186,230,253,0.25); backdrop-filter: blur(6px);
   opacity: 0; pointer-events: none;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.32s ease;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 68px;
 }
 #ecPanel.open { opacity: 1; pointer-events: all; }
+.ec-inner {
+  display: flex; flex-direction: column;
+  width: min(96vw, 900px);
+  max-height: calc(100vh - 80px);
+  background: linear-gradient(158deg, rgba(222,246,255,0.94) 0%, rgba(186,230,253,0.91) 100%);
+  border: 1px solid rgba(255,255,255,0.88); border-radius: 22px;
+  box-shadow: 0 10px 40px rgba(3,80,140,0.13);
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+}
 .ec-header {
-  width: 100%; max-width: 500px;
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 14px; padding: 0 4px;
+  padding: 18px 20px 10px; flex-shrink: 0;
 }
 .ec-header-title {
-  font-family: 'ZCOOL XiaoWei', serif; font-size: 15px;
-  letter-spacing: 4px; color: rgba(3,105,161,0.75);
+  font-family: 'ZCOOL XiaoWei', serif; font-size: 14px;
+  letter-spacing: 4px; color: rgba(3,105,161,0.72);
 }
 .ec-close {
-  width: 30px; height: 30px; border-radius: 50%;
-  border: 1px solid rgba(3,105,161,0.25);
-  background: rgba(255,255,255,0.5); backdrop-filter: blur(8px);
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid rgba(3,105,161,0.18);
+  background: rgba(255,255,255,0.45); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
+  transition: background 0.2s; flex-shrink: 0;
+}
+.ec-scroll {
+  flex: 1; overflow-x: auto; overflow-y: auto;
+  padding: 0 16px 20px;
 }
 .ec-table { display: flex; gap: 6px; min-width: max-content; }
-.ec-col { display: flex; flex-direction: column; gap: 5px; min-width: 88px; }
+.ec-col {
+  display: flex; flex-direction: column;
+  min-width: 88px; border-radius: 14px; overflow: hidden;
+  background: rgba(255,255,255,0.28);
+  border: 1px solid rgba(255,255,255,0.60);
+  flex-shrink: 0;
+}
 .ec-col-head {
-  border-radius: 10px; padding: 8px 6px 6px; text-align: center;
-  border: 1px solid rgba(255,255,255,0.6);
+  padding: 8px 6px 6px; text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
 }
 .ec-col-head .zh {
   font-family: 'ZCOOL XiaoWei', serif; font-size: 12px;
   letter-spacing: 1.5px; display: block;
+}
+.ec-col-head .en {
+  font-size: 7px; letter-spacing: 1px; opacity: 0.55;
+  display: block; margin-top: 2px;
+}
+.ec-col-body { padding: 6px 6px 8px; display: flex; flex-direction: column; gap: 1px; }
+.ec-col-body span {
+  font-family: 'ZCOOL XiaoWei', serif; font-size: 11px;
+  padding: 3px 5px; letter-spacing: 0.5px;
+  color: rgba(20,60,90,0.72); display: block;
 }
 .ec-col-head .en {
   font-size: 7px; letter-spacing: 1px; opacity: 0.55;
@@ -178,16 +207,20 @@ body::before {
   <button id="ecBtn">情绪表</button>
 
   <div id="ecPanel">
-    <div class="ec-header">
-      <span class="ec-header-title">情绪表</span>
-      <button class="ec-close" id="ecClose">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-          <line x1="1" y1="1" x2="9" y2="9" stroke="rgba(3,105,161,0.55)" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="9" y1="1" x2="1" y2="9" stroke="rgba(3,105,161,0.55)" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </button>
+    <div class="ec-inner">
+      <div class="ec-header">
+        <span class="ec-header-title">情绪表</span>
+        <button class="ec-close" id="ecClose">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <line x1="1" y1="1" x2="9" y2="9" stroke="rgba(3,105,161,0.55)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="9" y1="1" x2="1" y2="9" stroke="rgba(3,105,161,0.55)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="ec-scroll">
+        <div class="ec-table" id="ecTable"></div>
+      </div>
     </div>
-    <div class="ec-table" id="ecTable"></div>
   </div>
 
   <div id="questionEl"></div>
@@ -840,13 +873,14 @@ requestAnimationFrame(loop);
     head.style.background = col.bg;
     head.innerHTML = `<span class="zh" style="color:${col.color}">${col.zh}</span><span class="en" style="color:${col.color}">${col.en}</span>`;
     colEl.appendChild(head);
+    const body = document.createElement('div');
+    body.className = 'ec-col-body';
     col.items.forEach(w => {
-      const item = document.createElement('div');
-      item.className = 'ec-item';
-      item.style.background = col.bg;
-      item.textContent = w;
-      colEl.appendChild(item);
+      const s = document.createElement('span');
+      s.textContent = w;
+      body.appendChild(s);
     });
+    colEl.appendChild(body);
     table.appendChild(colEl);
   });
 
