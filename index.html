@@ -38,6 +38,11 @@ canvas { position:fixed; inset:0; display:block; }
 #hero-bubble {
   position:fixed;
   z-index:9;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  width:min(41vw, 41vh);
+  height:min(41vw, 41vh);
   border-radius:50%;
   display:flex;
   flex-direction:column;
@@ -45,8 +50,6 @@ canvas { position:fixed; inset:0; display:block; }
   justify-content:center;
   text-align:center;
   cursor:pointer;
-  /* size and position set by JS */
-  transform:translate(-50%,-50%);
   /* glass look */
   background: radial-gradient(circle at 28% 12%,
     rgba(255,255,255,0.82) 0%,
@@ -386,6 +389,8 @@ function drawHeroBubble(x, y, r, t) {
 
 const heroEl = document.getElementById('hero-bubble');
 let t = 0;
+let bubbleAlpha = 1.0;
+let bubbleTargetAlpha = 1.0;
 let showHero = true;
 let navState = 'hero';
 
@@ -400,7 +405,15 @@ function draw() {
   drawCaustics(t);
 
   // update & draw bubbles (small ones behind hero)
-  BUBBLES.forEach(b => { b.update(t); b.draw(); });
+  // fade background bubbles
+  bubbleAlpha += (bubbleTargetAlpha - bubbleAlpha) * 0.05;
+  if (bubbleAlpha > 0.01) {
+    ctx.globalAlpha = bubbleAlpha;
+    BUBBLES.forEach(b => { b.update(t); b.draw(); });
+    ctx.globalAlpha = 1.0;
+  } else {
+    BUBBLES.forEach(b => b.update(t)); // still update positions
+  }
 
   // hero bubble — gentle bob
   const heroR = Math.min(W,H) * 0.18;
@@ -410,8 +423,6 @@ function draw() {
     const d = heroR * 2;
     heroEl.style.width  = d + 'px';
     heroEl.style.height = d + 'px';
-    heroEl.style.left   = (W * 0.50) + 'px';
-    heroEl.style.top    = (H * 0.48) + 'px';
     heroEl.style.display = 'flex';
   } else {
     heroEl.style.display = 'none';
@@ -474,6 +485,8 @@ function setNavBubbleColors() {
 setNavBubbleColors();
 
 function showNavMain() {
+  bubbleTargetAlpha = 0.25;
+  heroEl.style.display = 'none';
   navState = 'main';
   showHero = false;
   document.getElementById('nav-layer').style.display = 'block';
@@ -489,6 +502,8 @@ function showNavMain() {
 
 function showNavTools() {
   navState = 'tools';
+  bubbleTargetAlpha = 0.25;
+  heroEl.style.display = 'none';
   document.querySelectorAll('#nav-main .nav-bubble').forEach(b => b.classList.remove('visible'));
   setTimeout(() => {
     document.getElementById('nav-main').style.display = 'none';
@@ -502,6 +517,8 @@ function showNavTools() {
 }
 
 function returnToHero() {
+  bubbleTargetAlpha = 1.0;
+  heroEl.style.display = 'flex';
   navState = 'hero';
   showHero = true;
   document.querySelectorAll('.nav-bubble').forEach(b => b.classList.remove('visible'));
