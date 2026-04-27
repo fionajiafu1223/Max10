@@ -244,15 +244,15 @@ function drawCaustics(t) {
 // ── BUBBLE CLASS ──
 // 9 emotion colors
 const EMOTION_COLORS = [
-  {r:180, g:100, b:255}, // 恐惧 紫
-  {r:60,  g:120, b:255}, // 悲苦 蓝
-  {r:100, g:140, b:200}, // 万念俱灰 蓝灰
-  {r:255, g:120, b:20 }, // 贪求 橙
-  {r:255, g:50,  b:50 }, // 愤怒 红
-  {r:220, g:170, b:0  }, // 自尊自傲 金
-  {r:0,   g:210, b:190}, // 无畏 青绿
-  {r:30,  g:210, b:100}, // 接纳 绿
-  {r:80,  g:200, b:255}, // 平和 天蓝
+  {r:144, g:96,  b:208}, // 恐惧 紫
+  {r:48,  g:80,  b:176}, // 悲苦 深蓝
+  {r:80,  g:110, b:160}, // 万念俱灰 蓝灰
+  {r:192, g:96,  b:16 }, // 贪求 橙
+  {r:192, g:32,  b:32 }, // 愤怒 红
+  {r:176, g:128, b:0  }, // 自尊自傲 金
+  {r:16,  g:160, b:144}, // 无畏 青绿
+  {r:16,  g:160, b:80 }, // 接纳 绿
+  {r:74,  g:176, b:224}, // 平和 天蓝
 ];
 
 class Bubble {
@@ -324,9 +324,9 @@ class Bubble {
     ctx.lineWidth = Math.max(0.5, r*0.06);
     ctx.stroke();
 
-    // primary specular
+    // primary specular — brighter for dark areas
     const sp = ctx.createRadialGradient(x-r*0.35,y-r*0.35,0,x-r*0.30,y-r*0.30,r*0.32);
-    sp.addColorStop(0, `rgba(255,255,255,${a*0.85})`);
+    sp.addColorStop(0, `rgba(255,255,255,${Math.min(1, a*1.6)})`);
     sp.addColorStop(1, `rgba(255,255,255,0)`);
     ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
     ctx.fillStyle=sp; ctx.fill();
@@ -434,30 +434,29 @@ document.fonts.ready.then(() => { draw(); });
 // ── NAV STATE ──
 // glow colors per bubble
 const BUBBLE_GLOWS = [
-  'rgba(80,160,255,0.55)',   // sky blue
-  'rgba(160,80,255,0.55)',   // violet
-  'rgba(40,190,140,0.55)',   // emerald
-  'rgba(255,80,140,0.55)',   // rose
-  'rgba(255,130,40,0.55)',   // amber
-  'rgba(20,195,190,0.55)',   // teal
-  'rgba(210,160,20,0.55)',   // gold
-  'rgba(255,80,80,0.55)',    // coral
-  'rgba(80,200,255,0.55)',   // cyan
-  'rgba(200,100,255,0.55)',  // purple
-  'rgba(100,220,120,0.55)',  // mint
-  'rgba(255,180,40,0.55)',   // orange
+  'rgba(80,160,255,0.35)',   // sky blue
+  'rgba(160,80,255,0.35)',   // violet
+  'rgba(40,190,140,0.35)',   // emerald
+  'rgba(255,80,140,0.35)',   // rose
+  'rgba(255,130,40,0.35)',   // amber
+  'rgba(20,195,190,0.35)',   // teal
+  'rgba(210,160,20,0.35)',   // gold
+  'rgba(255,80,80,0.35)',    // coral
+  'rgba(80,200,255,0.35)',   // cyan
+  'rgba(200,100,255,0.35)',  // purple
+  'rgba(100,220,120,0.35)',  // mint
+  'rgba(255,180,40,0.35)',   // orange
 ];
 
 // Fixed colors for main 4 nav bubbles
 const NAV_MAIN_COLORS = {
-  // tool bubbles with stronger glow
-  'tool-doublesides': 'rgba(20,195,190,0.55)',   // 好处坏处 青绿加深
-  'tool-sedona':      'rgba(20,195,190,0.55)',   // 情绪欲望 青绿加深
-  'tool-body':        'rgba(40,190,140,0.55)',   // 身体健康 翡翠绿加深
-  'nb-tools': 'rgba(100,170,255,0.35)',   // sky blue — 释放工具
-  'nb-ai':    'rgba(120,210,150,0.30)',   // soft green — 释放助手
-  'nb-goals': 'rgba(220,120,120,0.28)',   // soft red — 目标表
-  'nb-gains': 'rgba(220,190,80,0.28)',    // soft gold — 收获本
+  'tool-doublesides': 'rgba(20,195,190,0.55)',
+  'tool-sedona':      'rgba(20,195,190,0.55)',
+  'tool-body':        'rgba(40,190,140,0.55)',
+  'nb-tools': 'rgba(80,150,255,0.55)',   // 释放工具 蓝
+  'nb-ai':    'rgba(60,200,120,0.50)',   // 释放助手 绿
+  'nb-goals': 'rgba(220,80,80,0.48)',    // 目标表 红
+  'nb-gains': 'rgba(220,170,20,0.48)',   // 收获本 金
 };
 
 function setNavBubbleColors() {
@@ -472,17 +471,17 @@ function setNavBubbleColors() {
     // same glass gradient as hero bubble — transparent, white highlight top-left
     b.style.background = [
       'radial-gradient(circle at 32% 28%,',
-      '  rgba(255,255,255,0.15) 0%,',
-      '  rgba(255,255,255,0.04) 12%,',
-      '  ' + glow.replace('0.35','0.65') + ' 45%,',
-      '  ' + glow.replace('0.35','0.45') + ' 80%,',
-      '  ' + glow.replace('0.35','0.10') + ' 100%)',
+      '  rgba(255,255,255,0.60) 0%,',
+      '  rgba(255,255,255,0.18) 20%,',
+      '  ' + glow.replace('0.35','0.50') + ' 48%,',
+      '  ' + glow.replace('0.35','0.40') + ' 72%,',
+      '  ' + glow.replace('0.35','0.20') + ' 100%)',
     ].join('');
-    b.style.border = '0.5px solid rgba(255,255,255,0.40)';
+    b.style.border = '0.5px solid rgba(255,255,255,0.55)';
     b.style.boxShadow = [
-      'inset 0 1px 0 rgba(255,255,255,0.35)',
-      '0 6px 28px ' + glow,
-      '0 0 50px ' + glow.replace('0.35','0.15'),
+      'inset 0 1px 0 rgba(255,255,255,0.50)',
+      '0 3px 14px ' + glow.replace('0.35','0.70'),
+      '0 0 18px ' + glow.replace('0.35','0.35'),
     ].join(', ');
   });
 }
