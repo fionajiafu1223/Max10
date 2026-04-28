@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>收获本 · Freed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Noto+Sans+SC:wght@300;400&display=swap">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #e8f4fd 0%, #c8e6f5 40%, #a8d4ec 100%);
+  font-family: 'Noto Serif SC', serif;
+  padding: 80px 16px 32px;
+}
+.page-title {
+  text-align: center;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  color: rgba(3,80,140,0.7);
+  margin-bottom: 24px;
+}
+.page-wrap {
+  max-width: 480px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.75);
+  border-radius: 20px;
+  padding: 20px 16px;
+  box-shadow: 0 8px 32px rgba(0,60,120,0.10);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.85);
+}
+  .gain-input-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .gain-input-row input {
+    flex: 1; padding: 9px 14px;
+    border: 1.5px solid rgba(100,160,220,0.4); border-radius: 12px;
+    background: rgba(255,255,255,0.7);
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.88rem; color: #0e2840;
+    outline: none; transition: border-color 0.2s;
+  }
+  .gain-input-row input:focus { border-color: rgba(80,140,220,0.8); }
+  .gain-input-row button {
+    padding: 9px 16px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #4a9fd4, #2a7abf); color: #fff;
+    font-family: 'Noto Serif SC', serif; font-size: 0.84rem;
+    cursor: pointer; white-space: nowrap;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .gain-input-row button:hover { opacity: 0.88; transform: scale(1.04); }
+  .gain-cats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .gain-cat {
+    padding: 4px 10px; border-radius: 20px;
+    border: 1.5px solid rgba(100,160,220,0.4);
+    background: rgba(255,255,255,0.55);
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.72rem;
+    color: #2a5080; cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .gain-cat:hover { background: rgba(200,230,255,0.7); }
+  .gain-cat.active {
+    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
+    border-color: rgba(74,159,212,0.6); color: #fff;
+  }
+  .gain-filter-row {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px;
+  }
+  .gain-filter-label { font-size: 0.72rem; color: #5a7aa0; font-family: 'Noto Sans SC', sans-serif; }
+  .gain-filter {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid rgba(100,160,220,0.4);
+    background: rgba(255,255,255,0.55);
+    font-size: 0.9rem; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.18s ease;
+  }
+  .gain-filter[data-filter="all"] { width: auto; padding: 0 10px; font-size: 0.72rem; font-family: 'Noto Sans SC', sans-serif; color: #5a7aa0; }
+  .gain-filter:hover { background: rgba(200,230,255,0.7); }
+  .gain-filter.active {
+    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
+    border-color: rgba(74,159,212,0.6); color: #fff;
+  }
+  .gain-section-title {
+    font-size: 0.78rem; color: #2a5080; letter-spacing: 0.08em;
+    margin: 14px 0 8px; font-weight: 600;
+  }
+  .gain-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .gain-item {
+    background: rgba(255,255,255,0.62); border-radius: 12px;
+    padding: 10px 14px; border: 1px solid rgba(100,160,220,0.2);
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .gain-item.shared { background: rgba(230,245,255,0.62); }
+  .gain-text { font-size: 0.84rem; color: #0e2840; line-height: 1.5; }
+  .gain-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: rgba(74,159,212,0.15); border-radius: 10px;
+    padding: 2px 8px; font-size: 0.68rem; color: #2a6090;
+    font-family: 'Noto Sans SC', sans-serif; align-self: flex-start;
+  }
+  .gain-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 2px;
+  }
+  .gain-meta { font-size: 0.64rem; color: #7a9ab0; font-family: 'Noto Sans SC', sans-serif; }
+  .gain-like-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: none; border: 1px solid rgba(100,160,220,0.25);
+    border-radius: 20px; padding: 3px 10px;
+    font-size: 0.7rem; color: #7a9ab0;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer; transition: all 0.18s ease;
+    line-height: 1;
+  }
+  .gain-like-btn:hover { background: rgba(255,100,130,0.08); border-color: rgba(255,100,130,0.4); color: #e05080; }
+  .gain-like-btn.liked { background: rgba(255,100,130,0.12); border-color: rgba(255,100,130,0.5); color: #e05080; }
+  .gain-like-count { font-weight: 600; }
+  .gain-sort-btn {
+    padding: 4px 10px; border-radius: 14px;
+    border: 1.5px solid rgba(100,160,220,0.35);
+    background: rgba(255,255,255,0.5);
+    font-size: 0.68rem; color: #5a7aa0;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer; transition: all 0.18s ease;
+  }
+  .gain-sort-btn:hover { background: rgba(200,230,255,0.7); }
+  .gain-sort-btn.active {
+    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
+    border-color: rgba(74,159,212,0.6); color: #fff;
+  }
+  .gain-loading { font-size: 0.78rem; color: #8aaac0; text-align: center; padding: 10px 0; }
+  .gain-close-btn {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none; font-size: 1.1rem;
+    color: #5a7aa0; cursor: pointer; line-height: 1;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .gain-close-btn:hover { color: #0e2840; transform: scale(1.2); }
+
+
+</style>
+</head>
+<body>
+<div class="page-title">📒 收获本</div>
+<div class="page-wrap">
+  <div style="font-size:0.72rem;color:#5a7aa0;font-family:'Noto Sans SC',sans-serif;margin-bottom:10px;letter-spacing:0.04em;">记录每一次释放后的收获与领悟，与所有人共享</div>
+  <div class="gain-cats" id="gainCatsSb">
+    <button class="gain-cat active" data-cat="健康" onclick="selectCat(this,'sb')">🌿 健康</button>
+    <button class="gain-cat" data-cat="财富" onclick="selectCat(this,'sb')">💰 财富</button>
+    <button class="gain-cat" data-cat="SP" onclick="selectCat(this,'sb')">💞 SP</button>
+    <button class="gain-cat" data-cat="人际关系" onclick="selectCat(this,'sb')">🤝 人际关系</button>
+    <button class="gain-cat" data-cat="学业" onclick="selectCat(this,'sb')">📚 学业</button>
+    <button class="gain-cat" data-cat="工作" onclick="selectCat(this,'sb')">💼 工作</button>
+    <button class="gain-cat" data-cat="其他" onclick="selectCat(this,'sb')">✨ 其他</button>
+  </div>
+  <div class="gain-input-row" style="margin-top:10px;">
+    <input type="text" id="gainInputSb" placeholder="写下你释放后的收获…"
+           onkeydown="if(event.key==='Enter')submitGainSb()" />
+    <button onclick="submitGainSb()">记录</button>
+  </div>
+  <div class="gain-filter-row">
+    <span class="gain-filter-label">筛选：</span>
+    <button class="gain-filter active" data-filter="all" onclick="selectFilterSb(this)">全部</button>
+    <button class="gain-filter" data-filter="健康" onclick="selectFilterSb(this)">🌿</button>
+    <button class="gain-filter" data-filter="财富" onclick="selectFilterSb(this)">💰</button>
+    <button class="gain-filter" data-filter="SP" onclick="selectFilterSb(this)">💞</button>
+    <button class="gain-filter" data-filter="人际关系" onclick="selectFilterSb(this)">🤝</button>
+    <button class="gain-filter" data-filter="学业" onclick="selectFilterSb(this)">📚</button>
+    <button class="gain-filter" data-filter="工作" onclick="selectFilterSb(this)">💼</button>
+    <button class="gain-filter" data-filter="其他" onclick="selectFilterSb(this)">✨</button>
+  </div>
+  <div class="gain-section-title">我的记录</div>
+  <ul class="gain-list" id="myGainListSb"><li class="gain-loading">加载中…</li></ul>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;">
+    <div class="gain-section-title" style="margin:0;">所有人的收获</div>
+    <div style="display:flex;gap:6px;">
+      <button class="gain-sort-btn active" id="sortLikesSb" onclick="setSortSb('likes')">❤️ 最多赞</button>
+      <button class="gain-sort-btn" id="sortTimeSb" onclick="setSortSb('time')">🕐 最新</button>
+    </div>
+  </div>
+  <ul class="gain-list" id="sharedGainListSb"><li class="gain-loading">加载中…</li></ul>
+</div>
+<script>
+//  GAIN BOOK — Supabase backend
+// ═══════════════════════════════════════════════════
+const SUPA_URL  = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
+const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
+const GAIN_MAX  = 500;
+const CAT_ICONS = { '健康':'🌿', '财富':'💰', 'SP':'💞', '人际关系':'🤝', '学业':'📚', '工作':'💼', '其他':'✨' };
+
+let gainSelectedCat    = '健康';
+let gainSelectedFilterSb = 'all';
+let gainSortSb           = 'likes';
+const likedKeys          = new Set();
+
+function getMyItems() {
+  try { return JSON.parse(sessionStorage.getItem('gainMy') || '[]'); } catch(_) { return []; }
+}
+function saveMyItems(items) {
+  try { sessionStorage.setItem('gainMy', JSON.stringify(items)); } catch(_) {}
+}
+
+async function supaFetch(path, opts = {}) {
+  const res = await fetch(SUPA_URL + path, {
+    ...opts,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || '',
+      ...opts.headers,
+    },
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+function selectCat(btn, ctx) {
+  const scopeId = ctx === 'sb' ? 'gainCatsSb' : 'gainCats';
+  const scope = document.getElementById(scopeId);
+  if (scope) scope.querySelectorAll('.gain-cat').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  gainSelectedCat = btn.dataset.cat;
+}
+
+function selectFilterSb(btn) {
+  document.querySelectorAll('#tab-gainbook .gain-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  gainSelectedFilterSb = btn.dataset.filter;
+  loadGainsSb();
+}
+
+function setSortSb(s) {
+  gainSortSb = s;
+  document.getElementById('sortLikesSb').classList.toggle('active', s === 'likes');
+  document.getElementById('sortTimeSb').classList.toggle('active', s === 'time');
+  loadGainsSb();
+}
+
+function formatRelTime(ts) {
+  const diff = Date.now() - ts;
+  if (currentLang === 'en') {
+    if (diff < 60000)    return 'just now';
+    if (diff < 3600000)  return Math.floor(diff/60000) + 'm ago';
+    if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
+    return Math.floor(diff/86400000) + 'd ago';
+  }
+  if (diff < 60000)    return '刚刚';
+  if (diff < 3600000)  return Math.floor(diff/60000) + ' 分钟前';
+  if (diff < 86400000) return Math.floor(diff/3600000) + ' 小时前';
+  return Math.floor(diff/86400000) + ' 天前';
+}
+
+async function loadGainsSb() {
+  const myEl     = document.getElementById('myGainListSb');
+  const sharedEl = document.getElementById('sharedGainListSb');
+  const titleEl  = document.getElementById('sharedGainTitleSb');
+  sharedEl.innerHTML = '<li class="gain-loading">加载中…</li>';
+
+  let myItems = getMyItems();
+  if (gainSelectedFilterSb !== 'all') myItems = myItems.filter(i => i.cat === gainSelectedFilterSb);
+  const myTitleEl = document.getElementById('myGainTitleSb');
+  if (myTitleEl) myTitleEl.textContent = tf('my_gains', myItems.length);
+  renderGainList(myEl, myItems, false);
+
+  try {
+    const order = gainSortSb === 'likes' ? 'likes.desc,ts.desc' : 'ts.desc';
+    let url = `/rest/v1/gain_entries?select=*&order=${order}&limit=${GAIN_MAX}`;
+    if (gainSelectedFilterSb !== 'all') url += `&cat=eq.${encodeURIComponent(gainSelectedFilterSb)}`;
+    const items = await supaFetch(url);
+    if (titleEl) titleEl.textContent = tf('shared_gains', (items||[]).length);
+    renderGainList(sharedEl, items || [], true);
+  } catch(e) {
+    console.error('Supabase error:', e.message);
+    sharedEl.innerHTML = `<li class="gain-empty">加载失败：${escapeHtml(e.message.slice(0,80))}</li>`;
+  }
+}
+
+function renderGainList(el, items, isShared) {
+  if (!items.length) {
+    const emptyText = isShared
+      ? (currentLang==='en' ? 'No one has shared yet — be the first 🌸' : '还没有人分享，成为第一个吧 🌸')
+      : (currentLang==='en' ? 'No gains yet' : '暂无记录');
+    el.innerHTML = `<li class="gain-empty">${emptyText}</li>`;
+    return;
+  }
+  el.innerHTML = items.map(item => {
+    const icon    = CAT_ICONS[item.cat] || '🌸';
+    const CAT_EN = {'健康':'Health','财富':'Wealth','SP':'SP','人际关系':'Relations','学业':'Study','工作':'Work','其他':'Other'};
+    const catDisp = currentLang === 'en' ? (CAT_EN[item.cat] || item.cat) : item.cat;
+    const badge   = item.cat ? `<span class="gain-badge">${icon} ${catDisp}</span>` : '';
+    const likes   = item.likes || 0;
+    const itemId  = isShared ? (item.id + '') : (item.ts + '');
+    const liked   = likedKeys.has(itemId);
+    const likeBtn = isShared
+      ? `<button class="gain-like-btn ${liked ? 'liked' : ''}" onclick="likeGain('${item.id}', this)">
+           ${liked ? '❤️' : '🤍'} <span class="gain-like-count">${likes > 0 ? likes : '赞'}</span>
+         </button>`
+      : `<span class="gain-meta">${likes > 0 ? '❤️ ' + likes : ''}</span>`;
+    return `
+    <li class="gain-item ${isShared ? 'shared' : ''}">
+      <span class="gain-text">${escapeHtml(item.text)}</span>
+      <div class="gain-footer">
+        <div style="display:flex;align-items:center;gap:6px;">
+          ${badge}
+          <span class="gain-meta">${formatRelTime(item.ts)}</span>
+        </div>
+        ${likeBtn}
+      </div>
+    </li>`;
+  }).join('');
+}
+
+async function likeGain(id, btn) {
+  if (likedKeys.has(id + '')) return;
+  likedKeys.add(id + '');
+  btn.classList.add('liked');
+  btn.innerHTML = '❤️ <span class="gain-like-count">…</span>';
+  try {
+    const rows = await supaFetch(`/rest/v1/gain_entries?id=eq.${id}&select=likes`);
+    const current = (rows && rows[0]) ? (rows[0].likes || 0) : 0;
+    const newLikes = current + 1;
+    await supaFetch(`/rest/v1/gain_entries?id=eq.${id}`, {
+      method: 'PATCH',
+      prefer: 'return=minimal',
+      body: JSON.stringify({ likes: newLikes }),
+    });
+    btn.querySelector('.gain-like-count').textContent = newLikes;
+  } catch(e) {
+    btn.querySelector('.gain-like-count').textContent = '赞';
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Core gain submit used by both sidebar form and dropGoal
+async function _submitGainEntry(text, cat) {
+  const entry = { text, cat, ts: Date.now(), likes: 0 };
+  const myItems = getMyItems();
+  myItems.unshift(entry);
+  // no local limit
+  saveMyItems(myItems);
+  try {
+    await supaFetch('/rest/v1/gain_entries', {
+      method: 'POST',
+      prefer: 'return=minimal',
+      body: JSON.stringify(entry),
+    });
+  } catch(_) {}
+}
+
+async function submitGainSb() {
+  const input = document.getElementById('gainInputSb');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  await _submitGainEntry(text, gainSelectedCat);
+  showToast(tf('gain_recorded', gainSelectedCat));
+  loadGainsSb();
+}
+
+// Init goals list (needs CAT_ICONS, so runs last)
+renderGoals();
+
+// ═══════════════════════════════════════════════════
+//  RELEASE ASSISTANT — AI desire analysis
+
+</script>
+<script src="nav-orb.js"></script>
+</body>
+</html>

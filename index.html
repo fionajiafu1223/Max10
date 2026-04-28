@@ -548,8 +548,8 @@ document.getElementById('nb-tools').addEventListener('click', showNavTools);
 
 // placeholder pages
 document.getElementById('nb-ai').addEventListener('click', () => alert('释放助手 — 即将上线'));
-document.getElementById('nb-goals').addEventListener('click', () => alert('目标表 — 即将上线'));
-document.getElementById('nb-gains').addEventListener('click', () => alert('收获本 — 即将上线'));
+document.getElementById('nb-goals').addEventListener('click', () => window.location.href='goals.html');
+document.getElementById('nb-gains').addEventListener('click', () => window.location.href='gains.html');
 
 // tool links
 document.querySelectorAll('#nav-tools .nav-bubble[data-href]').forEach(b => {

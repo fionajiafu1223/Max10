@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>目标表 · Freed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Noto+Sans+SC:wght@300;400&display=swap">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #e8f4fd 0%, #c8e6f5 40%, #a8d4ec 100%);
+  font-family: 'Noto Serif SC', serif;
+  padding: 80px 16px 32px;
+}
+.page-title {
+  text-align: center;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  color: rgba(3,80,140,0.7);
+  margin-bottom: 24px;
+}
+.page-wrap {
+  max-width: 480px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.75);
+  border-radius: 20px;
+  padding: 20px 16px;
+  box-shadow: 0 8px 32px rgba(0,60,120,0.10);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.85);
+}
+  .gain-input-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .gain-input-row input {
+    flex: 1; padding: 9px 14px;
+    border: 1.5px solid rgba(100,160,220,0.4); border-radius: 12px;
+    background: rgba(255,255,255,0.7);
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.88rem; color: #0e2840;
+    outline: none; transition: border-color 0.2s;
+  }
+  .gain-input-row input:focus { border-color: rgba(80,140,220,0.8); }
+  .gain-input-row button {
+    padding: 9px 16px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #4a9fd4, #2a7abf); color: #fff;
+    font-family: 'Noto Serif SC', serif; font-size: 0.84rem;
+    cursor: pointer; white-space: nowrap;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .gain-input-row button:hover { opacity: 0.88; transform: scale(1.04); }
+  .gain-cats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .gain-cat {
+    padding: 4px 10px; border-radius: 20px;
+    border: 1.5px solid rgba(100,160,220,0.4);
+    background: rgba(255,255,255,0.55);
+    font-family: 'Noto Sans SC', sans-serif; font-size: 0.72rem;
+    color: #2a5080; cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .gain-cat:hover { background: rgba(200,230,255,0.7); }
+  .gain-cat.active {
+    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
+    border-color: rgba(74,159,212,0.6); color: #fff;
+  }
+  .gain-filter-row {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px;
+  }
+  .gain-filter-label { font-size: 0.72rem; color: #5a7aa0; font-family: 'Noto Sans SC', sans-serif; }
+  .gain-filter {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid rgba(100,160,220,0.4);
+    background: rgba(255,255,255,0.55);
+    font-size: 0.9rem; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.18s ease;
+  }
+  .gain-filter[data-filter="all"] { width: auto; padding: 0 10px; font-size: 0.72rem; font-family: 'Noto Sans SC', sans-serif; color: #5a7aa0; }
+  .gain-filter:hover { background: rgba(200,230,255,0.7); }
+  .gain-filter.active {
+    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
+    border-color: rgba(74,159,212,0.6); color: #fff;
+  }
+  .gain-section-title {
+    font-size: 0.78rem; color: #2a5080; letter-spacing: 0.08em;
+    margin: 14px 0 8px; font-weight: 600;
+  }
+  .gain-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .gain-item {
+    background: rgba(255,255,255,0.62); border-radius: 12px;
+    padding: 10px 14px; border: 1px solid rgba(100,160,220,0.2);
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .gain-item.shared { background: rgba(230,245,255,0.62); }
+  .gain-text { font-size: 0.84rem; color: #0e2840; line-height: 1.5; }
+  .gain-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: rgba(74,159,212,0.15); border-radius: 10px;
+    padding: 2px 8px; font-size: 0.68rem; color: #2a6090;
+    font-family: 'Noto Sans SC', sans-serif; align-self: flex-start;
+  }
+  .gain-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 2px;
+  }
+  .gain-meta { font-size: 0.64rem; color: #7a9ab0; font-family: 'Noto Sans SC', sans-serif; }
+  .gain-like-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: none; border: 1px solid rgba(100,160,220,0.25);
+    border-radius: 20px; padding: 3px 10px;
+    font-size: 0.7rem; color: #7a9ab0;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer; transition: all 0.18s ease;
+    line-height: 1;
+  }
+  .gain-like-btn:hover { background: rgba(255,100,130,0.08); border-color: rgba(255,100,130,0.4); color: #e05080; }
+  .gain-like-btn.liked { background: rgba(255,100,130,0.12); border-color: rgba(255,100,130,0.5); color: #e05080; }
+  .gain-like-count { font-weight: 600; }
+  .gain-sort-btn {
+    padding: 4px 10px; border-radius: 14px;
+    border: 1.5px solid rgba(100,160,220,0.35);
+    background: rgba(255,255,255,0.5);
+    font-size: 0.68rem; color: #5a7aa0;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer; transition: all 0.18s ease;
+  }
+  .gain-sort-btn:hover { background: rgba(200,230,255,0.7); }
+  .gain-sort-btn.active {
+    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
+    border-color: rgba(74,159,212,0.6); color: #fff;
+  }
+  .gain-loading { font-size: 0.78rem; color: #8aaac0; text-align: center; padding: 10px 0; }
+  .gain-close-btn {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none; font-size: 1.1rem;
+    color: #5a7aa0; cursor: pointer; line-height: 1;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .gain-close-btn:hover { color: #0e2840; transform: scale(1.2); }
+
+
+</style>
+</head>
+<body>
+<div class="page-title">🎯 目标表</div>
+<div class="page-wrap">
+  <div class="gain-cats" id="goalCats" style="margin-bottom:10px;">
+    <button class="gain-cat active" data-cat="健康" onclick="selectGoalCat(this)">🌿 健康</button>
+    <button class="gain-cat" data-cat="财富" onclick="selectGoalCat(this)">💰 财富</button>
+    <button class="gain-cat" data-cat="SP" onclick="selectGoalCat(this)">💞 SP</button>
+    <button class="gain-cat" data-cat="人际关系" onclick="selectGoalCat(this)">🤝 人际</button>
+    <button class="gain-cat" data-cat="学业" onclick="selectGoalCat(this)">📚 学业</button>
+    <button class="gain-cat" data-cat="工作" onclick="selectGoalCat(this)">💼 工作</button>
+    <button class="gain-cat" data-cat="其他" onclick="selectGoalCat(this)">✨ 其他</button>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <input type="text" id="goalInput" placeholder="写下你想要释放的目标…"
+           onkeydown="if(event.key==='Enter')addGoal()"
+           style="flex:1;padding:12px 16px;border:1.5px solid rgba(100,160,220,0.4);border-radius:14px;background:rgba(255,255,255,0.8);font-size:0.95rem;font-family:'Noto Serif SC',serif;color:#0e2840;outline:none;" />
+    <button onclick="addGoal()"
+            style="padding:12px 20px;border:none;border-radius:14px;background:rgba(60,130,220,0.85);color:#fff;font-size:0.9rem;cursor:pointer;white-space:nowrap;">添加</button>
+  </div>
+  <ul class="goals-list" id="goalsList"></ul>
+</div>
+<script>
+//  GOALS — stored in localStorage
+// ═══════════════════════════════════════════════════
+let activeGoalText = null; // currently releasing goal
+
+function getGoals() {
+  try { return JSON.parse(localStorage.getItem('goals') || '[]'); } catch(_) { return []; }
+}
+function saveGoals(goals) {
+  try { localStorage.setItem('goals', JSON.stringify(goals)); } catch(_) {}
+}
+
+let goalSelectedCat = '健康';
+
+function selectGoalCat(btn) {
+  document.querySelectorAll('#goalCats .gain-cat').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  goalSelectedCat = btn.dataset.cat;
+}
+
+function renderGoals() {
+  const goals = getGoals();
+  const list  = document.getElementById('goalsList');
+  if (!goals.length) {
+    list.innerHTML = '<li class="goals-empty">' + t('goal_empty') + '</li>';
+    return;
+  }
+  list.innerHTML = goals.map((g, i) => {
+    const icon  = CAT_ICONS[g.cat] || '✨';
+    const CAT_DISPLAY = {'健康':'Health','财富':'Wealth','SP':'SP','人际关系':'Relations','学业':'Study','工作':'Work','其他':'Other'};
+    const catLabel = currentLang === 'en' ? (CAT_DISPLAY[g.cat] || g.cat) : g.cat;
+    const badge = g.cat ? `<span class="gain-badge" style="margin-bottom:2px;">${icon} ${catLabel}</span>` : '';
+    return `
+    <li class="goal-item" id="goal-item-${i}">
+      ${badge}
+      <span class="goal-item-text">${escapeHtml(g.text)}</span>
+      <div class="goal-item-actions">
+        <button class="goal-btn-release" onclick="releaseGoal(${i})">${typeof t==='function'?'🫧 释放':'🫧 释放'}</button>
+        <button class="goal-btn-drop"    onclick="dropGoal(${i})">${typeof t==='function'?'✨ 掉落':'✨ 掉落'}</button>
+        <button class="goal-btn-del"     onclick="deleteGoal(${i})">✕</button>
+      </div>
+    </li>`;
+  }).join('');
+}
+
+function addGoal() {
+  const input = document.getElementById('goalInput');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const goals = getGoals();
+  goals.unshift({ text, cat: goalSelectedCat, ts: Date.now() });
+  saveGoals(goals);
+  renderGoals();
+}
+
+function deleteGoal(i) {
+  const goals = getGoals();
+  goals.splice(i, 1);
+  saveGoals(goals);
+  renderGoals();
+}
+
+function releaseGoal(i) {
+  const goals = getGoals();
+  const goal  = goals[i];
+  if (!goal) return;
+  activeGoalText = goal.text;
+  document.getElementById('activeGoalText').textContent = goal.text;
+  document.getElementById('activeGoalBanner').classList.add('show');
+  closeNav();
+  showToast(t('toast_goal_set'));
+}
+
+// dropGoal defined below
+
+// Init goals render on load — called after CAT_ICONS defined below
+// (moved to end of script)
+
+// ═══════════════════════════════════════════════════
+
+const SUPA_URL = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
+const CAT_ICONS = { '健康':'🌿', '财富':'💰', 'SP':'💞', '人际关系':'🤝', '学业':'📚', '工作':'💼', '其他':'✨' };
+
+async function supaFetch(path, opts) {
+  opts = opts || {};
+  const res = await fetch(SUPA_URL + path, Object.assign({}, opts, {
+    headers: Object.assign({ 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }, opts.headers || {})
+  }));
+  if (!res.ok) return null;
+  const ct = res.headers.get('content-type') || '';
+  return ct.includes('json') ? res.json() : res.text();
+}
+
+async function _submitGainEntry(text, cat) {
+  var fp = localStorage.getItem('freed-fp');
+  if (!fp) { fp = 'fp-' + Math.random().toString(36).slice(2); localStorage.setItem('freed-fp', fp); }
+  await supaFetch('/rest/v1/gain_entries', { method: 'POST', body: JSON.stringify({ text: text, cat: cat, fp: fp, likes: 0 }) });
+}
+
+function dropGoal(i) {
+  var goals = getGoals();
+  var goal = goals[i];
+  if (!goal) return;
+  _submitGainEntry(goal.text, goal.cat || '其他');
+  goals.splice(i, 1);
+  saveGoals(goals);
+  renderGoals();
+  showToast('✨ 目标已掉落并记录到收获本');
+}
+
+function showToast(msg) {
+  var el = document.getElementById('goalsToast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'goalsToast';
+    el.style.cssText = 'position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(10,40,80,0.85);color:#fff;padding:10px 20px;border-radius:99px;font-size:0.85rem;z-index:9999;transition:opacity 0.4s;pointer-events:none;';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(function() { el.style.opacity = '0'; }, 2500);
+}
+
+renderGoals();
+
+</script>
+<script src="nav-orb.js"></script>
+</body>
+</html>
