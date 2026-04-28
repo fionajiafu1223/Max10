@@ -348,18 +348,36 @@ async function runAssistant() {
   try {
     const SYSTEM_PROMPT = getLangSystemPrompt();
 
-    const res = await fetch('https://api.freedreleasing.com/api', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        max_tokens: 1200,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user',   content: text },
-        ],
-      }),
-    });
+    // Retry up to 3 times for network reliability
+    let res = null;
+    let lastErr = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        res = await fetch('https://api.freedreleasing.com/api', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            max_tokens: 1200,
+            messages: [
+              { role: 'system', content: SYSTEM_PROMPT },
+              { role: 'user',   content: text },
+            ],
+          }),
+        });
+        clearTimeout(timeoutId);
+        if (res.ok) break;
+        lastErr = new Error('HTTP ' + res.status);
+      } catch(err) {
+        lastErr = err;
+      }
+      // Wait before retry (1s, 2s)
+      if (attempt < 2) await new Promise(r => setTimeout(r, (attempt + 1) * 1000));
+    }
+    if (!res || !res.ok) throw lastErr || new Error('网络请求失败，请稍后再试');
 
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
