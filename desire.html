@@ -3569,4 +3569,24 @@ function discardRecording() {
 </script>
 </body>
 </html>
+<script>
+// ═══════════════════════════════════════════════════
+//  AUTO-START FROM ASSISTANT
+// ═══════════════════════════════════════════════════
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    try {
+      var queueData = sessionStorage.getItem('asstReleaseQueue');
+      if (queueData) {
+        sessionStorage.removeItem('asstReleaseQueue');
+        var points = JSON.parse(queueData);
+        if (points && points.length && typeof startReleaseQueue === 'function') {
+          asstPoints = points;
+          startReleaseQueue();
+        }
+      }
+    } catch(e) { console.error('Auto-start error:', e); }
+  }, 800);
+});
+</script>
 <script src="nav-orb.js"></script>
