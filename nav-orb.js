@@ -226,7 +226,7 @@ btn.addEventListener('click', () => {
 });
 
 document.getElementById('orb-tools').addEventListener('click', openTools);
-document.getElementById('orb-ai').addEventListener('click', () => alert('释放助手 — 即将上线'));
+document.getElementById('orb-ai').addEventListener('click', () => { window.location.href='assistant.html'; });
 document.getElementById('orb-goals').addEventListener('click', () => { window.location.href='goals.html'; });
 document.getElementById('orb-gains').addEventListener('click', () => { window.location.href='gains.html'; });
 
