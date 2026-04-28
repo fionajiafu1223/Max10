@@ -1,3 +1,4 @@
+<!-- goals v6 -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -8,30 +9,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Noto+Sans+SC:wght@300;400&display=swap">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  min-height: 100vh;
-  background: linear-gradient(160deg, #e8f4fd 0%, #c8e6f5 40%, #a8d4ec 100%);
-  font-family: 'Noto Serif SC', serif;
-  padding: 80px 16px 32px;
-}
-.page-title {
-  text-align: center;
-  font-size: 1.1rem;
-  letter-spacing: 0.2em;
-  color: rgba(3,80,140,0.7);
-  margin-bottom: 24px;
-}
-.page-wrap {
-  max-width: 480px;
-  margin: 0 auto;
-  background: rgba(255,255,255,0.75);
-  border-radius: 20px;
-  padding: 20px 16px;
-  box-shadow: 0 8px 32px rgba(0,60,120,0.10);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.85);
-}
-  .gain-input-row { display: flex; gap: 8px; margin-bottom: 16px; }
+body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',serif; padding:80px 16px 32px; }
+.page-title { text-align:center; font-size:1.1rem; letter-spacing:0.2em; color:rgba(3,80,140,0.7); margin-bottom:24px; }
+.page-wrap { max-width:480px; margin:0 auto; background:rgba(255,255,255,0.75); border-radius:20px; padding:20px 16px; box-shadow:0 8px 32px rgba(0,60,120,0.10); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.85); }
+.gain-input-row { display: flex; gap: 8px; margin-bottom: 16px; }
   .gain-input-row input {
     flex: 1; padding: 9px 14px;
     border: 1.5px solid rgba(100,160,220,0.4); border-radius: 12px;
@@ -139,10 +120,207 @@ body {
   .gain-close-btn:hover { color: #0e2840; transform: scale(1.2); }
 
 
+  
+.goal-item {
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(180,210,240,0.4);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.goal-item-text {
+  font-size: 0.92rem;
+  color: #0e2840;
+  line-height: 1.6;
+  margin: 0;
+}
+.goal-item-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.goal-btn-release {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(80,140,220,0.75);
+  color: #fff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: 'Noto Serif SC', serif;
+}
+.goal-btn-drop {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(210,160,20,0.85);
+  color: #fff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: 'Noto Serif SC', serif;
+}
+.goal-btn-del {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(220,80,80,0.12);
+  color: rgba(200,60,60,0.7);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
 </style>
 </head>
 <body>
-<div class="page-title">🎯 目标表</div>
+<script>
+(function() {
+var canvas = document.createElement('canvas');
+canvas.id = 'bgCanvas';
+canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;';
+document.body.insertBefore(canvas, document.body.firstChild);
+var ctx = canvas.getContext('2d');
+var W, H, t = 0;
+
+const EMOTION_COLORS = [
+  {r:144, g:96,  b:208}, // 恐惧 紫
+  {r:48,  g:80,  b:176}, // 悲苦 深蓝
+  {r:80,  g:110, b:160}, // 万念俱灰 蓝灰
+  {r:192, g:96,  b:16 }, // 贪求 橙
+  {r:192, g:32,  b:32 }, // 愤怒 红
+  {r:176, g:128, b:0  }, // 自尊自傲 金
+  {r:16,  g:160, b:144}, // 无畏 青绿
+  {r:16,  g:160, b:80 }, // 接纳 绿
+  {r:74,  g:176, b:224}, // 平和 天蓝
+];
+
+
+class Bubble {
+  constructor(fromBottom) {
+    this.reset(fromBottom);
+  }
+
+  reset(startAtBottom) {
+    this.x    = Math.random() * W;
+    this.y    = startAtBottom ? H + 20 + Math.random()*100 : Math.random() * H;
+    this.r    = 2 + Math.random() * 22;
+    this.vy   = -(0.4 + Math.random() * 1.2);
+    this.vx   = 0;
+    this.wobbleAmp   = 0.4 + Math.random() * 1.2;
+    this.wobbleFreq  = 0.8 + Math.random() * 1.5;
+    this.wobblePhase = Math.random() * Math.PI * 2;
+    this.opacity = 0.20 + Math.random() * 0.20;
+    this.life    = 0;
+    this.maxLife = (H + 200) / Math.abs(this.vy) * (0.7 + Math.random()*0.5);
+    this.vy *= (0.8 + this.r / 30);
+    this.color = EMOTION_COLORS[Math.floor(Math.random() * EMOTION_COLORS.length)];
+  }
+
+  update(t) {
+    this.life++;
+    // wobbly horizontal drift — classic bubble sway
+    this.x += Math.sin(t * this.wobbleFreq + this.wobblePhase) * this.wobbleAmp;
+    this.y += this.vy;
+
+    // fade in at bottom, fade out at top
+    const progress = this.life / this.maxLife;
+    if (progress < 0.08) {
+      this.opacity = (progress / 0.08) * (0.25 + Math.random()*0.01);
+    } else if (progress > 0.85) {
+      this.opacity *= 0.97;
+    }
+
+    if (this.y < -this.r * 3 || this.life > this.maxLife) {
+      this.reset(true);
+    }
+  }
+
+  draw() {
+    const x = this.x, y = this.y, r = this.r;
+    const a = this.opacity;
+
+    const {r:cr, g:cg, b:cb} = this.color;
+
+    // outer soft glow — emotion color
+    const glow = ctx.createRadialGradient(x,y,r*0.4,x,y,r*2.2);
+    glow.addColorStop(0, `rgba(${cr},${cg},${cb},${a*0.65})`);
+    glow.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+    ctx.beginPath(); ctx.arc(x,y,r*2.2,0,Math.PI*2);
+    ctx.fillStyle=glow; ctx.fill();
+
+    // glass shell — tinted with emotion color
+    const shell = ctx.createRadialGradient(x-r*0.32,y-r*0.32,r*0.01, x,y,r);
+    shell.addColorStop(0.00, `rgba(255,255,255,${a*0.70})`);
+    shell.addColorStop(0.12, `rgba(255,255,255,${a*0.15})`);
+    shell.addColorStop(0.55, `rgba(${cr},${cg},${cb},${a*0.48})`);
+    shell.addColorStop(0.82, `rgba(${cr},${cg},${cb},${a*0.62})`);
+    shell.addColorStop(1.00, `rgba(${cr},${cg},${cb},${a*0.75})`);
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=shell; ctx.fill();
+
+    // rim ring — emotion color tint
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.strokeStyle = `rgba(${cr},${cg},${cb},${a*0.90})`;
+    ctx.lineWidth = Math.max(0.5, r*0.06);
+    ctx.stroke();
+
+    // primary specular — brighter for dark areas
+    const sp = ctx.createRadialGradient(x-r*0.35,y-r*0.35,0,x-r*0.30,y-r*0.30,r*0.32);
+    sp.addColorStop(0, `rgba(255,255,255,${Math.min(1, a*1.6)})`);
+    sp.addColorStop(1, `rgba(255,255,255,0)`);
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=sp; ctx.fill();
+
+    // tiny secondary shimmer
+    const sp2 = ctx.createRadialGradient(x+r*0.38,y+r*0.30,0,x+r*0.38,y+r*0.30,r*0.14);
+    sp2.addColorStop(0, `rgba(255,255,255,${a*0.38})`);
+    sp2.addColorStop(1, `rgba(255,255,255,0)`);
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=sp2; ctx.fill();
+  }
+}
+
+const BUBBLES = Array.from({length: 55}, (_, i) => new Bubble(i > 20));
+
+// hero bubble — large, center, also rising slowly
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function draw() {
+  requestAnimationFrame(draw);
+  t += 0.01;
+  ctx.clearRect(0, 0, W, H);
+  
+  var bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#cdeeff');
+  bg.addColorStop(0.4, '#a8d8f0');
+  bg.addColorStop(0.7, '#7abde0');
+  bg.addColorStop(1, '#4a8fbf');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+  
+  BUBBLES.forEach(function(b) { b.update(t); b.draw(); });
+}
+
+window.addEventListener('resize', resize);
+resize();
+draw();
+})();
+</script>
+
+
+
+
+
+<div class="page-title">🎯 目 标 表</div>
 <div class="page-wrap">
   <div class="gain-cats" id="goalCats" style="margin-bottom:10px;">
     <button class="gain-cat active" data-cat="健康" onclick="selectGoalCat(this)">🌿 健康</button>
@@ -156,124 +334,28 @@ body {
   <div style="display:flex;gap:8px;margin-bottom:16px;">
     <input type="text" id="goalInput" placeholder="写下你想要释放的目标…"
            onkeydown="if(event.key==='Enter')addGoal()"
-           style="flex:1;padding:12px 16px;border:1.5px solid rgba(100,160,220,0.4);border-radius:14px;background:rgba(255,255,255,0.8);font-size:0.95rem;font-family:'Noto Serif SC',serif;color:#0e2840;outline:none;" />
+           style="flex:1;padding:12px 16px;border:1.5px solid rgba(100,160,220,0.4);border-radius:14px;background:rgba(255,255,255,0.8);font-size:0.95rem;color:#0e2840;outline:none;" />
     <button onclick="addGoal()"
             style="padding:12px 20px;border:none;border-radius:14px;background:rgba(60,130,220,0.85);color:#fff;font-size:0.9rem;cursor:pointer;white-space:nowrap;">添加</button>
   </div>
-  <ul class="goals-list" id="goalsList"></ul>
+  <ul class="goals-list" id="goalsList" style="list-style:none;padding:0;"></ul>
 </div>
+
 <script>
-//  GOALS — stored in localStorage
-// ═══════════════════════════════════════════════════
-let activeGoalText = null; // currently releasing goal
-
-function getGoals() {
-  try { return JSON.parse(localStorage.getItem('goals') || '[]'); } catch(_) { return []; }
-}
-function saveGoals(goals) {
-  try { localStorage.setItem('goals', JSON.stringify(goals)); } catch(_) {}
-}
-
+const CAT_ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际关系':'🤝','学业':'📚','工作':'💼','其他':'✨'};
+const SUPA_URL  = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
+const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
 let goalSelectedCat = '健康';
 
-function selectGoalCat(btn) {
-  document.querySelectorAll('#goalCats .gain-cat').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  goalSelectedCat = btn.dataset.cat;
+function getGoals() {
+  try { return JSON.parse(localStorage.getItem('freed-goals') || '[]'); } catch(e) { return []; }
 }
-
-function renderGoals() {
-  const goals = getGoals();
-  const list  = document.getElementById('goalsList');
-  if (!goals.length) {
-    list.innerHTML = '<li class="goals-empty">' + t('goal_empty') + '</li>';
-    return;
-  }
-  list.innerHTML = goals.map((g, i) => {
-    const icon  = CAT_ICONS[g.cat] || '✨';
-    const CAT_DISPLAY = {'健康':'Health','财富':'Wealth','SP':'SP','人际关系':'Relations','学业':'Study','工作':'Work','其他':'Other'};
-    const catLabel = currentLang === 'en' ? (CAT_DISPLAY[g.cat] || g.cat) : g.cat;
-    const badge = g.cat ? `<span class="gain-badge" style="margin-bottom:2px;">${icon} ${catLabel}</span>` : '';
-    return `
-    <li class="goal-item" id="goal-item-${i}">
-      ${badge}
-      <span class="goal-item-text">${escapeHtml(g.text)}</span>
-      <div class="goal-item-actions">
-        <button class="goal-btn-release" onclick="releaseGoal(${i})">${typeof t==='function'?'🫧 释放':'🫧 释放'}</button>
-        <button class="goal-btn-drop"    onclick="dropGoal(${i})">${typeof t==='function'?'✨ 掉落':'✨ 掉落'}</button>
-        <button class="goal-btn-del"     onclick="deleteGoal(${i})">✕</button>
-      </div>
-    </li>`;
-  }).join('');
+function saveGoals(g) {
+  try { localStorage.setItem('freed-goals', JSON.stringify(g)); } catch(e) {}
 }
-
-function addGoal() {
-  const input = document.getElementById('goalInput');
-  const text  = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  const goals = getGoals();
-  goals.unshift({ text, cat: goalSelectedCat, ts: Date.now() });
-  saveGoals(goals);
-  renderGoals();
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
-function deleteGoal(i) {
-  const goals = getGoals();
-  goals.splice(i, 1);
-  saveGoals(goals);
-  renderGoals();
-}
-
-function releaseGoal(i) {
-  const goals = getGoals();
-  const goal  = goals[i];
-  if (!goal) return;
-  activeGoalText = goal.text;
-  document.getElementById('activeGoalText').textContent = goal.text;
-  document.getElementById('activeGoalBanner').classList.add('show');
-  closeNav();
-  showToast(t('toast_goal_set'));
-}
-
-// dropGoal defined below
-
-// Init goals render on load — called after CAT_ICONS defined below
-// (moved to end of script)
-
-// ═══════════════════════════════════════════════════
-
-const SUPA_URL = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
-const CAT_ICONS = { '健康':'🌿', '财富':'💰', 'SP':'💞', '人际关系':'🤝', '学业':'📚', '工作':'💼', '其他':'✨' };
-
-async function supaFetch(path, opts) {
-  opts = opts || {};
-  const res = await fetch(SUPA_URL + path, Object.assign({}, opts, {
-    headers: Object.assign({ 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }, opts.headers || {})
-  }));
-  if (!res.ok) return null;
-  const ct = res.headers.get('content-type') || '';
-  return ct.includes('json') ? res.json() : res.text();
-}
-
-async function _submitGainEntry(text, cat) {
-  var fp = localStorage.getItem('freed-fp');
-  if (!fp) { fp = 'fp-' + Math.random().toString(36).slice(2); localStorage.setItem('freed-fp', fp); }
-  await supaFetch('/rest/v1/gain_entries', { method: 'POST', body: JSON.stringify({ text: text, cat: cat, fp: fp, likes: 0 }) });
-}
-
-function dropGoal(i) {
-  var goals = getGoals();
-  var goal = goals[i];
-  if (!goal) return;
-  _submitGainEntry(goal.text, goal.cat || '其他');
-  goals.splice(i, 1);
-  saveGoals(goals);
-  renderGoals();
-  showToast('✨ 目标已掉落并记录到收获本');
-}
-
 function showToast(msg) {
   var el = document.getElementById('goalsToast');
   if (!el) {
@@ -287,10 +369,82 @@ function showToast(msg) {
   clearTimeout(el._t);
   el._t = setTimeout(function() { el.style.opacity = '0'; }, 2500);
 }
+function selectGoalCat(btn) {
+  goalSelectedCat = btn.dataset.cat;
+  document.querySelectorAll('#goalCats .gain-cat').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+function renderGoals() {
+  var goals = getGoals();
+  var list = document.getElementById('goalsList');
+  if (!goals.length) {
+    list.innerHTML = '<li style="color:#8aa8c0;font-size:0.88rem;padding:12px 4px;font-family:Noto Sans SC,sans-serif;">还没有目标，添加一个吧 🌱</li>';
+    return;
+  }
+  list.innerHTML = goals.map(function(g, i) {
+    var icon = CAT_ICONS[g.cat] || '✨';
+    return '<li class="goal-item" id="goal-item-' + i + '">' +
+      '<span class="gain-badge">' + icon + ' ' + escapeHtml(g.cat || '') + '</span>' +
+      '<p class="goal-item-text">' + escapeHtml(g.text) + '</p>' +
+      '<div class="goal-item-actions">' +
+      '<button class="goal-btn-release" onclick="releaseGoal(' + i + ')">🫧 释放</button>' +
+      '<button class="goal-btn-drop" onclick="dropGoal(' + i + ')">✨ 掉落</button>' +
+      '<button class="goal-btn-del" onclick="deleteGoal(' + i + ')">✕</button>' +
+      '</div></li>';
+  }).join('');
+}
+function addGoal() {
+  var input = document.getElementById('goalInput');
+  var text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  var goals = getGoals();
+  goals.unshift({ text: text, cat: goalSelectedCat, ts: Date.now() });
+  saveGoals(goals);
+  renderGoals();
+  showToast('🎯 目标已添加');
+}
+function deleteGoal(i) {
+  var goals = getGoals();
+  goals.splice(i, 1);
+  saveGoals(goals);
+  renderGoals();
+}
+function releaseGoal(i) {
+  var goals = getGoals();
+  var goal = goals[i];
+  if (!goal) return;
+  sessionStorage.setItem('releaseGoalText', goal.text);
+  window.location.href = 'desire.html';
+}
+async function supaFetch(path, opts) {
+  opts = opts || {};
+  var res = await fetch(SUPA_URL + path, Object.assign({}, opts, {
+    headers: Object.assign({'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation'}, opts.headers || {})
+  }));
+  if (!res.ok) return null;
+  var ct = res.headers.get('content-type') || '';
+  return ct.includes('json') ? res.json() : res.text();
+}
+async function dropGoal(i) {
+  var goals = getGoals();
+  var goal = goals[i];
+  if (!goal) return;
+  var fp = localStorage.getItem('freed-fp');
+  if (!fp) { fp = 'fp-' + Math.random().toString(36).slice(2); localStorage.setItem('freed-fp', fp); }
+  await supaFetch('/rest/v1/gain_entries', {
+    method: 'POST',
+    body: JSON.stringify({ text: goal.text, cat: goal.cat || '其他', fp: fp, likes: 0 })
+  });
+  goals.splice(i, 1);
+  saveGoals(goals);
+  renderGoals();
+  showToast('✨ 目标已掉落并记录到收获本');
+}
 
 renderGoals();
-
 </script>
+
 <script src="nav-orb.js"></script>
 </body>
 </html>
