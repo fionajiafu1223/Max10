@@ -432,10 +432,19 @@ async function dropGoal(i) {
   if (!goal) return;
   var fp = localStorage.getItem('freed-fp');
   if (!fp) { fp = 'fp-' + Math.random().toString(36).slice(2); localStorage.setItem('freed-fp', fp); }
+  
+  // Also save to local "my records" so it shows in 我的记录
+  var myItems = [];
+  try { myItems = JSON.parse(localStorage.getItem('freed-my-gains') || '[]'); } catch(e) {}
+  myItems.unshift({ text: goal.text, cat: goal.cat || '其他', ts: Date.now(), likes: 0 });
+  try { localStorage.setItem('freed-my-gains', JSON.stringify(myItems)); } catch(e) {}
+  
+  // Submit to shared Supabase
   await supaFetch('/rest/v1/gain_entries', {
     method: 'POST',
     body: JSON.stringify({ text: goal.text, cat: goal.cat || '其他', fp: fp, likes: 0 })
   });
+  
   goals.splice(i, 1);
   saveGoals(goals);
   renderGoals();
