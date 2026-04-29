@@ -618,7 +618,8 @@
       frRecordBgStopFn = function() { bgStops.forEach(function(fn){try{fn();}catch(_){}}); };
     }
     var mimeType = '';
-    ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg'].forEach(function(mt){if(!mimeType&&MediaRecorder.isTypeSupported(mt))mimeType=mt;});
+    // iOS Safari prefers mp4/aac, others can use webm/opus
+    ['audio/mp4','audio/mp4;codecs=mp4a.40.2','audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg'].forEach(function(mt){if(!mimeType&&MediaRecorder.isTypeSupported(mt))mimeType=mt;});
     frMediaRecorder = mimeType ? new MediaRecorder(mixDest.stream,{mimeType:mimeType}) : new MediaRecorder(mixDest.stream);
     frMediaRecorder.ondataavailable = function(e){if(e.data.size>0)frRecordChunks.push(e.data);};
     frMediaRecorder.onstop = frOnRecordStop;
@@ -652,10 +653,18 @@
   }
   window.frPlayRecording = function() {
     if (!frRecordObjectUrl) return;
-    if (!frRecordPreviewEl) frRecordPreviewEl = new Audio();
-    if (!frRecordPreviewEl.paused) { frRecordPreviewEl.pause(); frRecordPreviewEl.currentTime=0; return; }
+    // Recreate audio element each time for cleanest playback (iOS Safari friendly)
+    if (frRecordPreviewEl) {
+      try { frRecordPreviewEl.pause(); } catch(_) {}
+      frRecordPreviewEl.src = '';
+    }
+    frRecordPreviewEl = new Audio();
     frRecordPreviewEl.src = frRecordObjectUrl;
-    frRecordPreviewEl.play().catch(function(){});
+    frRecordPreviewEl.preload = 'auto';
+    frRecordPreviewEl.load();
+    frRecordPreviewEl.play().catch(function(err) {
+      frShowToast('❌ 播放失败：' + (err.message || '该格式不支持'));
+    });
   };
   window.frSaveRecording = function() {
     if (!frRecordObjectUrl) return;
