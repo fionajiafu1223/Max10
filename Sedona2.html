@@ -58,6 +58,14 @@ body::before {
 .hg3 { animation: hg3 4s ease-in-out infinite 1s; }
 .hcore { animation: hcore 4s ease-in-out infinite; }
 
+@keyframes desireRing {
+  0%   { r: 32; opacity: 0.5; }
+  100% { r: 50; opacity: 0; }
+}
+.desire-ring {
+  animation: desireRing 1.8s ease-out infinite;
+}
+
 @keyframes energyBreath1 { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.08); } }
 @keyframes energyBreath2 { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.85; transform: scale(1.12); } }
 @keyframes energyBreath3 { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); } }
@@ -68,84 +76,9 @@ body::before {
 #energyField.dim .energy-mid   { opacity: 0.25 !important; }
 #energyField.dim .energy-core  { opacity: 0.4 !important; }
 
-.scene {
-  position: absolute; inset: 0;
-  z-index: 8;
-  pointer-events: none;
-}
 
-.bubble {
-  position: absolute;
-  border-radius: 50%;
-  cursor: pointer;
-  pointer-events: auto;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Noto Serif SC', serif;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: rgba(255,255,255,0.95);
-  text-align: center;
-  line-height: 1.1;
-  text-shadow: 0 1px 3px rgba(0,40,80,0.35);
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  user-select: none;
-  -webkit-user-select: none;
-}
-.bubble:hover { transform: scale(1.06); }
-.bubble:active { transform: scale(0.96); }
 
-.bubble::before {
-  content: '';
-  position: absolute;
-  top: 12%; left: 18%;
-  width: 30%; height: 22%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center,
-    rgba(255,255,255,0.9) 0%,
-    rgba(255,255,255,0.5) 40%,
-    rgba(255,255,255,0) 70%);
-  filter: blur(2px);
-  pointer-events: none;
-  z-index: 1;
-}
-.bubble::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at 30% 25%, transparent 35%, rgba(0,30,70,0.18) 90%);
-  pointer-events: none;
-}
-
-.bubble.bc {
-  background: radial-gradient(circle at 32% 28%, #ffd9b8 0%, #f5a888 35%, #d97758 70%, #a04830 100%);
-  box-shadow:
-    0 8px 24px rgba(180,90,50,0.32),
-    inset 0 -8px 18px rgba(120,40,10,0.25),
-    inset 0 4px 12px rgba(255,255,255,0.4);
-  border: 1.5px solid rgba(255,180,140,0.7);
-}
-.bubble.ba {
-  background: radial-gradient(circle at 32% 28%, #e8d5ff 0%, #c8a8ed 35%, #9c75d4 70%, #6840a0 100%);
-  box-shadow:
-    0 8px 24px rgba(130,75,180,0.32),
-    inset 0 -8px 18px rgba(70,30,110,0.25),
-    inset 0 4px 12px rgba(255,255,255,0.4);
-  border: 1.5px solid rgba(220,180,255,0.7);
-}
-.bubble.bs {
-  background: radial-gradient(circle at 32% 28%, #b8e8e0 0%, #6ab5b0 35%, #3d8a85 70%, #1e5a58 100%);
-  box-shadow:
-    0 8px 24px rgba(40,110,105,0.32),
-    inset 0 -8px 18px rgba(15,60,55,0.25),
-    inset 0 4px 12px rgba(255,255,255,0.4);
-  border: 1.5px solid rgba(180,230,225,0.7);
-}
-
-.bubble span {
-  position: relative;
-  z-index: 2;
-}
+/* Bubbles now rendered as SVG groups inside silhouette SVG */
 
 .question {
   position: absolute;
@@ -308,10 +241,11 @@ body::before {
       <filter id="f1" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="10"/></filter>
       <filter id="f2" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="20"/></filter>
       <filter id="f3" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="36"/></filter>
+      <filter id="fd" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="16"/></filter>
       <radialGradient id="energyGrad" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#fff5cc" stop-opacity="0.9"/>
-        <stop offset="40%" stop-color="#ffd9a8" stop-opacity="0.5"/>
-        <stop offset="100%" stop-color="#ffaa70" stop-opacity="0"/>
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+        <stop offset="40%" stop-color="#f0f8ff" stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="#e0eeff" stop-opacity="0"/>
       </radialGradient>
     </defs>
     <path class="hg1" d="M330 580 C330 490 320 410 312 372 C303 333 272 323 247 318 C222 313 210 303 210 276 C210 261 210 248 219 239 C241 213 232 143 183 143 C134 143 125 213 147 239 C156 248 156 261 156 276 C156 303 144 313 119 318 C94 323 63 333 54 372 C45 411 36 490 36 580"
@@ -323,6 +257,9 @@ body::before {
     <path class="hcore" d="M330 580 C330 490 320 410 312 372 C303 333 272 323 247 318 C222 313 210 303 210 276 C210 261 210 248 219 239 C241 213 232 143 183 143 C134 143 125 213 147 239 C156 248 156 261 156 276 C156 303 144 313 119 318 C94 323 63 333 54 372 C45 411 36 490 36 580"
       stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     
+    <!-- Bubbles will be inserted here -->
+    <g id="bubblesG"></g>
+
     <!-- Energy field — breathing core that fades as desires release -->
     <g id="energyField">
       <circle class="energy-outer" cx="183" cy="425" r="105" fill="url(#energyGrad)" filter="url(#f3)"/>
@@ -331,7 +268,6 @@ body::before {
     </g>
   </svg>
 
-  <div class="scene" id="scene"></div>
 </div>
 
 
@@ -341,16 +277,28 @@ body::before {
 
 <script>
 const DESIRES = [
-  { key:'control',  label:'想要\n控制', cls:'bc' },
-  { key:'approval', label:'想要\n认同', cls:'ba' },
-  { key:'safety',   label:'想要\n安全', cls:'bs' },
+  {
+    key: 'control', name: '想要控制',
+    glow: '#b84040', stroke: '#ffcca0',
+    s: ['#ffcca0','#c05030','#7a2010']
+  },
+  {
+    key: 'approval', name: '想要认同',
+    glow: '#9050b0', stroke: '#e0b8ff',
+    s: ['#e0b8ff','#9050b0','#5a1880']
+  },
+  {
+    key: 'safety', name: '想要安全',
+    glow: '#2080a0', stroke: '#a0e0ff',
+    s: ['#a0e0ff','#2080a0','#0a4860']
+  },
 ];
 
-const BUBBLES_PER_DESIRE = 3;
+const BUBBLES_PER_DESIRE = 2;
 
 const BODY_REGIONS = {
   head:  { cx: 183, cy: 200, rx: 28,  ry: 30  },
-  torso: { cx: 183, cy: 425, rx: 110, ry: 115 },
+  torso: { cx: 183, cy: 425, rx: 135, ry: 130 },
 };
 
 let svgScreenRect = null;
@@ -402,11 +350,12 @@ function isInsideBody(screenX, screenY) {
 
 function randomPointInBody() {
   const region = BODY_REGIONS.torso;
-  const u = Math.random();
+  // Distributed but keep within bounds
+  const u = 0.2 + Math.random() * 0.5;  // 20-70% of radius
   const v = Math.random() * 2 * Math.PI;
   const r = Math.sqrt(u);
-  const svgX = region.cx + region.rx * r * Math.cos(v) * 0.6;
-  const svgY = region.cy + region.ry * r * Math.sin(v) * 0.6;
+  const svgX = region.cx + region.rx * r * Math.cos(v) * 0.7;
+  const svgY = region.cy + region.ry * r * Math.sin(v) * 0.7;
   return svgToScreen(svgX, svgY);
 }
 
@@ -416,122 +365,203 @@ function bodyConstrainForce(screenX, screenY) {
   const dx = (svg.x - t.cx) / t.rx;
   const dy = (svg.y - t.cy) / t.ry;
   const dist2 = dx*dx + dy*dy;
-  if (dist2 > 0.55) {
+  if (dist2 > 0.85) {
     const len = Math.sqrt(dist2);
-    const target = 0.5;
+    const target = 0.8;
     const screenScale = getSvgScale().scale;
     const pullX = (t.cx + (svg.x - t.cx) * (target / len) - svg.x) * screenScale;
     const pullY = (t.cy + (svg.y - t.cy) * (target / len) - svg.y) * screenScale;
-    return { fx: pullX * 0.025, fy: pullY * 0.025 };
+    return { fx: pullX * 0.04, fy: pullY * 0.04 };
   }
   return { fx: 0, fy: 0 };
 }
 
-const sceneEl = document.getElementById('scene');
 let idleBubbles = [];
 let physicsRaf = null;
 let released = 0;
 
 const DAMPING   = 0.985;
-const REPULSION = 100;
+const REPULSION = 60;
+
+const BUBBLE_R_SVG = 44;  // SVG bubble radius (40 body + 4 buffer)
 
 function physicsTick() {
   for (const b of idleBubbles) {
     if (!b.physicsActive) continue;
-    const r = b.sz / 2;
 
+    // Repel from other bubbles (SVG coords)
     for (const o of idleBubbles) {
       if (o === b || !o.physicsActive) continue;
-      const dx = b.px - o.px;
-      const dy = b.py - o.py;
+      const dx = b.sx - o.sx;
+      const dy = b.sy - o.sy;
       const dist2 = dx*dx + dy*dy;
-      const minDist = r + o.sz/2 + 4;
+      const minDist = BUBBLE_R_SVG * 2 + 2;
       if (dist2 < minDist*minDist && dist2 > 0.01) {
         const dist = Math.sqrt(dist2);
-        const force = REPULSION * (minDist - dist) / (minDist * dist);
-        b.vx += dx * force * 0.001;
-        b.vy += dy * force * 0.001;
+        const force = 1.5 * (minDist - dist) / (minDist * dist);
+        b.vx += dx * force;
+        b.vy += dy * force;
       }
     }
 
-    const bf = bodyConstrainForce(b.px, b.py);
-    b.vx += bf.fx;
-    b.vy += bf.fy;
+    // Body constraint (SVG coords)
+    const t = BODY_REGIONS.torso;
+    const ndx = (b.sx - t.cx) / t.rx;
+    const ndy = (b.sy - t.cy) / t.ry;
+    const ndist2 = ndx*ndx + ndy*ndy;
+    if (ndist2 > 0.7) {
+      const len = Math.sqrt(ndist2);
+      const target = 0.6;
+      b.vx += ((t.cx + (b.sx - t.cx) * (target / len)) - b.sx) * 0.04;
+      b.vy += ((t.cy + (b.sy - t.cy) * (target / len)) - b.sy) * 0.04;
+    }
 
-    b.vx += (Math.random() - 0.5) * 0.015;
-    b.vy += (Math.random() - 0.5) * 0.015;
+    // Random drift
+    b.vx += (Math.random() - 0.5) * 0.05;
+    b.vy += (Math.random() - 0.5) * 0.05;
 
     b.vx *= DAMPING;
     b.vy *= DAMPING;
     const spd2 = b.vx*b.vx + b.vy*b.vy;
-    if (spd2 > 0.16) { const s = 0.4/Math.sqrt(spd2); b.vx *= s; b.vy *= s; }
+    if (spd2 > 0.5) { const s = 0.7/Math.sqrt(spd2); b.vx *= s; b.vy *= s; }
 
-    b.px += b.vx;
-    b.py += b.vy;
+    b.sx += b.vx;
+    b.sy += b.vy;
 
-    if (!isInsideBody(b.px, b.py)) {
-      const screenT = svgToScreen(BODY_REGIONS.torso.cx, BODY_REGIONS.torso.cy);
-      const dx = b.px - screenT.x;
-      const dy = b.py - screenT.y;
-      const len = Math.sqrt(dx*dx + dy*dy);
-      if (len > 0) {
-        const t = BODY_REGIONS.torso;
-        const screenScale = getSvgScale().scale;
-        const maxR = t.rx * screenScale * 0.55;
-        const newLen = Math.min(len, maxR);
-        b.px = screenT.x + dx / len * newLen;
-        b.py = screenT.y + dy / len * newLen;
-      }
-      b.vx *= -0.3;
-      b.vy *= -0.3;
+    // Hard clamp - keep inside torso
+    const cdx = (b.sx - t.cx) / t.rx;
+    const cdy = (b.sy - t.cy) / t.ry;
+    const cdist2 = cdx*cdx + cdy*cdy;
+    if (cdist2 > 1) {
+      const len = Math.sqrt(cdist2);
+      b.sx = t.cx + (b.sx - t.cx) / len * 0.95;
+      b.sy = t.cy + (b.sy - t.cy) / len * 0.95;
+      b.vx *= -0.3; b.vy *= -0.3;
     }
 
-    b.el.style.left = `${(b.px - r) | 0}px`;
-    b.el.style.top  = `${(b.py - r) | 0}px`;
+    // Update SVG transform
+    b.el.setAttribute('transform', 'translate(' + b.sx.toFixed(2) + ',' + b.sy.toFixed(2) + ')');
   }
   physicsRaf = requestAnimationFrame(physicsTick);
 }
 
+const NS = 'http://www.w3.org/2000/svg';
+let gradCounter = 0;
+const bubblesG = () => document.getElementById('bubblesG');
+const dfsEl    = () => document.querySelector('#sv defs');
+
+function mkDesireGrad(s) {
+  const id = 'dg' + (gradCounter++);
+  const rg = document.createElementNS(NS, 'radialGradient');
+  rg.setAttribute('id', id);
+  rg.setAttribute('cx', '35%'); rg.setAttribute('cy', '30%'); rg.setAttribute('r', '65%');
+  [[s[0], 0.55, '0%'], [s[1], 0.28, '60%'], [s[2], 0.62, '100%']].forEach(([c, o, off]) => {
+    const st = document.createElementNS(NS, 'stop');
+    st.setAttribute('offset', off);
+    st.setAttribute('stop-color', c);
+    st.setAttribute('stop-opacity', o);
+    rg.appendChild(st);
+  });
+  dfsEl().appendChild(rg);
+  return id;
+}
+
+function spawnBubbleAt(desire, svgPos) {
+  return _createBubble(desire, svgPos, true);
+}
+
 function spawnBubble(desire) {
-  const baseScale = svgScreenRect ? Math.min(svgScreenRect.width / 360, svgScreenRect.height / 640) : 1;
-  const sz = Math.round(60 * Math.max(0.7, baseScale));
+  // Respawn at random body position - SVG coords
+  const region = BODY_REGIONS.torso;
+  const u = 0.2 + Math.random() * 0.5;
+  const v = Math.random() * 2 * Math.PI;
+  const r = Math.sqrt(u);
+  const svgX = region.cx + region.rx * r * Math.cos(v) * 0.7;
+  const svgY = region.cy + region.ry * r * Math.sin(v) * 0.7;
+  return _createBubble(desire, { x: svgX, y: svgY });
+}
 
-  let pos;
-  for (let attempt = 0; attempt < 30; attempt++) {
-    pos = randomPointInBody();
-    let conflict = false;
-    for (const o of idleBubbles) {
-      const dx = pos.x - o.px;
-      const dy = pos.y - o.py;
-      if (dx*dx + dy*dy < (sz + o.sz)*(sz + o.sz) * 0.3) {
-        conflict = true; break;
-      }
-    }
-    if (!conflict) break;
-  }
+function _createBubble(desire, svgPos, delayPhysics) {
+  const gid = mkDesireGrad(desire.s);
+  const g = document.createElementNS(NS, 'g');
+  g.setAttribute('style', 'cursor:pointer; pointer-events:all; opacity:0; transition:opacity 0.6s ease;');
 
-  const el = document.createElement('div');
-  el.className = `bubble ${desire.cls}`;
-  el.innerHTML = `<span>${desire.label.replace('\n', '<br>')}</span>`;
-  el.style.cssText = `
-    width:${sz}px; height:${sz}px;
-    left:${pos.x - sz/2}px; top:${pos.y - sz/2}px;
-    font-size:${sz > 50 ? 0.72 : 0.62}rem;
-    opacity:0;
-    transition:opacity 0.6s ease;
-  `;
-  sceneEl.appendChild(el);
-  requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+  // Pulsing outer ring
+  const ring = document.createElementNS(NS, 'circle');
+  ring.setAttribute('r', '44'); ring.setAttribute('fill', 'none');
+  ring.setAttribute('stroke', desire.stroke); ring.setAttribute('stroke-width', '1.2');
+  ring.setAttribute('stroke-opacity', '0.5');
+  ring.classList.add('desire-ring');
+  ring.style.animationDelay = (Math.random() * 1.8) + 's';
+
+  // Glow
+  const glC = document.createElementNS(NS, 'circle');
+  glC.setAttribute('r', '46'); glC.setAttribute('fill', desire.glow);
+  glC.setAttribute('filter', 'url(#fd)'); glC.style.opacity = '0.35';
+
+  // Body (with radial gradient)
+  const bod = document.createElementNS(NS, 'circle');
+  bod.setAttribute('r', '40'); bod.setAttribute('fill', 'url(#' + gid + ')');
+
+  // Rim stroke
+  const rim = document.createElementNS(NS, 'circle');
+  rim.setAttribute('r', '40'); rim.setAttribute('fill', 'none');
+  rim.setAttribute('stroke', desire.stroke); rim.setAttribute('stroke-width', '1.4');
+  rim.setAttribute('stroke-opacity', '0.9');
+
+  // Sparkle dots
+  [-10, 10].forEach(dx => {
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('r', '2'); dot.setAttribute('cx', dx); dot.setAttribute('cy', '-8');
+    dot.setAttribute('fill', 'white'); dot.setAttribute('fill-opacity', '0.35');
+    g.appendChild(dot);
+  });
+
+  // White highlight ellipse 1
+  const h1 = document.createElementNS(NS, 'ellipse');
+  h1.setAttribute('rx', '12'); h1.setAttribute('ry', '6');
+  h1.setAttribute('fill', 'white'); h1.setAttribute('fill-opacity', '0.28');
+  h1.setAttribute('transform', 'translate(-10,-13)');
+
+  // Smaller highlight ellipse 2
+  const h2 = document.createElementNS(NS, 'ellipse');
+  h2.setAttribute('rx', '5'); h2.setAttribute('ry', '2.5');
+  h2.setAttribute('fill', 'white'); h2.setAttribute('fill-opacity', '0.18');
+  h2.setAttribute('transform', 'translate(8,-10)');
+
+  // Text label - 想要 + 控制/认同/安全
+  const tx1 = document.createElementNS(NS, 'text');
+  tx1.setAttribute('text-anchor', 'middle'); tx1.setAttribute('y', '-2');
+  tx1.setAttribute('font-size', '10');
+  tx1.setAttribute('font-family', "'Noto Serif SC',serif");
+  tx1.setAttribute('fill', 'white'); tx1.setAttribute('fill-opacity', '0.92');
+  tx1.textContent = '想要';
+
+  const tx2 = document.createElementNS(NS, 'text');
+  tx2.setAttribute('text-anchor', 'middle'); tx2.setAttribute('y', '12');
+  tx2.setAttribute('font-size', '10');
+  tx2.setAttribute('font-family', "'Noto Serif SC',serif");
+  tx2.setAttribute('fill', 'white'); tx2.setAttribute('fill-opacity', '0.92');
+  tx2.textContent = desire.name.replace('想要', '');
+
+  [ring, glC, bod, rim, h1, h2, tx1, tx2].forEach(el => g.appendChild(el));
+  g.setAttribute('transform', 'translate(' + svgPos.x + ',' + svgPos.y + ')');
+  bubblesG().appendChild(g);
+
+  requestAnimationFrame(() => requestAnimationFrame(() => { g.style.opacity = '1'; }));
 
   const entry = {
-    el, desire, sz,
-    px: pos.x, py: pos.y,
+    el: g, desire,
+    sx: svgPos.x, sy: svgPos.y,   // SVG coordinates
     vx: (Math.random() - 0.5) * 0.3,
     vy: (Math.random() - 0.5) * 0.3,
-    physicsActive: true,
+    physicsActive: !delayPhysics,
     clicked: false,
   };
-  el.onclick = () => onBubbleClick(entry);
+  if (delayPhysics) {
+    setTimeout(() => { entry.physicsActive = true; }, 1500);
+  }
+  g.addEventListener('click', () => onBubbleClick(entry));
   idleBubbles.push(entry);
   return entry;
 }
@@ -542,29 +572,30 @@ function onBubbleClick(entry) {
   entry.physicsActive = false;
   idleBubbles = idleBubbles.filter(b => b !== entry);
 
-  const { el, desire, sz } = entry;
-  el.style.transition = 'none';
-  el.style.left = `${entry.px - sz/2}px`;
-  el.style.top  = `${entry.py - sz/2}px`;
+  const { el, desire } = entry;
   el.style.pointerEvents = 'none';
   el.style.cursor = 'default';
 
-  const label = desire.label.replace('\n', '');
-  showToast(`🌸 「${label}」已悄然离去`);
+  showToast('🌸 「' + desire.name + '」已悄然离去');
 
-  const currentTop = entry.py - sz/2;
-  el.style.zIndex = '18';
-
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    el.style.transition = 'top 1.9s cubic-bezier(0.22,0.58,0.38,0.96), opacity 1.9s ease';
-    el.style.top     = `${currentTop - 600}px`;
-    el.style.opacity = '0';
-  }));
+  // Fly upward and fade (SVG transform)
+  const startY = entry.sy;
+  const startTime = performance.now();
+  const duration = 1900;
+  function flyUp(now) {
+    const t = Math.min(1, (now - startTime) / duration);
+    const eased = 1 - Math.pow(1 - t, 2.5);
+    const y = startY - eased * 600;
+    el.setAttribute('transform', 'translate(' + entry.sx.toFixed(2) + ',' + y.toFixed(2) + ')');
+    el.style.opacity = (1 - t).toFixed(3);
+    if (t < 1) requestAnimationFrame(flyUp);
+  }
+  requestAnimationFrame(flyUp);
 
   setTimeout(() => {
     el.remove();
     released++;
-    document.getElementById('counter').textContent = `已释放 ${released} 个欲望`;
+    document.getElementById('counter').textContent = '已释放 ' + released + ' 个欲望';
     updateEnergyField();
     setTimeout(() => {
       spawnBubble(desire);
@@ -596,11 +627,33 @@ function showToast(msg) {
   showToast._t = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
+// 6 positions in 2 rows - well-spaced inside torso
+const FIXED_POSITIONS = [
+  // Upper row (chest)
+  { x: 125, y: 380 },
+  { x: 241, y: 380 },
+  // Middle row
+  { x: 183, y: 430 },
+  { x: 125, y: 480 },
+  // Lower row (belly)
+  { x: 241, y: 480 },
+  { x: 183, y: 530 },
+];
+
 function spawnInitial() {
-  for (const desire of DESIRES) {
-    for (let i = 0; i < BUBBLES_PER_DESIRE; i++) {
-      setTimeout(() => spawnBubble(desire), i * 200 + Math.random() * 200);
-    }
+  // Randomize which desire goes to which position
+  const positions = [...FIXED_POSITIONS];
+  const allDesires = [];
+  for (const d of DESIRES) {
+    for (let i = 0; i < BUBBLES_PER_DESIRE; i++) allDesires.push(d);
+  }
+  // Shuffle desire assignment
+  for (let i = allDesires.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allDesires[i], allDesires[j]] = [allDesires[j], allDesires[i]];
+  }
+  for (let i = 0; i < positions.length; i++) {
+    setTimeout(() => spawnBubbleAt(allDesires[i], positions[i]), i * 80);
   }
 }
 
