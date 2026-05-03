@@ -257,15 +257,15 @@ body::before {
     <path class="hcore" d="M330 580 C330 490 320 410 312 372 C303 333 272 323 247 318 C222 313 210 303 210 276 C210 261 210 248 219 239 C241 213 232 143 183 143 C134 143 125 213 147 239 C156 248 156 261 156 276 C156 303 144 313 119 318 C94 323 63 333 54 372 C45 411 36 490 36 580"
       stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     
-    <!-- Bubbles will be inserted here -->
-    <g id="bubblesG"></g>
-
     <!-- Energy field — breathing core that fades as desires release -->
     <g id="energyField">
       <circle class="energy-outer" cx="183" cy="425" r="105" fill="url(#energyGrad)" filter="url(#f3)"/>
       <circle class="energy-mid" cx="183" cy="425" r="75" fill="url(#energyGrad)" filter="url(#f2)"/>
       <circle class="energy-core" cx="183" cy="425" r="40" fill="url(#energyGrad)" filter="url(#f1)"/>
     </g>
+
+    <!-- Bubbles will be inserted here (on top of energy field) -->
+    <g id="bubblesG"></g>
   </svg>
 
 </div>
