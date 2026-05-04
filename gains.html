@@ -7,6 +7,7 @@
 <title>收获本 · Freed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Noto+Sans+SC:wght@300;400&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',serif; padding:80px 16px 32px; }
@@ -120,7 +121,266 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
   .gain-close-btn:hover { color: #0e2840; transform: scale(1.2); }
 
 
-  
+/* ════════════════════════════════════════
+   Tab 切换栏 — 我的收获 / 所有人的收获
+   ════════════════════════════════════════ */
+.tabs-bar {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(220, 235, 250, 0.55);
+  border-radius: 14px;
+  margin-bottom: 16px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 9px 0;
+  border: none;
+  background: transparent;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.85rem;
+  color: #5a7aa0;
+  cursor: pointer;
+  border-radius: 11px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.05em;
+}
+.tab-btn.active {
+  background: linear-gradient(135deg, #4a9fd4, #2a7abf);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(42,122,191,0.25);
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ════════════════════════════════════════
+   我的释放数据 — 折叠卡片
+   ════════════════════════════════════════ */
+.stats-card {
+  background: rgba(245, 250, 255, 0.7);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(120, 175, 220, 0.18);
+}
+.stats-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.stats-title {
+  font-size: 0.78rem;
+  color: #2a5080;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.stats-toggle {
+  font-size: 0.7rem;
+  color: #5a7aa0;
+  transition: transform 0.25s ease;
+}
+.stats-card.collapsed .stats-toggle { transform: rotate(-90deg); }
+.stats-body {
+  margin-top: 10px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+  max-height: 600px;
+  opacity: 1;
+}
+.stats-card.collapsed .stats-body {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+}
+.stats-line {
+  font-size: 0.78rem;
+  color: #2a5080;
+  font-family: 'Noto Sans SC', sans-serif;
+  line-height: 1.85;
+  letter-spacing: 0.02em;
+}
+.stats-line strong {
+  font-weight: 600;
+  color: #0e3560;
+  font-size: 0.86rem;
+}
+.stats-milestone {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(255,200,80,0.18), rgba(255,170,60,0.12));
+  border-radius: 10px;
+  border: 1px solid rgba(220, 160, 50, 0.20);
+  font-size: 0.78rem;
+  color: #8a5a10;
+  text-align: center;
+  font-family: 'Noto Sans SC', sans-serif;
+}
+.stats-quote {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.45);
+  border-left: 3px solid rgba(74,159,212,0.45);
+  border-radius: 8px;
+  font-size: 0.76rem;
+  color: #4a6580;
+  font-style: italic;
+  line-height: 1.6;
+  font-family: 'Noto Sans SC', sans-serif;
+}
+.stats-empty {
+  font-size: 0.78rem;
+  color: #8aaac0;
+  font-family: 'Noto Sans SC', sans-serif;
+  text-align: center;
+  padding: 6px 0;
+}
+
+/* 登录提示条 */
+.login-hint {
+  margin-top: 10px;
+  padding: 9px 12px;
+  background: rgba(180, 220, 255, 0.30);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.login-hint-text {
+  font-size: 0.72rem;
+  color: #2a5080;
+  font-family: 'Noto Sans SC', sans-serif;
+  flex: 1;
+  line-height: 1.4;
+}
+.login-hint-btn {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4a9fd4, #2a7abf);
+  color: #fff;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.74rem;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+}
+.login-hint-btn:active { transform: scale(0.96); }
+
+/* 登录弹窗（和 index.html 同款玻璃气泡风格） */
+#auth-overlay-gains {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(10, 40, 75, 0.55);
+  backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0;
+  transition: opacity 0.3s ease;
+}
+#auth-overlay-gains.show { display: flex; opacity: 1; }
+.auth-card-g {
+  position: relative; width: 100%; max-width: 340px;
+  padding: 32px 26px 26px; border-radius: 28px;
+  background: radial-gradient(circle at 30% 25%,
+    rgba(255,255,255,0.88) 0%,
+    rgba(230,245,255,0.72) 30%,
+    rgba(180,220,250,0.60) 60%,
+    rgba(140,200,240,0.55) 100%);
+  box-shadow:
+    inset 0 0 30px rgba(180,220,255,0.55),
+    inset 0 0 8px rgba(255,255,255,0.60),
+    0 12px 40px rgba(10,50,100,0.35),
+    0 0 50px rgba(140,200,240,0.30);
+  backdrop-filter: blur(6px);
+  transform: scale(0.92);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+#auth-overlay-gains.show .auth-card-g { transform: scale(1); }
+.auth-card-g .auth-close-g {
+  position: absolute; top: 12px; right: 14px;
+  width: 28px; height: 28px;
+  border: none; background: transparent;
+  font-size: 1.1rem; color: rgba(20, 60, 110, 0.55);
+  cursor: pointer; line-height: 1;
+}
+.auth-card-g .auth-title-g {
+  text-align: center;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.05rem; font-weight: 400;
+  color: #0e3560; letter-spacing: 0.15em;
+  margin-bottom: 4px;
+}
+.auth-card-g .auth-subtitle-g {
+  text-align: center;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.68rem; color: rgba(20, 60, 110, 0.62);
+  margin-bottom: 22px; letter-spacing: 0.04em;
+}
+.auth-card-g .auth-tabs-g {
+  display: flex; gap: 4px; margin-bottom: 18px;
+  padding: 3px; background: rgba(255,255,255,0.40);
+  border-radius: 12px;
+}
+.auth-card-g .auth-tab-g {
+  flex: 1; padding: 8px 0;
+  border: none; background: transparent;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.78rem; color: rgba(20, 60, 110, 0.65);
+  cursor: pointer; border-radius: 9px;
+  transition: all 0.2s ease;
+}
+.auth-card-g .auth-tab-g.active {
+  background: linear-gradient(135deg, #4a9fd4, #2a7abf);
+  color: #fff; box-shadow: 0 2px 8px rgba(42,122,191,0.30);
+}
+.auth-card-g .auth-input-g {
+  width: 100%; padding: 11px 14px; margin-bottom: 12px;
+  border: 1.5px solid rgba(120,170,220,0.40);
+  border-radius: 12px; background: rgba(255,255,255,0.75);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.85rem; color: #0e2840;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.auth-card-g .auth-input-g:focus {
+  border-color: rgba(80,140,210,0.85);
+  background: rgba(255,255,255,0.92);
+}
+.auth-card-g .auth-submit-g {
+  width: 100%; padding: 12px 0; margin-top: 6px;
+  border: none; border-radius: 14px;
+  background: linear-gradient(135deg, #4a9fd4, #2a7abf);
+  color: #fff;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.92rem; letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(42,122,191,0.35);
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+.auth-card-g .auth-submit-g:active { transform: scale(0.97); }
+.auth-card-g .auth-submit-g:disabled { opacity: 0.55; cursor: not-allowed; }
+.auth-card-g .auth-msg-g {
+  margin-top: 12px; padding: 8px 12px;
+  border-radius: 10px;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.75rem; text-align: center;
+  display: none;
+}
+.auth-card-g .auth-msg-g.error {
+  display: block;
+  background: rgba(220, 80, 80, 0.15);
+  color: #a02020;
+  border: 1px solid rgba(220, 80, 80, 0.30);
+}
+.auth-card-g .auth-msg-g.success {
+  display: block;
+  background: rgba(80, 180, 130, 0.18);
+  color: #1a6f48;
+  border: 1px solid rgba(80, 180, 130, 0.35);
+}
+
 </style>
 </head>
 <body>
@@ -258,42 +518,96 @@ draw();
 </script>
 <div class="page-title">📒 收 获 本</div>
 <div class="page-wrap">
-  <div style="font-size:0.72rem;color:#5a7aa0;font-family:'Noto Sans SC',sans-serif;margin-bottom:10px;letter-spacing:0.04em;">记录每一次释放后的收获与领悟，与所有人共享</div>
-  <div class="gain-cats" id="gainCatsSb">
-    <button class="gain-cat active" data-cat="健康" onclick="selectCat(this,'sb')">🌿 健康</button>
-    <button class="gain-cat" data-cat="财富" onclick="selectCat(this,'sb')">💰 财富</button>
-    <button class="gain-cat" data-cat="SP" onclick="selectCat(this,'sb')">💞 SP</button>
-    <button class="gain-cat" data-cat="人际关系" onclick="selectCat(this,'sb')">🤝 人际关系</button>
-    <button class="gain-cat" data-cat="学业" onclick="selectCat(this,'sb')">📚 学业</button>
-    <button class="gain-cat" data-cat="工作" onclick="selectCat(this,'sb')">💼 工作</button>
-    <button class="gain-cat" data-cat="其他" onclick="selectCat(this,'sb')">✨ 其他</button>
+
+  <!-- ════════════════════════════════════════
+       Tab 切换栏
+       ════════════════════════════════════════ -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" id="tab-mine" onclick="switchGainTab('mine')">我的收获</button>
+    <button class="tab-btn" id="tab-shared" onclick="switchGainTab('shared')">所有人的收获</button>
   </div>
-  <div class="gain-input-row" style="margin-top:10px;">
-    <input type="text" id="gainInputSb" placeholder="写下你释放后的收获…"
-           onkeydown="if(event.key==='Enter')submitGainSb()" />
-    <button onclick="submitGainSb()">记录</button>
-  </div>
-  <div class="gain-filter-row">
-    <span class="gain-filter-label">筛选：</span>
-    <button class="gain-filter active" data-filter="all" onclick="selectFilterSb(this)">全部</button>
-    <button class="gain-filter" data-filter="健康" onclick="selectFilterSb(this)">🌿</button>
-    <button class="gain-filter" data-filter="财富" onclick="selectFilterSb(this)">💰</button>
-    <button class="gain-filter" data-filter="SP" onclick="selectFilterSb(this)">💞</button>
-    <button class="gain-filter" data-filter="人际关系" onclick="selectFilterSb(this)">🤝</button>
-    <button class="gain-filter" data-filter="学业" onclick="selectFilterSb(this)">📚</button>
-    <button class="gain-filter" data-filter="工作" onclick="selectFilterSb(this)">💼</button>
-    <button class="gain-filter" data-filter="其他" onclick="selectFilterSb(this)">✨</button>
-  </div>
-  <div class="gain-section-title">我的记录</div>
-  <ul class="gain-list" id="myGainListSb"><li class="gain-loading">加载中…</li></ul>
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;">
-    <div class="gain-section-title" style="margin:0;">所有人的收获</div>
-    <div style="display:flex;gap:6px;">
-      <button class="gain-sort-btn active" id="sortLikesSb" onclick="setSortSb('likes')">❤️ 最多赞</button>
-      <button class="gain-sort-btn" id="sortTimeSb" onclick="setSortSb('time')">🕐 最新</button>
+
+  <!-- ════════════════════════════════════════
+       Tab 1: 我的收获
+       ════════════════════════════════════════ -->
+  <div class="tab-panel active" id="panel-mine">
+
+    <!-- 我的释放数据 卡片（可折叠） -->
+    <div class="stats-card" id="statsCard">
+      <div class="stats-header" onclick="toggleStatsCard()">
+        <span class="stats-title">📊 我的释放数据</span>
+        <span class="stats-toggle">▼</span>
+      </div>
+      <div class="stats-body" id="statsBody">
+        <div class="stats-empty">加载中…</div>
+      </div>
     </div>
+
+    <!-- 写新收获 -->
+    <div style="font-size:0.72rem;color:#5a7aa0;font-family:'Noto Sans SC',sans-serif;margin-bottom:10px;letter-spacing:0.04em;">记录每一次释放后的收获与领悟</div>
+    <div class="gain-cats" id="gainCatsSb">
+      <button class="gain-cat active" data-cat="健康" onclick="selectCat(this,'sb')">🌿 健康</button>
+      <button class="gain-cat" data-cat="财富" onclick="selectCat(this,'sb')">💰 财富</button>
+      <button class="gain-cat" data-cat="SP" onclick="selectCat(this,'sb')">💞 SP</button>
+      <button class="gain-cat" data-cat="人际关系" onclick="selectCat(this,'sb')">🤝 人际关系</button>
+      <button class="gain-cat" data-cat="学业" onclick="selectCat(this,'sb')">📚 学业</button>
+      <button class="gain-cat" data-cat="工作" onclick="selectCat(this,'sb')">💼 工作</button>
+      <button class="gain-cat" data-cat="其他" onclick="selectCat(this,'sb')">✨ 其他</button>
+    </div>
+    <div class="gain-input-row" style="margin-top:10px;">
+      <input type="text" id="gainInputSb" placeholder="写下你释放后的收获…"
+             onkeydown="if(event.key==='Enter')submitGainSb()" />
+      <button onclick="submitGainSb()">记录</button>
+    </div>
+
+    <!-- 我的收获记录 -->
+    <div class="gain-section-title" id="myGainTitleSb">我的收获记录</div>
+    <ul class="gain-list" id="myGainListSb"><li class="gain-loading">加载中…</li></ul>
   </div>
-  <ul class="gain-list" id="sharedGainListSb"><li class="gain-loading">加载中…</li></ul>
+
+  <!-- ════════════════════════════════════════
+       Tab 2: 所有人的收获
+       ════════════════════════════════════════ -->
+  <div class="tab-panel" id="panel-shared">
+    <div class="gain-filter-row">
+      <span class="gain-filter-label">筛选：</span>
+      <button class="gain-filter active" data-filter="all" onclick="selectFilterSb(this)">全部</button>
+      <button class="gain-filter" data-filter="健康" onclick="selectFilterSb(this)">🌿</button>
+      <button class="gain-filter" data-filter="财富" onclick="selectFilterSb(this)">💰</button>
+      <button class="gain-filter" data-filter="SP" onclick="selectFilterSb(this)">💞</button>
+      <button class="gain-filter" data-filter="人际关系" onclick="selectFilterSb(this)">🤝</button>
+      <button class="gain-filter" data-filter="学业" onclick="selectFilterSb(this)">📚</button>
+      <button class="gain-filter" data-filter="工作" onclick="selectFilterSb(this)">💼</button>
+      <button class="gain-filter" data-filter="其他" onclick="selectFilterSb(this)">✨</button>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px;">
+      <div class="gain-section-title" id="sharedGainTitleSb" style="margin:0;">所有人的收获</div>
+      <div style="display:flex;gap:6px;">
+        <button class="gain-sort-btn active" id="sortLikesSb" onclick="setSortSb('likes')">❤️ 最多赞</button>
+        <button class="gain-sort-btn" id="sortTimeSb" onclick="setSortSb('time')">🕐 最新</button>
+      </div>
+    </div>
+    <ul class="gain-list" id="sharedGainListSb"><li class="gain-loading">加载中…</li></ul>
+  </div>
+
+</div>
+
+<!-- 登录/注册弹窗 -->
+<div id="auth-overlay-gains" onclick="if(event.target===this)closeAuthG()">
+  <div class="auth-card-g">
+    <button class="auth-close-g" onclick="closeAuthG()">✕</button>
+    <div class="auth-title-g">Freed</div>
+    <div class="auth-subtitle-g">登录以跨设备同步你的收获</div>
+    <div class="auth-tabs-g">
+      <button class="auth-tab-g active" id="g-tab-login" onclick="switchAuthTabG('login')">登录</button>
+      <button class="auth-tab-g" id="g-tab-signup" onclick="switchAuthTabG('signup')">注册</button>
+    </div>
+    <input type="text" id="g-auth-nickname" class="auth-input-g" placeholder="昵称" maxlength="20" style="display:none;" />
+    <input type="email" id="g-auth-email" class="auth-input-g" placeholder="邮箱" autocomplete="email" />
+    <input type="password" id="g-auth-password" class="auth-input-g" placeholder="密码（至少 6 位）" autocomplete="current-password" />
+    <button class="auth-submit-g" id="g-auth-submit-btn" onclick="doAuthSubmitG()">登 录</button>
+    <div class="auth-msg-g" id="g-auth-msg"></div>
+  </div>
 </div>
 
 <script>
@@ -303,11 +617,32 @@ const SUPA_URL  = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
 const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
 const GAIN_MAX = 500;
 
+// ════════════════════════════════════════
+// Supabase 客户端 + 登录态
+// ════════════════════════════════════════
+const supaAuth = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    storageKey: 'freed-auth',
+  }
+});
+window.freedSupa = supaAuth;
+let currentUser = null;          // 当前登录的 user 对象（null 表示未登录）
+let migrationDone = false;       // 防止重复迁移本地数据
+
+// ════════════════════════════════════════
+// 状态
+// ════════════════════════════════════════
 let gainSelectedCat = '健康';
 let gainSelectedFilterSb = 'all';
 let gainSortSb = 'likes';
+let activeGainTab = 'mine';       // 当前 tab：'mine' 或 'shared'
 const likedKeys = new Set();
 
+// ════════════════════════════════════════
+// 本地存储工具
+// ════════════════════════════════════════
 function getMyItems() {
   try { return JSON.parse(localStorage.getItem('freed-my-gains') || '[]'); } catch(e) { return []; }
 }
@@ -316,8 +651,8 @@ function saveMyItems(items) {
 }
 function tf(key, n) {
   const map = {
-    'my_gains': '我的记录（' + n + '）',
-    'shared_gains': '所有人的收获（' + n + '）',
+    'my_gains': '我的收获记录（' + n + ' 条）',
+    'shared_gains': '所有人的收获（' + n + ' 条）',
     'gain_recorded': '✨ 已记录到 ' + n,
   };
   return map[key] || key;
@@ -337,11 +672,14 @@ function showToast(msg) {
 }
 
 async function supaFetch(path, opts = {}) {
+  // 如果用户登录了，带上 user token；否则用 anon key
+  const session = await supaAuth.auth.getSession();
+  const token = (session && session.data && session.data.session && session.data.session.access_token) || SUPA_KEY;
   const res = await fetch(SUPA_URL + path, {
     ...opts,
     headers: {
       'apikey': SUPA_KEY,
-      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Authorization': 'Bearer ' + token,
       'Content-Type': 'application/json',
       'Prefer': 'return=representation',
       ...(opts.headers || {})
@@ -353,10 +691,55 @@ async function supaFetch(path, opts = {}) {
 }
 
 
+// ════════════════════════════════════════
+// Tab 切换
+// ════════════════════════════════════════
+function switchGainTab(tab) {
+  activeGainTab = tab;
+  document.getElementById('tab-mine').classList.toggle('active', tab === 'mine');
+  document.getElementById('tab-shared').classList.toggle('active', tab === 'shared');
+  document.getElementById('panel-mine').classList.toggle('active', tab === 'mine');
+  document.getElementById('panel-shared').classList.toggle('active', tab === 'shared');
+
+  if (tab === 'shared') {
+    loadSharedGains();
+  } else {
+    loadMyGains();
+    renderStats();
+  }
+}
+
+// ════════════════════════════════════════
+// 释放数据折叠
+// ════════════════════════════════════════
+function toggleStatsCard() {
+  const card = document.getElementById('statsCard');
+  const collapsed = card.classList.toggle('collapsed');
+  // 用户主动收起后，本次会话内保持收起状态
+  try {
+    if (collapsed) sessionStorage.setItem('freed-stats-collapsed', '1');
+    else sessionStorage.removeItem('freed-stats-collapsed');
+  } catch(_) {}
+}
+// 初始化折叠状态：会话内有标记 → 收起；否则展开
+(function initStatsCollapse(){
+  try {
+    if (sessionStorage.getItem('freed-stats-collapsed') === '1') {
+      document.addEventListener('DOMContentLoaded', function(){
+        document.getElementById('statsCard').classList.add('collapsed');
+      });
+    }
+  } catch(_) {}
+})();
+
+
+// ════════════════════════════════════════
+// 渲染收获列表
+// ════════════════════════════════════════
 function renderGainList(el, items, isShared) {
   if (!items.length) {
-    const emptyText = isShared ? '还没有人分享，成为第一个吧 🌸' : '暂无记录';
-    el.innerHTML = '<li class="gain-empty">' + emptyText + '</li>';
+    const emptyText = isShared ? '还没有人分享，成为第一个吧 🌸' : '还没有记录，写下第一条收获吧 🌊';
+    el.innerHTML = '<li class="gain-empty" style="padding:20px 0;text-align:center;color:#8aaac0;font-size:0.78rem;">' + emptyText + '</li>';
     return;
   }
   el.innerHTML = items.map(function(item) {
@@ -378,17 +761,44 @@ function renderGainList(el, items, isShared) {
   }).join('');
 }
 
-async function loadGainsSb() {
-  const myEl     = document.getElementById('myGainListSb');
+// ════════════════════════════════════════
+// 加载「我的收获」（登录用户从云端，未登录从 localStorage）
+// ════════════════════════════════════════
+async function loadMyGains() {
+  const myEl = document.getElementById('myGainListSb');
+  const myTitleEl = document.getElementById('myGainTitleSb');
+  myEl.innerHTML = '<li class="gain-loading">加载中…</li>';
+
+  let myItems = [];
+
+  if (currentUser) {
+    // 登录用户：从云端拉取自己的记录
+    try {
+      const rows = await supaFetch(
+        '/rest/v1/gain_entries?user_id=eq.' + currentUser.id +
+        '&select=*&order=ts.desc&limit=' + GAIN_MAX
+      );
+      myItems = rows || [];
+    } catch(e) {
+      console.error('Load my gains error:', e);
+      myItems = [];
+    }
+  } else {
+    // 未登录用户：从 localStorage 读
+    myItems = getMyItems();
+  }
+
+  if (myTitleEl) myTitleEl.textContent = tf('my_gains', myItems.length);
+  renderGainList(myEl, myItems, false);
+}
+
+// ════════════════════════════════════════
+// 加载「所有人的收获」
+// ════════════════════════════════════════
+async function loadSharedGains() {
   const sharedEl = document.getElementById('sharedGainListSb');
   const titleEl  = document.getElementById('sharedGainTitleSb');
   sharedEl.innerHTML = '<li class="gain-loading">加载中…</li>';
-
-  let myItems = getMyItems();
-  if (gainSelectedFilterSb !== 'all') myItems = myItems.filter(i => i.cat === gainSelectedFilterSb);
-  const myTitleEl = document.getElementById('myGainTitleSb');
-  if (myTitleEl) myTitleEl.textContent = tf('my_gains', myItems.length);
-  renderGainList(myEl, myItems, false);
 
   try {
     const order = gainSortSb === 'likes' ? 'likes.desc,ts.desc' : 'ts.desc';
@@ -398,8 +808,8 @@ async function loadGainsSb() {
     if (titleEl) titleEl.textContent = tf('shared_gains', (items||[]).length);
     renderGainList(sharedEl, items || [], true);
   } catch(e) {
-    console.error('Supabase error:', e.message);
-    sharedEl.innerHTML = `<li class="gain-empty">加载失败：${escapeHtml(e.message.slice(0,80))}</li>`;
+    console.error('Supabase error:', e);
+    sharedEl.innerHTML = `<li class="gain-empty">加载失败</li>`;
   }
 }
 
@@ -412,17 +822,17 @@ function selectCat(btn, ctx) {
 }
 
 function selectFilterSb(btn) {
-  document.querySelectorAll('#tab-gainbook .gain-filter').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#panel-shared .gain-filter').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   gainSelectedFilterSb = btn.dataset.filter;
-  loadGainsSb();
+  loadSharedGains();
 }
 
 function setSortSb(s) {
   gainSortSb = s;
   document.getElementById('sortLikesSb').classList.toggle('active', s === 'likes');
   document.getElementById('sortTimeSb').classList.toggle('active', s === 'time');
-  loadGainsSb();
+  loadSharedGains();
 }
 
 async function submitGainSb() {
@@ -432,19 +842,29 @@ async function submitGainSb() {
   input.value = '';
   await _submitGainEntry(text, gainSelectedCat);
   showToast(tf('gain_recorded', gainSelectedCat));
-  loadGainsSb();
+  // 写完后刷新「我的收获」（如果当前在那个 tab）
+  if (activeGainTab === 'mine') {
+    loadMyGains();
+    renderStats();
+  }
 }
 
 async function _submitGainEntry(text, cat) {
-  const entry = { text, cat, ts: Date.now(), likes: 0 };
+  const ts = Date.now();
+  const entry = { text, cat, ts, likes: 0 };
+  // 登录用户带上 user_id
+  if (currentUser) entry.user_id = currentUser.id;
+
+  // 本地也存一份（兜底，未登录用户用，登录用户作为冗余）
   const myItems = getMyItems();
-  myItems.unshift(entry);
-  // no local limit
+  myItems.unshift({ text, cat, ts, likes: 0 });
   saveMyItems(myItems);
+
+  // 写云端（公开池里所有人都能看到）
   try {
     await supaFetch('/rest/v1/gain_entries', {
       method: 'POST',
-      prefer: 'return=minimal',
+      headers: { 'Prefer': 'return=minimal' },
       body: JSON.stringify(entry),
     });
   } catch(_) {}
@@ -461,7 +881,7 @@ async function likeGain(id, btn) {
     const newLikes = current + 1;
     await supaFetch(`/rest/v1/gain_entries?id=eq.${id}`, {
       method: 'PATCH',
-      prefer: 'return=minimal',
+      headers: { 'Prefer': 'return=minimal' },
       body: JSON.stringify({ likes: newLikes }),
     });
     btn.querySelector('.gain-like-count').textContent = newLikes;
@@ -476,19 +896,296 @@ function escapeHtml(s) {
 
 function formatRelTime(ts) {
   const diff = Date.now() - ts;
-  if (currentLang === 'en') {
-    if (diff < 60000)    return 'just now';
-    if (diff < 3600000)  return Math.floor(diff/60000) + 'm ago';
-    if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
-    return Math.floor(diff/86400000) + 'd ago';
-  }
   if (diff < 60000)    return '刚刚';
   if (diff < 3600000)  return Math.floor(diff/60000) + ' 分钟前';
   if (diff < 86400000) return Math.floor(diff/3600000) + ' 小时前';
   return Math.floor(diff/86400000) + ' 天前';
 }
 
-loadGainsSb();
+// ════════════════════════════════════════
+// 「我的释放数据」计算 + 渲染
+// ════════════════════════════════════════
+async function getStatsSourceItems() {
+  // 登录用户用云端数据，未登录用户用 localStorage
+  if (currentUser) {
+    try {
+      const rows = await supaFetch(
+        '/rest/v1/gain_entries?user_id=eq.' + currentUser.id +
+        '&select=*&order=ts.asc'
+      );
+      return rows || [];
+    } catch(e) { return []; }
+  } else {
+    return getMyItems().slice().sort((a,b) => a.ts - b.ts);
+  }
+}
+
+// 暖心引言池（占位 — 等 Fiona 发书后替换为真正的释放法语录）
+const QUOTES_POOL = [
+  '释放不是放弃，而是停止抓取。',
+  '允许它在，允许它去 — 这就是释放。',
+  '你不是想要本身，你只是被想要占据了片刻。',
+  '一切都已经在了，不需要再追逐。',
+  '放下的不是事情，而是对事情的执着。',
+  '当你不再用力，自然就会发生。',
+  '允许 — 这是最深的力量。',
+  '此刻就足够了。',
+];
+
+function pickQuote(items) {
+  // 简单：根据周内是否有记录，挑不同基调的引言
+  // 未来等 Fiona 发书后这里替换为按主题挑选
+  const idx = Math.floor((Date.now() / (1000*60*60*24*7)) % QUOTES_POOL.length);
+  return QUOTES_POOL[idx];
+}
+
+// 里程碑数字
+const MILESTONES = [1, 10, 30, 50, 100, 200, 365, 500, 1000];
+function getMilestone(total) {
+  // 当前正好在某个里程碑数字上
+  return MILESTONES.includes(total) ? total : null;
+}
+
+function formatDate(ts) {
+  const d = new Date(ts);
+  return (d.getMonth()+1) + ' 月 ' + d.getDate() + ' 日';
+}
+
+function daysSince(ts) {
+  return Math.floor((Date.now() - ts) / 86400000);
+}
+
+async function renderStats() {
+  const body = document.getElementById('statsBody');
+  const items = await getStatsSourceItems();
+  const total = items.length;
+
+  // 没有任何记录时的引导
+  if (total === 0) {
+    let hint = '';
+    if (!currentUser) {
+      hint = '<div class="login-hint">' +
+        '<div class="login-hint-text">登录后可以跨设备同步你的收获 🌊</div>' +
+        '<button class="login-hint-btn" onclick="openAuthG()">登 录</button>' +
+        '</div>';
+    }
+    body.innerHTML = '<div class="stats-empty">写下第一条收获，开启你的释放之旅 🌸</div>' + hint;
+    return;
+  }
+
+  // 计算各项数据
+  const firstTs = items[0].ts;
+  const lastTs = items[items.length - 1].ts;
+  const journeyDays = Math.max(1, daysSince(firstTs) + 1);
+  const lastDays = daysSince(lastTs);
+
+  // 最擅长的类别（≥3 条才显示）
+  let topCat = null;
+  if (total >= 3) {
+    const counts = {};
+    items.forEach(it => {
+      const c = it.cat || '其他';
+      counts[c] = (counts[c] || 0) + 1;
+    });
+    let max = 0, best = null;
+    Object.keys(counts).forEach(k => {
+      if (counts[k] > max) { max = counts[k]; best = k; }
+    });
+    if (best) topCat = best;
+  }
+
+  // 平均每周释放次数（journeyDays >= 7 时才有意义；不足 7 天按当前周比例算）
+  const weeks = Math.max(1, journeyDays / 7);
+  const perWeek = (total / weeks).toFixed(1).replace(/\.0$/, '');
+
+  // 里程碑
+  const milestone = getMilestone(total);
+
+  // 最近一次释放的友好描述
+  let lastDesc;
+  if (lastDays === 0) lastDesc = '今天';
+  else if (lastDays === 1) lastDesc = '昨天';
+  else lastDesc = lastDays + ' 天前';
+
+  // 引言
+  const quote = pickQuote(items);
+
+  // 拼接 HTML
+  let html = '';
+  html += '<div class="stats-line">• 你已经记录了 <strong>' + total + '</strong> 条收获 🌸</div>';
+  html += '<div class="stats-line">• 释放之旅持续 <strong>' + journeyDays + '</strong> 天 🌊</div>';
+  html += '<div class="stats-line">• 第一次释放是 <strong>' + formatDate(firstTs) + '</strong> 🌸</div>';
+  html += '<div class="stats-line">• 上次释放是 <strong>' + lastDesc + '</strong> ✨</div>';
+  if (topCat) {
+    const icon = CAT_ICONS[topCat] || '✨';
+    html += '<div class="stats-line">• <strong>' + topCat + '</strong> 是你最深的成长 ' + icon + '</div>';
+  }
+  html += '<div class="stats-line">• 平均每周释放 <strong>' + perWeek + '</strong> 次 🌊</div>';
+
+  if (milestone) {
+    html += '<div class="stats-milestone">🎉 恭喜你完成了第 ' + milestone + ' 次释放</div>';
+  }
+
+  html += '<div class="stats-quote">「' + escapeHtml(quote) + '」</div>';
+
+  // 未登录提示
+  if (!currentUser) {
+    html += '<div class="login-hint">' +
+      '<div class="login-hint-text">登录后可以跨设备同步你的收获 🌊</div>' +
+      '<button class="login-hint-btn" onclick="openAuthG()">登 录</button>' +
+      '</div>';
+  }
+
+  body.innerHTML = html;
+}
+
+// ════════════════════════════════════════
+// 登录态管理 + 首次登录的"沉默迁移"
+// ════════════════════════════════════════
+async function refreshUser() {
+  const { data } = await supaAuth.auth.getSession();
+  currentUser = (data && data.session && data.session.user) || null;
+}
+
+async function migrateLocalToCloud() {
+  // 只在用户登录后执行一次；把 localStorage 里的本地记录上传到云端
+  if (!currentUser || migrationDone) return;
+  migrationDone = true;
+  try {
+    // 检查云端是不是已经有这个用户的记录了
+    const existing = await supaFetch(
+      '/rest/v1/gain_entries?user_id=eq.' + currentUser.id +
+      '&select=ts&limit=1'
+    );
+    if (existing && existing.length > 0) {
+      // 已经有了 — 说明之前迁移过，不再迁移（避免重复）
+      return;
+    }
+    const local = getMyItems();
+    if (!local.length) return;
+    // 批量上传，每条带上 user_id
+    const payload = local.map(it => ({
+      text: it.text,
+      cat: it.cat,
+      ts: it.ts,
+      likes: it.likes || 0,
+      user_id: currentUser.id
+    }));
+    await supaFetch('/rest/v1/gain_entries', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=minimal' },
+      body: JSON.stringify(payload),
+    });
+  } catch(e) {
+    console.warn('迁移失败（不影响使用）：', e);
+  }
+}
+
+// 监听登录态变化（其他页面登录/登出时自动响应）
+supaAuth.auth.onAuthStateChange(async (event, session) => {
+  await refreshUser();
+  if (currentUser) {
+    await migrateLocalToCloud();
+  }
+  // 当前 tab 重新加载
+  if (activeGainTab === 'mine') {
+    loadMyGains();
+    renderStats();
+  } else {
+    loadSharedGains();
+  }
+});
+
+// ════════════════════════════════════════
+// gains.html 内置登录弹窗（与 index.html 共用同一 Supabase 会话）
+// ════════════════════════════════════════
+let gAuthTab = 'login';
+function $g(id) { return document.getElementById(id); }
+function showAuthMsgG(text, type) {
+  const el = $g('g-auth-msg');
+  el.textContent = text;
+  el.className = 'auth-msg-g ' + (type || '');
+}
+function clearAuthMsgG() {
+  const el = $g('g-auth-msg');
+  el.textContent = '';
+  el.className = 'auth-msg-g';
+}
+window.openAuthG = function() {
+  clearAuthMsgG();
+  $g('auth-overlay-gains').classList.add('show');
+};
+window.closeAuthG = function() {
+  $g('auth-overlay-gains').classList.remove('show');
+};
+window.switchAuthTabG = function(tab) {
+  gAuthTab = tab;
+  clearAuthMsgG();
+  $g('g-tab-login').classList.toggle('active', tab === 'login');
+  $g('g-tab-signup').classList.toggle('active', tab === 'signup');
+  $g('g-auth-nickname').style.display = (tab === 'signup') ? 'block' : 'none';
+  $g('g-auth-submit-btn').textContent = (tab === 'signup') ? '注 册' : '登 录';
+};
+window.doAuthSubmitG = async function() {
+  const email = $g('g-auth-email').value.trim();
+  const password = $g('g-auth-password').value;
+  const nickname = $g('g-auth-nickname').value.trim();
+
+  if (!email || !password) { showAuthMsgG('请填写邮箱和密码', 'error'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAuthMsgG('邮箱格式不正确', 'error'); return; }
+  if (password.length < 6) { showAuthMsgG('密码至少 6 位', 'error'); return; }
+  if (gAuthTab === 'signup' && !nickname) { showAuthMsgG('请填写昵称', 'error'); return; }
+
+  const btn = $g('g-auth-submit-btn');
+  btn.disabled = true;
+  const orig = btn.textContent;
+  btn.textContent = '请稍候…';
+  clearAuthMsgG();
+
+  try {
+    if (gAuthTab === 'signup') {
+      const { data, error } = await supaAuth.auth.signUp({ email, password });
+      if (error) throw error;
+      if (data.user) {
+        try {
+          await supaAuth.from('user_profiles').insert({ id: data.user.id, nickname: nickname });
+        } catch(_) {}
+      }
+      showAuthMsgG('注册成功 🌊', 'success');
+      setTimeout(() => closeAuthG(), 800);
+    } else {
+      const { error } = await supaAuth.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      showAuthMsgG('登录成功 ✨', 'success');
+      setTimeout(() => closeAuthG(), 600);
+    }
+  } catch (err) {
+    let msg = err.message || '操作失败';
+    if (msg.includes('Invalid login credentials')) msg = '邮箱或密码错误';
+    else if (msg.includes('User already registered')) msg = '该邮箱已注册，请直接登录';
+    else if (msg.includes('Password should be')) msg = '密码至少 6 位';
+    else if (msg.includes('Email rate limit')) msg = '请求过于频繁，请稍后再试';
+    showAuthMsgG(msg, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = orig;
+  }
+};
+
+// ════════════════════════════════════════
+// 启动
+// ════════════════════════════════════════
+(async function init() {
+  await refreshUser();
+  if (currentUser) {
+    await migrateLocalToCloud();
+  }
+  // 初始 tab 是「我的收获」
+  loadMyGains();
+  renderStats();
+  // 「所有人的收获」也提前加载一下，提升切换体验
+  loadSharedGains();
+})();
 </script>
 <script src="nav-orb.js"></script>
 </body>
