@@ -672,9 +672,17 @@ function showToast(msg) {
 }
 
 async function supaFetch(path, opts = {}) {
-  // 如果用户登录了，带上 user token；否则用 anon key
-  const session = await supaAuth.auth.getSession();
-  const token = (session && session.data && session.data.session && session.data.session.access_token) || SUPA_KEY;
+  // 默认用 anon key（读取最稳定）
+  // 写入带 user_id 的记录时，传 useAuth: true 用 user token
+  let token = SUPA_KEY;
+  if (opts.useAuth) {
+    try {
+      const sess = await supaAuth.auth.getSession();
+      const t = sess && sess.data && sess.data.session && sess.data.session.access_token;
+      if (t) token = t;
+    } catch(_) {}
+    delete opts.useAuth;
+  }
   const res = await fetch(SUPA_URL + path, {
     ...opts,
     headers: {
@@ -704,8 +712,12 @@ function switchGainTab(tab) {
   if (tab === 'shared') {
     loadSharedGains();
   } else {
-    loadMyGains();
-    renderStats();
+    // 切回我的收获，用缓存数据立即渲染（不会等加载）
+    if (cachedMyItems !== null) {
+      renderStatsFromCache();
+    } else {
+      loadMyData();
+    }
   }
 }
 
@@ -762,17 +774,21 @@ function renderGainList(el, items, isShared) {
 }
 
 // ════════════════════════════════════════
-// 加载「我的收获」（登录用户从云端，未登录从 localStorage）
+// 加载「我的收获」数据 — 同时更新列表和统计
+// 登录用户：从云端拉自己的记录（一次拉取，列表+统计共用）
+// 未登录用户：从 localStorage 读
 // ════════════════════════════════════════
-async function loadMyGains() {
+let cachedMyItems = null;  // 缓存当前用户的"我的收获"数据
+
+async function loadMyData() {
   const myEl = document.getElementById('myGainListSb');
   const myTitleEl = document.getElementById('myGainTitleSb');
-  myEl.innerHTML = '<li class="gain-loading">加载中…</li>';
 
   let myItems = [];
 
   if (currentUser) {
-    // 登录用户：从云端拉取自己的记录
+    // 登录用户：从云端拉
+    myEl.innerHTML = '<li class="gain-loading">加载中…</li>';
     try {
       const rows = await supaFetch(
         '/rest/v1/gain_entries?user_id=eq.' + currentUser.id +
@@ -784,13 +800,22 @@ async function loadMyGains() {
       myItems = [];
     }
   } else {
-    // 未登录用户：从 localStorage 读
+    // 未登录：从 localStorage 读
     myItems = getMyItems();
   }
 
+  cachedMyItems = myItems;
+
+  // 更新列表（按时间倒序，所以直接用）
   if (myTitleEl) myTitleEl.textContent = tf('my_gains', myItems.length);
   renderGainList(myEl, myItems, false);
+
+  // 更新统计
+  renderStatsFromCache();
 }
+
+// 兼容旧调用名
+async function loadMyGains() { return loadMyData(); }
 
 // ════════════════════════════════════════
 // 加载「所有人的收获」
@@ -842,11 +867,13 @@ async function submitGainSb() {
   input.value = '';
   await _submitGainEntry(text, gainSelectedCat);
   showToast(tf('gain_recorded', gainSelectedCat));
-  // 写完后刷新「我的收获」（如果当前在那个 tab）
+  // 写完后清空缓存并刷新「我的收获」
+  cachedMyItems = null;
   if (activeGainTab === 'mine') {
-    loadMyGains();
-    renderStats();
+    loadMyData();
   }
+  // 「所有人的收获」也刷新一下（登录用户写的会出现在公开池）
+  loadSharedGains();
 }
 
 async function _submitGainEntry(text, cat) {
@@ -861,11 +888,13 @@ async function _submitGainEntry(text, cat) {
   saveMyItems(myItems);
 
   // 写云端（公开池里所有人都能看到）
+  // 登录用户必须用 user token（RLS 要求 user_id = auth.uid()）
   try {
     await supaFetch('/rest/v1/gain_entries', {
       method: 'POST',
       headers: { 'Prefer': 'return=minimal' },
       body: JSON.stringify(entry),
+      useAuth: !!currentUser,
     });
   } catch(_) {}
 }
@@ -903,48 +932,10 @@ function formatRelTime(ts) {
 }
 
 // ════════════════════════════════════════
-// 「我的释放数据」计算 + 渲染
+// 「我的释放数据」工具函数
+// 注：温暖语录、里程碑提示已按产品决策移除
+// 里程碑功能未来可能在用户写完第 N 条收获时弹出 toast 庆祝（待开发）
 // ════════════════════════════════════════
-async function getStatsSourceItems() {
-  // 登录用户用云端数据，未登录用户用 localStorage
-  if (currentUser) {
-    try {
-      const rows = await supaFetch(
-        '/rest/v1/gain_entries?user_id=eq.' + currentUser.id +
-        '&select=*&order=ts.asc'
-      );
-      return rows || [];
-    } catch(e) { return []; }
-  } else {
-    return getMyItems().slice().sort((a,b) => a.ts - b.ts);
-  }
-}
-
-// 暖心引言池（占位 — 等 Fiona 发书后替换为真正的释放法语录）
-const QUOTES_POOL = [
-  '释放不是放弃，而是停止抓取。',
-  '允许它在，允许它去 — 这就是释放。',
-  '你不是想要本身，你只是被想要占据了片刻。',
-  '一切都已经在了，不需要再追逐。',
-  '放下的不是事情，而是对事情的执着。',
-  '当你不再用力，自然就会发生。',
-  '允许 — 这是最深的力量。',
-  '此刻就足够了。',
-];
-
-function pickQuote(items) {
-  // 简单：根据周内是否有记录，挑不同基调的引言
-  // 未来等 Fiona 发书后这里替换为按主题挑选
-  const idx = Math.floor((Date.now() / (1000*60*60*24*7)) % QUOTES_POOL.length);
-  return QUOTES_POOL[idx];
-}
-
-// 里程碑数字
-const MILESTONES = [1, 10, 30, 50, 100, 200, 365, 500, 1000];
-function getMilestone(total) {
-  // 当前正好在某个里程碑数字上
-  return MILESTONES.includes(total) ? total : null;
-}
 
 function formatDate(ts) {
   const d = new Date(ts);
@@ -955,21 +946,71 @@ function daysSince(ts) {
   return Math.floor((Date.now() - ts) / 86400000);
 }
 
-async function renderStats() {
+// ════════════════════════════════════════
+// 「我的释放数据」渲染
+// 未登录用户：整个卡片改成引导卡片（不显示任何统计）
+// 登录用户：显示 6 条核心数据（不再显示温暖语录、里程碑）
+// ════════════════════════════════════════
+
+// 控制整个卡片的显示
+function setStatsCardForLoggedOut() {
+  const card = document.getElementById('statsCard');
+  // 未登录：卡片标题改成引导，body 显示登录按钮
+  card.innerHTML =
+    '<div class="stats-header" style="cursor:default;">' +
+      '<span class="stats-title">🌊 登录后查看你的释放足迹</span>' +
+    '</div>' +
+    '<div class="stats-body" style="margin-top:10px;max-height:none;opacity:1;">' +
+      '<div class="login-hint" style="margin-top:0;">' +
+        '<div class="login-hint-text">登录后可以跨设备同步你的收获，并看到自己的释放数据 ✨</div>' +
+        '<button class="login-hint-btn" onclick="openAuthG()">登 录</button>' +
+      '</div>' +
+    '</div>';
+  card.classList.remove('collapsed');
+}
+
+function setStatsCardForLoggedIn() {
+  const card = document.getElementById('statsCard');
+  // 登录：恢复成可折叠的标准结构
+  card.innerHTML =
+    '<div class="stats-header" onclick="toggleStatsCard()">' +
+      '<span class="stats-title">📊 我的释放数据</span>' +
+      '<span class="stats-toggle">▼</span>' +
+    '</div>' +
+    '<div class="stats-body" id="statsBody">' +
+      '<div class="stats-empty">加载中…</div>' +
+    '</div>';
+  // 应用会话内的折叠记忆
+  try {
+    if (sessionStorage.getItem('freed-stats-collapsed') === '1') {
+      card.classList.add('collapsed');
+    }
+  } catch(_) {}
+}
+
+function renderStatsFromCache() {
+  // 未登录：直接展示引导卡片，不计算任何数据
+  if (!currentUser) {
+    setStatsCardForLoggedOut();
+    return;
+  }
+
+  // 登录：把卡片切换成标准结构（如果之前是引导态）
+  const card = document.getElementById('statsCard');
+  const isLoggedOutLayout = !card.querySelector('#statsBody');
+  if (isLoggedOutLayout) {
+    setStatsCardForLoggedIn();
+  }
+
   const body = document.getElementById('statsBody');
-  const items = await getStatsSourceItems();
+  if (!body) return;
+
+  const items = (cachedMyItems || []).slice().sort((a,b) => a.ts - b.ts);
   const total = items.length;
 
-  // 没有任何记录时的引导
+  // 登录但还没记录任何收获
   if (total === 0) {
-    let hint = '';
-    if (!currentUser) {
-      hint = '<div class="login-hint">' +
-        '<div class="login-hint-text">登录后可以跨设备同步你的收获 🌊</div>' +
-        '<button class="login-hint-btn" onclick="openAuthG()">登 录</button>' +
-        '</div>';
-    }
-    body.innerHTML = '<div class="stats-empty">写下第一条收获，开启你的释放之旅 🌸</div>' + hint;
+    body.innerHTML = '<div class="stats-empty">写下第一条收获，开启你的释放之旅 🌸</div>';
     return;
   }
 
@@ -994,12 +1035,9 @@ async function renderStats() {
     if (best) topCat = best;
   }
 
-  // 平均每周释放次数（journeyDays >= 7 时才有意义；不足 7 天按当前周比例算）
+  // 平均每周释放次数
   const weeks = Math.max(1, journeyDays / 7);
   const perWeek = (total / weeks).toFixed(1).replace(/\.0$/, '');
-
-  // 里程碑
-  const milestone = getMilestone(total);
 
   // 最近一次释放的友好描述
   let lastDesc;
@@ -1007,10 +1045,7 @@ async function renderStats() {
   else if (lastDays === 1) lastDesc = '昨天';
   else lastDesc = lastDays + ' 天前';
 
-  // 引言
-  const quote = pickQuote(items);
-
-  // 拼接 HTML
+  // 拼接 HTML — 6 条核心数据（不含温暖语录、不含里程碑）
   let html = '';
   html += '<div class="stats-line">• 你已经记录了 <strong>' + total + '</strong> 条收获 🌸</div>';
   html += '<div class="stats-line">• 释放之旅持续 <strong>' + journeyDays + '</strong> 天 🌊</div>';
@@ -1022,22 +1057,11 @@ async function renderStats() {
   }
   html += '<div class="stats-line">• 平均每周释放 <strong>' + perWeek + '</strong> 次 🌊</div>';
 
-  if (milestone) {
-    html += '<div class="stats-milestone">🎉 恭喜你完成了第 ' + milestone + ' 次释放</div>';
-  }
-
-  html += '<div class="stats-quote">「' + escapeHtml(quote) + '」</div>';
-
-  // 未登录提示
-  if (!currentUser) {
-    html += '<div class="login-hint">' +
-      '<div class="login-hint-text">登录后可以跨设备同步你的收获 🌊</div>' +
-      '<button class="login-hint-btn" onclick="openAuthG()">登 录</button>' +
-      '</div>';
-  }
-
   body.innerHTML = html;
 }
+
+// 兼容旧调用名（不发新请求，用缓存）
+async function renderStats() { renderStatsFromCache(); }
 
 // ════════════════════════════════════════
 // 登录态管理 + 首次登录的"沉默迁移"
@@ -1075,6 +1099,7 @@ async function migrateLocalToCloud() {
       method: 'POST',
       headers: { 'Prefer': 'return=minimal' },
       body: JSON.stringify(payload),
+      useAuth: true,
     });
   } catch(e) {
     console.warn('迁移失败（不影响使用）：', e);
@@ -1087,12 +1112,15 @@ supaAuth.auth.onAuthStateChange(async (event, session) => {
   if (currentUser) {
     await migrateLocalToCloud();
   }
+  // 重置缓存
+  cachedMyItems = null;
   // 当前 tab 重新加载
   if (activeGainTab === 'mine') {
-    loadMyGains();
-    renderStats();
+    loadMyData();
   } else {
     loadSharedGains();
+    // shared tab 时也悄悄刷新 mine 数据，下次切换就能用
+    loadMyData();
   }
 });
 
@@ -1180,11 +1208,10 @@ window.doAuthSubmitG = async function() {
   if (currentUser) {
     await migrateLocalToCloud();
   }
-  // 初始 tab 是「我的收获」
-  loadMyGains();
-  renderStats();
-  // 「所有人的收获」也提前加载一下，提升切换体验
-  loadSharedGains();
+  // 初始 tab 是「我的收获」— 加载我的数据（含统计）
+  loadMyData();
+  // 「所有人的收获」延迟一点再加载，避免和上面的请求互相挤占
+  setTimeout(() => loadSharedGains(), 200);
 })();
 </script>
 <script src="nav-orb.js"></script>
