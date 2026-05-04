@@ -132,8 +132,252 @@ canvas { position:fixed; inset:0; display:block; }
   0%,100% { margin-top: 0px; }
   50%      { margin-top: -8px; }
 }
+
+/* ════════════════════════════════════════
+   登录系统样式 — 玻璃气泡风格，与海洋主题一致
+   ════════════════════════════════════════ */
+
+/* 右上角登录气泡按钮 */
+#auth-btn {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 100;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.62rem;
+  font-weight: 400;
+  color: rgba(235, 250, 255, 0.95);
+  text-shadow: 0 1px 4px rgba(0, 60, 120, 0.5);
+  letter-spacing: 0.05em;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: radial-gradient(circle at 32% 28%,
+    rgba(255,255,255,0.55) 0%,
+    rgba(220,235,250,0.30) 25%,
+    rgba(120,180,230,0.20) 55%,
+    rgba(80,140,200,0.18) 100%);
+  box-shadow:
+    inset 0 0 18px rgba(180,220,255,0.45),
+    inset 0 0 6px rgba(255,255,255,0.30),
+    0 4px 16px rgba(20,80,140,0.30),
+    0 0 20px rgba(140,200,240,0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#auth-btn:active { transform: scale(0.92); }
+#auth-btn.logged-in {
+  font-size: 0.55rem;
+  letter-spacing: 0.03em;
+  padding: 0 4px;
+  word-break: break-all;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 登出小菜单 */
+#auth-menu {
+  position: fixed;
+  top: 82px;
+  right: 18px;
+  z-index: 101;
+  background: rgba(255,255,255,0.92);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 8px 28px rgba(0,60,120,0.25);
+  backdrop-filter: blur(10px);
+  display: none;
+  min-width: 110px;
+}
+#auth-menu.show { display: block; }
+#auth-menu button {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.78rem;
+  color: #2a5080;
+  cursor: pointer;
+  border-radius: 8px;
+  text-align: left;
+}
+#auth-menu button:active { background: rgba(74,159,212,0.15); }
+
+/* 登录/注册弹窗遮罩 */
+#auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(10, 40, 75, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+#auth-overlay.show {
+  display: flex;
+  opacity: 1;
+}
+
+/* 登录/注册玻璃气泡卡片 */
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  padding: 32px 26px 26px;
+  border-radius: 28px;
+  background: radial-gradient(circle at 30% 25%,
+    rgba(255,255,255,0.88) 0%,
+    rgba(230,245,255,0.72) 30%,
+    rgba(180,220,250,0.60) 60%,
+    rgba(140,200,240,0.55) 100%);
+  box-shadow:
+    inset 0 0 30px rgba(180,220,255,0.55),
+    inset 0 0 8px rgba(255,255,255,0.60),
+    0 12px 40px rgba(10,50,100,0.35),
+    0 0 50px rgba(140,200,240,0.30);
+  backdrop-filter: blur(6px);
+  transform: scale(0.92);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+#auth-overlay.show .auth-card { transform: scale(1); }
+
+.auth-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  width: 28px; height: 28px;
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  color: rgba(20, 60, 110, 0.55);
+  cursor: pointer;
+  line-height: 1;
+}
+.auth-close:active { color: rgba(20, 60, 110, 0.9); }
+
+.auth-title {
+  text-align: center;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: #0e3560;
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+}
+.auth-subtitle {
+  text-align: center;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.68rem;
+  color: rgba(20, 60, 110, 0.62);
+  margin-bottom: 22px;
+  letter-spacing: 0.04em;
+}
+
+/* tab 切换 */
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 18px;
+  padding: 3px;
+  background: rgba(255,255,255,0.40);
+  border-radius: 12px;
+}
+.auth-tab {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.78rem;
+  color: rgba(20, 60, 110, 0.65);
+  cursor: pointer;
+  border-radius: 9px;
+  transition: all 0.2s ease;
+}
+.auth-tab.active {
+  background: linear-gradient(135deg, #4a9fd4, #2a7abf);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(42,122,191,0.30);
+}
+
+/* 输入框 */
+.auth-input {
+  width: 100%;
+  padding: 11px 14px;
+  margin-bottom: 12px;
+  border: 1.5px solid rgba(120,170,220,0.40);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.75);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.85rem;
+  color: #0e2840;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.auth-input:focus {
+  border-color: rgba(80,140,210,0.85);
+  background: rgba(255,255,255,0.92);
+}
+.auth-input::placeholder { color: rgba(20, 60, 110, 0.40); }
+
+/* 提交按钮 */
+.auth-submit {
+  width: 100%;
+  padding: 12px 0;
+  margin-top: 6px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4a9fd4, #2a7abf);
+  color: #fff;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.92rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(42,122,191,0.35);
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+.auth-submit:active { transform: scale(0.97); }
+.auth-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* 提示信息 */
+.auth-msg {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.75rem;
+  text-align: center;
+  display: none;
+}
+.auth-msg.error {
+  display: block;
+  background: rgba(220, 80, 80, 0.15);
+  color: #a02020;
+  border: 1px solid rgba(220, 80, 80, 0.30);
+}
+.auth-msg.success {
+  display: block;
+  background: rgba(80, 180, 130, 0.18);
+  color: #1a6f48;
+  border: 1px solid rgba(80, 180, 130, 0.35);
+}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Josefin+Sans:ital,wght@0,700;0,900;1,700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+<!-- Supabase JS SDK（用于登录/注册/会话管理） -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -565,5 +809,240 @@ document.getElementById('nav-layer').addEventListener('click', function(e) {
 const _origDraw = draw;
 
 </script>
+
+<!-- ════════════════════════════════════════
+     登录系统 — HTML 元素
+     ════════════════════════════════════════ -->
+
+<!-- 右上角登录气泡按钮 -->
+<button id="auth-btn" onclick="onAuthBtnClick()">登录</button>
+
+<!-- 登出菜单 -->
+<div id="auth-menu">
+  <button onclick="doLogout()">登出</button>
+</div>
+
+<!-- 登录/注册弹窗 -->
+<div id="auth-overlay" onclick="if(event.target===this)closeAuth()">
+  <div class="auth-card">
+    <button class="auth-close" onclick="closeAuth()">✕</button>
+    <div class="auth-title">Freed</div>
+    <div class="auth-subtitle">登录以跨设备同步你的目标与收获</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">登录</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">注册</button>
+    </div>
+
+    <!-- 注册时才显示昵称输入 -->
+    <input type="text" id="auth-nickname" class="auth-input" placeholder="昵称" maxlength="20" style="display:none;" />
+    <input type="email" id="auth-email" class="auth-input" placeholder="邮箱" autocomplete="email" />
+    <input type="password" id="auth-password" class="auth-input" placeholder="密码（至少 6 位）" autocomplete="current-password" />
+
+    <button class="auth-submit" id="auth-submit-btn" onclick="doAuthSubmit()">登 录</button>
+
+    <div class="auth-msg" id="auth-msg"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     登录系统 — JavaScript 逻辑
+     ════════════════════════════════════════ -->
+<script>
+(function(){
+  // —— Supabase 配置 ——
+  const SUPABASE_URL = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
+
+  // 创建 Supabase 客户端，挂在全局便于其他页面（goals.html/gains.html）共用
+  const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: {
+      persistSession: true,        // 把会话存在 localStorage（跨页面、跨刷新保留）
+      autoRefreshToken: true,      // 自动刷新 token（避免过期）
+      storageKey: 'freed-auth',    // localStorage 的 key 名
+    }
+  });
+  window.freedSupa = supa;          // 暴露给其他页面用
+
+  // —— 当前 tab 状态：'login' 或 'signup' ——
+  let currentTab = 'login';
+
+  // —— UI 工具函数 ——
+  function $(id) { return document.getElementById(id); }
+  function showMsg(text, type) {
+    const el = $('auth-msg');
+    el.textContent = text;
+    el.className = 'auth-msg ' + (type || '');
+  }
+  function clearMsg() {
+    const el = $('auth-msg');
+    el.textContent = '';
+    el.className = 'auth-msg';
+  }
+  function setBtnLoading(loading) {
+    const btn = $('auth-submit-btn');
+    btn.disabled = loading;
+    if (loading) {
+      btn.dataset.original = btn.textContent;
+      btn.textContent = '请稍候…';
+    } else if (btn.dataset.original) {
+      btn.textContent = btn.dataset.original;
+    }
+  }
+
+  // —— 弹窗开关 ——
+  window.openAuth = function() {
+    clearMsg();
+    $('auth-overlay').classList.add('show');
+  };
+  window.closeAuth = function() {
+    $('auth-overlay').classList.remove('show');
+  };
+
+  // —— Tab 切换 ——
+  window.switchAuthTab = function(tab) {
+    currentTab = tab;
+    clearMsg();
+    $('tab-login').classList.toggle('active', tab === 'login');
+    $('tab-signup').classList.toggle('active', tab === 'signup');
+    $('auth-nickname').style.display = (tab === 'signup') ? 'block' : 'none';
+    $('auth-submit-btn').textContent = (tab === 'signup') ? '注 册' : '登 录';
+    $('auth-password').setAttribute('autocomplete',
+      tab === 'signup' ? 'new-password' : 'current-password');
+  };
+
+  // —— 提交（注册或登录） ——
+  window.doAuthSubmit = async function() {
+    const email = $('auth-email').value.trim();
+    const password = $('auth-password').value;
+    const nickname = $('auth-nickname').value.trim();
+
+    // 简单校验
+    if (!email || !password) {
+      showMsg('请填写邮箱和密码', 'error'); return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showMsg('邮箱格式不正确', 'error'); return;
+    }
+    if (password.length < 6) {
+      showMsg('密码至少 6 位', 'error'); return;
+    }
+    if (currentTab === 'signup' && !nickname) {
+      showMsg('请填写昵称', 'error'); return;
+    }
+
+    setBtnLoading(true);
+    clearMsg();
+
+    try {
+      if (currentTab === 'signup') {
+        // 注册
+        const { data, error } = await supa.auth.signUp({ email, password });
+        if (error) throw error;
+
+        // 注册成功后写入昵称到 user_profiles 表
+        if (data.user) {
+          const { error: profileErr } = await supa
+            .from('user_profiles')
+            .insert({ id: data.user.id, nickname: nickname });
+          if (profileErr) {
+            console.warn('昵称保存失败：', profileErr.message);
+            // 不阻塞流程，用户已注册成功
+          }
+        }
+
+        showMsg('注册成功 🌊', 'success');
+        setTimeout(() => { closeAuth(); refreshAuthUI(); }, 800);
+
+      } else {
+        // 登录
+        const { error } = await supa.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        showMsg('登录成功 ✨', 'success');
+        setTimeout(() => { closeAuth(); refreshAuthUI(); }, 600);
+      }
+    } catch (err) {
+      // 友好错误信息
+      let msg = err.message || '操作失败';
+      if (msg.includes('Invalid login credentials')) msg = '邮箱或密码错误';
+      else if (msg.includes('User already registered')) msg = '该邮箱已注册，请直接登录';
+      else if (msg.includes('Password should be')) msg = '密码至少 6 位';
+      else if (msg.includes('Email rate limit')) msg = '请求过于频繁，请稍后再试';
+      showMsg(msg, 'error');
+    } finally {
+      setBtnLoading(false);
+    }
+  };
+
+  // —— 登出 ——
+  window.doLogout = async function() {
+    $('auth-menu').classList.remove('show');
+    await supa.auth.signOut();
+    refreshAuthUI();
+  };
+
+  // —— 右上角按钮点击 ——
+  window.onAuthBtnClick = async function() {
+    const { data: { session } } = await supa.auth.getSession();
+    if (session) {
+      // 已登录：切换显示登出菜单
+      $('auth-menu').classList.toggle('show');
+    } else {
+      // 未登录：打开登录弹窗
+      switchAuthTab('login');
+      openAuth();
+    }
+  };
+
+  // —— 点击别处关闭登出菜单 ——
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#auth-btn') && !e.target.closest('#auth-menu')) {
+      $('auth-menu').classList.remove('show');
+    }
+  });
+
+  // —— 刷新右上角按钮显示 ——
+  async function refreshAuthUI() {
+    const btn = $('auth-btn');
+    const { data: { session } } = await supa.auth.getSession();
+    if (session && session.user) {
+      // 已登录：显示昵称（从 user_profiles 取，取不到就显示邮箱前半段）
+      let displayName = '';
+      try {
+        const { data } = await supa
+          .from('user_profiles')
+          .select('nickname')
+          .eq('id', session.user.id)
+          .single();
+        displayName = (data && data.nickname) || '';
+      } catch(_) {}
+      if (!displayName) {
+        const email = session.user.email || '';
+        displayName = email.split('@')[0] || '已登录';
+      }
+      // 控制长度
+      if (displayName.length > 5) displayName = displayName.slice(0, 5);
+      btn.textContent = displayName;
+      btn.classList.add('logged-in');
+    } else {
+      // 未登录
+      btn.textContent = '登录';
+      btn.classList.remove('logged-in');
+      $('auth-menu').classList.remove('show');
+    }
+  }
+  window.refreshAuthUI = refreshAuthUI;
+
+  // —— 监听登录态变化（其他 tab 登录/登出时自动同步） ——
+  supa.auth.onAuthStateChange((event, session) => {
+    refreshAuthUI();
+  });
+
+  // —— 页面加载时初始化 UI ——
+  refreshAuthUI();
+})();
+</script>
+
 </body>
 </html>
