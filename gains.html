@@ -1,4 +1,4 @@
-<!-- gains v9 - diagnostic -->
+<!-- gains v10 - direct localStorage read -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -518,29 +518,6 @@ draw();
 </script>
 <div class="page-title">📒 收 获 本</div>
 <div class="page-wrap">
-
-  <!-- 临时诊断按钮（诊断完会去掉） -->
-  <button onclick="window.__diag()" style="display:block;width:100%;padding:8px;margin-bottom:12px;background:#ffe066;color:#7a5500;border:2px dashed #d4a017;border-radius:10px;font-family:'Noto Sans SC',sans-serif;font-size:0.78rem;cursor:pointer;">🔍 点这里查看登录态诊断</button>
-  <script>
-    window.__diag = function() {
-      var keys = Object.keys(localStorage);
-      var msg = '【localStorage 所有 key】\n\n';
-      msg += keys.map(function(k){
-        var v = localStorage.getItem(k) || '';
-        var preview = v.length > 80 ? v.slice(0, 80) + '...' : v;
-        return k + '\n  → ' + preview;
-      }).join('\n\n');
-      msg += '\n\n【currentUser】\n' + (window.currentUser ? JSON.stringify({id: window.currentUser.id, email: window.currentUser.email}) : 'null（未登录）');
-      msg += '\n\n【cachedMyItems】\n' + (window.cachedMyItems === null ? 'null' : '数组长度=' + window.cachedMyItems.length);
-      alert(msg);
-    };
-    // 把 currentUser 暴露到全局，方便诊断
-    setTimeout(function(){
-      // 等业务代码加载完
-      if (typeof currentUser !== 'undefined') window.currentUser = currentUser;
-      if (typeof cachedMyItems !== 'undefined') window.cachedMyItems = cachedMyItems;
-    }, 1500);
-  </script>
 
   <!-- ════════════════════════════════════════
        Tab 切换栏
@@ -1100,23 +1077,46 @@ async function renderStats() { renderStatsFromCache(); }
 // ════════════════════════════════════════
 // 登录态管理 + 首次登录的"沉默迁移"
 // ════════════════════════════════════════
+
+// 直接从 localStorage 里读 token 并解析 JWT —— 绕过 Supabase SDK 的异步加载时序
+// 这个方法是同步的，结果立即可用
+function readUserFromLocalStorage() {
+  try {
+    const raw = localStorage.getItem('sb-ryoaxziysgdkjcjiuqti-auth-token');
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    const token = obj && obj.access_token;
+    if (!token) return null;
+    // 解析 JWT 的 payload（中间那段 base64）
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    // base64url 解码
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (!payload || !payload.sub) return null;
+    // 检查是否过期
+    if (payload.exp && payload.exp * 1000 < Date.now()) return null;
+    return {
+      id: payload.sub,
+      email: payload.email || '',
+    };
+  } catch(_) { return null; }
+}
+
 async function refreshUser() {
-  // Supabase SDK 在页面加载初期可能还没从 localStorage 读完会话
-  // 给一次小重试，避免拿到 null 误判为未登录
-  let session = null;
+  // 优先用 localStorage 直读（同步、立即可用）
+  const localUser = readUserFromLocalStorage();
+  if (localUser) {
+    currentUser = localUser;
+    return;
+  }
+  // 兜底：再让 SDK 试一次
   try {
     const { data } = await supaAuth.auth.getSession();
-    session = (data && data.session) || null;
-  } catch(_) {}
-  // 如果第一次拿不到，等一小段再试一次
-  if (!session) {
-    await new Promise(r => setTimeout(r, 120));
-    try {
-      const { data } = await supaAuth.auth.getSession();
-      session = (data && data.session) || null;
-    } catch(_) {}
+    const session = (data && data.session) || null;
+    currentUser = (session && session.user) || null;
+  } catch(_) {
+    currentUser = null;
   }
-  currentUser = (session && session.user) || null;
 }
 
 async function migrateLocalToCloud() {
@@ -1252,30 +1252,8 @@ window.doAuthSubmitG = async function() {
 // 启动
 // ════════════════════════════════════════
 (async function init() {
-  // 第一次拿登录态
+  // refreshUser 现在直接读 localStorage，立即可用
   await refreshUser();
-
-  // 如果第一次没拿到，再等 onAuthStateChange 触发的 INITIAL_SESSION 事件
-  // （Supabase SDK 在初始化完成后会触发这个事件，含真实的会话）
-  if (!currentUser) {
-    await new Promise(resolve => {
-      let resolved = false;
-      const timer = setTimeout(() => {
-        if (!resolved) { resolved = true; resolve(); }
-      }, 800); // 兜底超时 800ms
-      const sub = supaAuth.auth.onAuthStateChange((event, session) => {
-        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-          if (!resolved) {
-            resolved = true;
-            clearTimeout(timer);
-            // 不取消订阅，让全局监听器继续工作
-            resolve();
-          }
-        }
-      });
-    });
-    await refreshUser();  // 再拿一次
-  }
 
   if (currentUser) {
     await migrateLocalToCloud();

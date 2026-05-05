@@ -1,4 +1,4 @@
-<!-- goals v9 - shared storageKey -->
+<!-- goals v10 - direct localStorage read -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -703,22 +703,37 @@ renderGoals();
     }
   });
 
+  // 直接从 localStorage 读 token 解析（绕过 SDK 加载时序问题）
+  function readUserFromLocalStorage() {
+    try {
+      const raw = localStorage.getItem('sb-ryoaxziysgdkjcjiuqti-auth-token');
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      const token = obj && obj.access_token;
+      if (!token) return null;
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+      if (!payload || !payload.sub) return null;
+      if (payload.exp && payload.exp * 1000 < Date.now()) return null;
+      return { id: payload.sub, email: payload.email || '' };
+    } catch(_) { return null; }
+  }
+
   // ===== 检查登录态 =====
   async function checkLoginAndPrompt() {
-    let session = null;
-    try {
-      const { data } = await supa.auth.getSession();
-      session = (data && data.session) || null;
-    } catch(_) {}
-    if (!session) {
-      await new Promise(r => setTimeout(r, 150));
+    // 优先用 localStorage 直读
+    let user = readUserFromLocalStorage();
+    if (!user) {
+      // 兜底：让 SDK 试一次
       try {
         const { data } = await supa.auth.getSession();
-        session = (data && data.session) || null;
+        const session = (data && data.session) || null;
+        user = (session && session.user) || null;
       } catch(_) {}
     }
 
-    if (session && session.user) return;
+    if (user) return;  // 已登录，不弹
 
     try {
       // 用版本化 key，确保升级后会重新弹一次
