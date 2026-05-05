@@ -1,3 +1,4 @@
+<!-- index v8 - shared storageKey -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -876,13 +877,15 @@ const _origDraw = draw;
   } catch(_) {}
 
   // 创建 Supabase 客户端，挂在全局便于其他页面（goals.html/gains.html）共用
+  // 注意：storageKey 必须三个文件保持一致，这样登录态才能跨页面共享
   const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
     auth: {
-      persistSession: true,        // 把会话存在 localStorage（跨页面、跨刷新保留）
-      autoRefreshToken: true,      // 自动刷新 token（避免过期）
+      persistSession: true,
+      autoRefreshToken: true,
+      storageKey: 'sb-ryoaxziysgdkjcjiuqti-auth-token',
     }
   });
-  window.freedSupa = supa;          // 暴露给其他页面用
+  window.freedSupa = supa;
 
   // —— 当前 tab 状态：'login' 或 'signup' ——
   let currentTab = 'login';
