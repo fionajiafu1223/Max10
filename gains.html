@@ -1,4 +1,4 @@
-<!-- gains v8 - shared storageKey -->
+<!-- gains v9 - diagnostic -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -518,6 +518,29 @@ draw();
 </script>
 <div class="page-title">📒 收 获 本</div>
 <div class="page-wrap">
+
+  <!-- 临时诊断按钮（诊断完会去掉） -->
+  <button onclick="window.__diag()" style="display:block;width:100%;padding:8px;margin-bottom:12px;background:#ffe066;color:#7a5500;border:2px dashed #d4a017;border-radius:10px;font-family:'Noto Sans SC',sans-serif;font-size:0.78rem;cursor:pointer;">🔍 点这里查看登录态诊断</button>
+  <script>
+    window.__diag = function() {
+      var keys = Object.keys(localStorage);
+      var msg = '【localStorage 所有 key】\n\n';
+      msg += keys.map(function(k){
+        var v = localStorage.getItem(k) || '';
+        var preview = v.length > 80 ? v.slice(0, 80) + '...' : v;
+        return k + '\n  → ' + preview;
+      }).join('\n\n');
+      msg += '\n\n【currentUser】\n' + (window.currentUser ? JSON.stringify({id: window.currentUser.id, email: window.currentUser.email}) : 'null（未登录）');
+      msg += '\n\n【cachedMyItems】\n' + (window.cachedMyItems === null ? 'null' : '数组长度=' + window.cachedMyItems.length);
+      alert(msg);
+    };
+    // 把 currentUser 暴露到全局，方便诊断
+    setTimeout(function(){
+      // 等业务代码加载完
+      if (typeof currentUser !== 'undefined') window.currentUser = currentUser;
+      if (typeof cachedMyItems !== 'undefined') window.cachedMyItems = cachedMyItems;
+    }, 1500);
+  </script>
 
   <!-- ════════════════════════════════════════
        Tab 切换栏
