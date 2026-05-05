@@ -1,4 +1,4 @@
-<!-- gains v6 -->
+<!-- gains v8 - shared storageKey -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -635,6 +635,7 @@ const supaAuth = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
+    storageKey: 'sb-ryoaxziysgdkjcjiuqti-auth-token',
   }
 });
 window.freedSupa = supaAuth;

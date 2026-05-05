@@ -1,4 +1,4 @@
-<!-- goals v6 -->
+<!-- goals v9 - shared storageKey -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -696,7 +696,11 @@ renderGoals();
   if (!window.supabase) return;
 
   const supa = window.supabase.createClient(SUPA_URL_AUTH, SUPA_KEY_AUTH, {
-    auth: { persistSession: true, autoRefreshToken: true }
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      storageKey: 'sb-ryoaxziysgdkjcjiuqti-auth-token',
+    }
   });
 
   // ===== 检查登录态 =====
@@ -717,7 +721,8 @@ renderGoals();
     if (session && session.user) return;
 
     try {
-      if (sessionStorage.getItem('freed-goals-prompt-skipped') === '1') return;
+      // 用版本化 key，确保升级后会重新弹一次
+      if (sessionStorage.getItem('freed-goals-prompt-skipped-v2') === '1') return;
     } catch(_) {}
 
     document.getElementById('login-prompt-overlay').classList.add('show');
@@ -726,7 +731,7 @@ renderGoals();
   // ===== 引导窗按钮 =====
   window.skipLoginPrompt = function() {
     document.getElementById('login-prompt-overlay').classList.remove('show');
-    try { sessionStorage.setItem('freed-goals-prompt-skipped', '1'); } catch(_) {}
+    try { sessionStorage.setItem('freed-goals-prompt-skipped-v2', '1'); } catch(_) {}
   };
 
   // 改成弹出登录窗，不再跳走
