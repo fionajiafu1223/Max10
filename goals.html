@@ -1,4 +1,4 @@
-<!-- goals v14 - read with auth -->
+<!-- goals v15 - delete by ts fallback -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -771,9 +771,19 @@ async function deleteGoal(i) {
   if (!goal) return;
 
   var u = readGoalsUserFromStorage();
-  if (u && goal.id) {
-    // 登录用户且有云端 id：先删云端
-    await deleteGoalFromCloud(goal.id);
+  if (u) {
+    if (goal.id) {
+      // 有云端 id：直接按 id 删
+      await deleteGoalFromCloud(goal.id);
+    } else if (goal.ts) {
+      // 没 id（老数据/迁移过来的）：按 ts 删除该用户的所有匹配记录
+      try {
+        await supaFetch('/rest/v1/user_goals?user_id=eq.' + u.id + '&ts=eq.' + goal.ts, {
+          method: 'DELETE',
+          useAuth: true
+        });
+      } catch(_) {}
+    }
   }
   // 不论登录与否，本地都删
   goals.splice(i, 1);
@@ -823,8 +833,18 @@ async function dropGoal(i) {
   } catch(_) {}
 
   // 删除这个目标（登录则删云端，本地都删）
-  if (u && goal.id) {
-    try { await deleteGoalFromCloud(goal.id); } catch(_) {}
+  if (u) {
+    if (goal.id) {
+      try { await deleteGoalFromCloud(goal.id); } catch(_) {}
+    } else if (goal.ts) {
+      // 老数据没 id，按 ts 删除
+      try {
+        await supaFetch('/rest/v1/user_goals?user_id=eq.' + u.id + '&ts=eq.' + goal.ts, {
+          method: 'DELETE',
+          useAuth: true
+        });
+      } catch(_) {}
+    }
   }
   goals.splice(i, 1);
   saveGoals(goals);
