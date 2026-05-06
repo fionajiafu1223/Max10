@@ -1,4 +1,4 @@
-<!-- goals v15 - delete by ts fallback -->
+<!-- goals v17 - no migration, cloud only -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -664,51 +664,6 @@ async function deleteGoalFromCloud(cloudId) {
 }
 
 // ════════════════════════════════════════
-// 首次登录的"沉默迁移"——把本地目标上传到云端
-// ════════════════════════════════════════
-var goalsMigrationDone = false;
-async function migrateGoalsToCloud() {
-  if (goalsMigrationDone) return;
-  goalsMigrationDone = true;
-  var u = readGoalsUserFromStorage();
-  if (!u) return;
-
-  // 看本地有没有未上传的目标
-  var localGoals = getGoals();
-  if (!localGoals.length) return;
-
-  // 已经迁移过就跳过（看标记）
-  var migratedKey = 'freed-goals-migrated-' + u.id;
-  try {
-    if (localStorage.getItem(migratedKey) === '1') return;
-  } catch(_) {}
-
-  // 上传每一个本地目标
-  for (var i = 0; i < localGoals.length; i++) {
-    var g = localGoals[i];
-    if (!g || !g.text) continue;
-    try {
-      await supaFetch('/rest/v1/user_goals', {
-        method: 'POST',
-        headers: { 'Prefer': 'return=minimal' },
-        body: JSON.stringify({
-          user_id: u.id,
-          text: g.text,
-          cat: g.cat || '其他',
-          ts: g.ts || Date.now()
-        }),
-        useAuth: true
-      });
-    } catch(_) {}
-  }
-
-  // 标记已迁移（同账号不重复迁移）
-  try { localStorage.setItem(migratedKey, '1'); } catch(_) {}
-  // 清空本地（已经在云端了）
-  saveGoals([]);
-}
-
-// ════════════════════════════════════════
 // 渲染列表
 // ════════════════════════════════════════
 function renderGoals() {
@@ -771,19 +726,9 @@ async function deleteGoal(i) {
   if (!goal) return;
 
   var u = readGoalsUserFromStorage();
-  if (u) {
-    if (goal.id) {
-      // 有云端 id：直接按 id 删
-      await deleteGoalFromCloud(goal.id);
-    } else if (goal.ts) {
-      // 没 id（老数据/迁移过来的）：按 ts 删除该用户的所有匹配记录
-      try {
-        await supaFetch('/rest/v1/user_goals?user_id=eq.' + u.id + '&ts=eq.' + goal.ts, {
-          method: 'DELETE',
-          useAuth: true
-        });
-      } catch(_) {}
-    }
+  if (u && goal.id) {
+    // 登录用户：删云端
+    await deleteGoalFromCloud(goal.id);
   }
   // 不论登录与否，本地都删
   goals.splice(i, 1);
@@ -833,18 +778,8 @@ async function dropGoal(i) {
   } catch(_) {}
 
   // 删除这个目标（登录则删云端，本地都删）
-  if (u) {
-    if (goal.id) {
-      try { await deleteGoalFromCloud(goal.id); } catch(_) {}
-    } else if (goal.ts) {
-      // 老数据没 id，按 ts 删除
-      try {
-        await supaFetch('/rest/v1/user_goals?user_id=eq.' + u.id + '&ts=eq.' + goal.ts, {
-          method: 'DELETE',
-          useAuth: true
-        });
-      } catch(_) {}
-    }
+  if (u && goal.id) {
+    try { await deleteGoalFromCloud(goal.id); } catch(_) {}
   }
   goals.splice(i, 1);
   saveGoals(goals);
@@ -853,20 +788,16 @@ async function dropGoal(i) {
 }
 
 // ════════════════════════════════════════
-// 启动：登录用户拉云端，未登录用本地
+// 启动：登录用户拉云端覆盖本地，未登录用本地
 // ════════════════════════════════════════
 (async function initGoals() {
   var u = readGoalsUserFromStorage();
   if (u) {
-    // 1. 先迁移本地数据到云端（沉默）
-    await migrateGoalsToCloud();
-    // 2. 从云端拉取所有目标
+    // 登录用户：直接拉云端，覆盖本地（登录前的本地目标会被丢弃）
     var cloudGoals = await loadGoalsFromCloud();
-    if (cloudGoals !== null) {
-      saveGoals(cloudGoals);
-    }
+    saveGoals(cloudGoals || []);
   }
-  // 渲染（登录用户用云端数据，未登录用本地）
+  // 渲染（登录用户用云端，未登录用本地）
   renderGoals();
 })();
 </script>
