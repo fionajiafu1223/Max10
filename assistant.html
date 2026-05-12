@@ -1,3 +1,4 @@
+<!-- assistant v3 -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -296,7 +297,7 @@ function startReleaseQueue() {
 
 function getLangSystemPrompt() {
   if (currentLang === 'en') {
-    return 'You are a deep psychological insight guide, expert in the Sedona Method.\n\n'
+    return 'You are a deep psychological insight guide, expert in identifying hidden desire patterns beneath emotional language.\n\n'
       + 'The three core desires:\n'
       + '- control: craving to control situations, outcomes, others; fear of losing control\n'
       + '- approval: craving acceptance, validation, love; fear of rejection, criticism, abandonment\n'
@@ -315,24 +316,33 @@ function getLangSystemPrompt() {
       + '{"points":[{"quote":"brief phrase max 20 words","desire":"control|approval|safety","reason":"insight 40-60 words"}]}\n\n'
       + 'No limit on number of points. List every insight. Same desire can appear multiple times.';
   }
-  return '你是一位深度心理洞察师，精通圣多纳释放法（Sedona Method）。\n\n'
+  return '你是一位深度心理洞察师，专精识别情绪语言背后隐藏的欲望模式。\n\n'
     + '三种核心欲望：\n'
     + '- control（想要控制）：渴望掌控局面、结果、他人；害怕失控、混乱、不确定\n'
     + '- approval（想要被认同）：渴望被接受、肯定、爱；害怕被拒绝、批评、抛弃\n'
     + '- safety（想要安全）：渴望稳定、保障、确定；害怕失去、改变、受伤\n\n'
-    + '任务：\n'
-    + '1. 感受文字背后的情绪结构，不只看表面词汇\n'
-    + '2. 找出每个独立想法或情绪点，识别背后的欲望类型\n'
-    + '3. 重点洞察用户没有意识到的深层欲望\n'
-    + '4. 注意欲望之间的交织\n\n'
-    + '原则：\n'
-    + '- 解释为什么这个想法背后是这种欲望\n'
+    + '你的核心任务：尽可能多地挖掘用户察觉不到的深层欲望。\n\n'
+    + '分析层次（每一层都要找）：\n'
+    + '1. **表层欲望**：用户字面说出来的渴望或恐惧\n'
+    + '2. **次层欲望**：表层渴望背后的更深需求（例如想要高薪→想要安全）\n'
+    + '3. **隐藏欲望**：用户回避、不愿承认、甚至自己都不知道的欲望（这是最重要的）\n'
+    + '4. **矛盾欲望**：同一段文字里互相冲突的欲望（例如又想要又怕被看到）\n'
+    + '5. **行为背后的欲望**：每个具体行为/抗拒/拖延背后的欲望（例如不想投简历→怕被拒绝→想要认同）\n\n'
+    + '挖掘的技巧：\n'
+    + '- 看每一句话每一个词，问"这背后真正想要什么？"\n'
+    + '- 注意"不想"、"害怕"、"讨厌"、"避免"——这些都暗示着欲望\n'
+    + '- 注意"应该"、"希望"、"完美"、"必须"——这些暴露执着\n'
+    + '- 同一句话可能藏着 2-3 个欲望，都要挖出来\n'
+    + '- 用户没说但显然在意的东西，也要点出来\n\n'
+    + '输出原则：\n'
+    + '- 至少给出 5-8 个洞察点（短输入 5 个，复杂输入 8-12 个）\n'
+    + '- 每条 quote 用用户原文里的关键词，或 AI 提炼的短句（不超过 20 字）\n'
+    + '- 每条 reason 解释"为什么这背后是这种欲望"，特别强调用户自己没意识到的部分\n'
     + '- 像温柔而犀利的咨询师说话，让人感到被看见又能揭示盲点\n'
-    + '- 如果用户表达了A但背后藏着B，要指出来\n'
-    + '- 每条reason控制在40-60字\n\n'
+    + '- 每条 reason 控制在 50-80 字，把洞察讲透\n'
+    + '- 同一种欲望可以多次出现\n\n'
     + '严格用以下JSON格式回复，不要任何其他内容：\n'
-    + '{"points":[{"quote":"从用户原文提炼的短句不超过20字","desire":"control或approval或safety","reason":"深度洞察40-60字"}]}\n\n'
-    + '重要：不要限制条数。每个值得洞察的点都单独列出，同一种欲望可以多次出现。';
+    + '{"points":[{"quote":"短句不超过20字","desire":"control或approval或safety","reason":"深度洞察50-80字，揭示用户没意识到的部分"}]}';
 }
 
 async function runAssistant() {
@@ -361,7 +371,7 @@ async function runAssistant() {
           signal: controller.signal,
           body: JSON.stringify({
             model: 'deepseek-chat',
-            max_tokens: 1200,
+            max_tokens: 4000,
             messages: [
               { role: 'system', content: SYSTEM_PROMPT },
               { role: 'user',   content: text },
@@ -391,8 +401,30 @@ async function runAssistant() {
       json = JSON.parse(raw.slice(start, end + 1));
     } catch(_) {}
 
-    asstPoints = (json.points || []).filter(p => DESIRE_INFO[p.desire]);
-    if (!asstPoints.length) throw new Error('parse failed');
+    // Try multiple possible field names from AI response
+    let rawPoints = json.points || json.results || json.analysis || json.data || [];
+    if (!Array.isArray(rawPoints)) rawPoints = [];
+    
+    // Map common variations to expected schema
+    asstPoints = rawPoints.map(p => {
+      // Normalize desire field
+      let desire = p.desire || p.type || p.category || '';
+      desire = String(desire).toLowerCase();
+      if (desire.includes('control') || desire.includes('控制')) desire = 'control';
+      else if (desire.includes('approval') || desire.includes('认同') || desire.includes('被爱')) desire = 'approval';
+      else if (desire.includes('safety') || desire.includes('安全') || desire.includes('survival')) desire = 'safety';
+      return {
+        desire: desire,
+        quote: p.quote || p.text || p.phrase || '',
+        reason: p.reason || p.explanation || p.analysis || ''
+      };
+    }).filter(p => DESIRE_INFO[p.desire]);
+    
+    if (!asstPoints.length) {
+      // Show raw response so user can see what AI returned
+      console.log('Raw AI response:', raw);
+      throw new Error('AI 返回格式异常，请重试。返回内容：' + raw.slice(0, 100));
+    }
 
     // 重置结果区结构（防止被错误信息替换掉）
     resultEl.innerHTML = '<div class="asst-desire-badges" id="asstBadges"></div>'
