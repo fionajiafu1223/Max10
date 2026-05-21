@@ -871,10 +871,49 @@ function setSortSb(s) {
   loadSharedGains();
 }
 
+// ════════════════════════════════════════
+// 敏感词过滤（满足 Apple Guideline 1.2 内容过滤要求）
+// ════════════════════════════════════════
+const BANNED_WORDS = [
+  // 辱骂
+  '傻逼','沙比','煞笔','傻x','sb','智障','脑残','废物','贱人','婊子',
+  '狗东西','畜生','滚蛋','去死','该死','王八蛋','混蛋','操你','草你','日你',
+  'fuck','shit','bitch','asshole','idiot',
+  // 色情
+  '色情','黄片','av','做爱','性交','裸照','约炮','一夜情','卖淫','嫖娼',
+  '阴茎','阴道','性器','自慰','发骚','骚货','淫',
+  // 暴力
+  '杀人','砍死','打死','血腥','自杀','自残','炸弹','枪支','贩毒','吸毒',
+  // 广告诈骗
+  '加微信','加我vx','加qq','扫码','返利','代理','刷单','兼职日入',
+  '博彩','赌博','彩票','贷款','办卡','引流','推广加',
+  '点击链接','www.','http://','https://','.com','.cn','.net',
+];
+
+function checkContent(text) {
+  if (!text) return { ok: true };
+  const lower = text.toLowerCase();
+  for (let i = 0; i < BANNED_WORDS.length; i++) {
+    const w = BANNED_WORDS[i].toLowerCase();
+    if (w && lower.indexOf(w) !== -1) {
+      return { ok: false, word: BANNED_WORDS[i] };
+    }
+  }
+  return { ok: true };
+}
+
 async function submitGainSb() {
   const input = document.getElementById('gainInputSb');
   const text  = input.value.trim();
   if (!text) return;
+
+  // 敏感词检查
+  const check = checkContent(text);
+  if (!check.ok) {
+    showToast('内容含有不当词汇，请修改后再发布');
+    return;
+  }
+
   input.value = '';
   await _submitGainEntry(text, gainSelectedCat);
   showToast(tf('gain_recorded', gainSelectedCat));
