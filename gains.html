@@ -1159,38 +1159,9 @@ async function refreshUser() {
 }
 
 async function migrateLocalToCloud() {
-  // 只在用户登录后执行一次；把 localStorage 里的本地记录上传到云端
-  if (!currentUser || migrationDone) return;
-  migrationDone = true;
-  try {
-    // 检查云端是不是已经有这个用户的记录了
-    const existing = await supaFetch(
-      '/rest/v1/gain_entries?user_id=eq.' + currentUser.id +
-      '&select=ts&limit=1'
-    );
-    if (existing && existing.length > 0) {
-      // 已经有了 — 说明之前迁移过，不再迁移（避免重复）
-      return;
-    }
-    const local = getMyItems();
-    if (!local.length) return;
-    // 批量上传，每条带上 user_id
-    const payload = local.map(it => ({
-      text: it.text,
-      cat: it.cat,
-      ts: it.ts,
-      likes: it.likes || 0,
-      user_id: currentUser.id
-    }));
-    await supaFetch('/rest/v1/gain_entries', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=minimal' },
-      body: JSON.stringify(payload),
-      useAuth: true,
-    });
-  } catch(e) {
-    console.warn('迁移失败（不影响使用）：', e);
-  }
+  // 已废弃：本地→云端的自动迁移会导致重复记录（匿名发的+登录后迁移=显示多条）
+  // 现行策略：登录用户发的直接进云端；未登录用户的本地记录不再自动上传
+  return;
 }
 
 // 监听登录态变化（其他页面登录/登出时自动响应）
