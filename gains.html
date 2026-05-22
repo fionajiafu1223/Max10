@@ -1047,38 +1047,25 @@ window.doReportEntry = async function() {
   }
   // 写入云端 gain_reports 表
   try {
-    // 直接用 fetch 而不是 supaFetch，方便看到错误
     const sess = await supaAuth.auth.getSession();
     const token = sess && sess.data && sess.data.session && sess.data.session.access_token;
-    if (!token) {
-      console.error('举报失败：没拿到 token');
-      alert('举报失败：未登录');
-      closeWarnMenu();
-      return;
-    }
-    const res = await fetch(SUPA_URL + '/rest/v1/gain_reports', {
-      method: 'POST',
-      headers: {
-        'apikey': SUPA_KEY,
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation',
-      },
-      body: JSON.stringify({
-        entry_id: Number(_warnTargetEntryId),
-        reporter_id: currentUser.id,
-      }),
-    });
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error('举报失败 HTTP', res.status, errText);
-      alert('举报上报失败: ' + res.status + '\nentry_id=' + _warnTargetEntryId + ' Number=' + Number(_warnTargetEntryId) + '\n' + errText);
-    } else {
-      console.log('举报上报成功');
+    if (token) {
+      await fetch(SUPA_URL + '/rest/v1/gain_reports', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_KEY,
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation',
+        },
+        body: JSON.stringify({
+          entry_id: _warnTargetEntryId,
+          reporter_id: currentUser.id,
+        }),
+      });
     }
   } catch(e) {
-    console.error('举报异常:', e);
-    alert('举报异常: ' + e.message);
+    console.warn('举报上报失败（已本地隐藏）:', e);
   }
   closeWarnMenu();
   showToast('已举报，该内容已从你的视图中移除');
