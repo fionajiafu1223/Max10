@@ -1072,7 +1072,7 @@ window.doReportEntry = async function() {
     if (!res.ok) {
       const errText = await res.text();
       console.error('举报失败 HTTP', res.status, errText);
-      alert('举报上报失败: ' + res.status + '\n' + errText);
+      alert('举报上报失败: ' + res.status + '\nentry_id=' + _warnTargetEntryId + ' Number=' + Number(_warnTargetEntryId) + '\n' + errText);
     } else {
       console.log('举报上报成功');
     }
