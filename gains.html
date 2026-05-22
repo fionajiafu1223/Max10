@@ -98,6 +98,44 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
   .gain-like-btn:hover { background: rgba(255,100,130,0.08); border-color: rgba(255,100,130,0.4); color: #e05080; }
   .gain-like-btn.liked { background: rgba(255,100,130,0.12); border-color: rgba(255,100,130,0.5); color: #e05080; }
   .gain-like-count { font-weight: 600; }
+  /* ⚠️ 举报/屏蔽按钮 */
+  .gain-warn-btn {
+    padding: 3px 8px; border-radius: 14px;
+    border: 1.5px solid rgba(180,150,80,0.30);
+    background: rgba(255,255,255,0.45);
+    font-size: 0.74rem; color: #a08020;
+    cursor: pointer; transition: all 0.18s ease;
+    line-height: 1;
+    margin-left: 4px;
+  }
+  .gain-warn-btn:hover { background: rgba(255,200,80,0.12); border-color: rgba(180,150,80,0.5); }
+  /* 举报/屏蔽 弹出菜单 */
+  #warn-menu-overlay {
+    position: fixed; inset: 0; z-index: 9000;
+    background: rgba(20,60,110,0.30);
+    display: none; align-items: center; justify-content: center;
+  }
+  #warn-menu-overlay.show { display: flex; }
+  .warn-menu {
+    background: rgba(255,255,255,0.98);
+    border-radius: 16px; padding: 12px;
+    min-width: 200px;
+    box-shadow: 0 6px 24px rgba(20,60,110,0.25);
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  .warn-menu button {
+    display: block; width: 100%;
+    padding: 12px 14px; margin: 4px 0;
+    border: none; border-radius: 10px;
+    background: transparent; text-align: left;
+    font-size: 0.85rem; color: #143c6e;
+    cursor: pointer; transition: background 0.15s;
+    font-family: inherit;
+  }
+  .warn-menu button:hover { background: rgba(100,160,220,0.10); }
+  .warn-menu button.danger { color: #c04040; }
+  .warn-menu button.danger:hover { background: rgba(200,80,80,0.10); }
+  .warn-menu button.cancel { color: #8aaac0; }
   .gain-sort-btn {
     padding: 4px 10px; border-radius: 14px;
     border: 1.5px solid rgba(100,160,220,0.35);
@@ -782,12 +820,17 @@ function renderGainList(el, items, isShared) {
       ? '<button class="gain-like-btn ' + (liked ? 'liked' : '') + '" onclick="likeGain(\'' + item.id + '\', this)">' +
         (liked ? '❤️' : '🤍') + ' <span class="gain-like-count">' + (likes > 0 ? likes : '赞') + '</span></button>'
       : '<span class="gain-meta">' + (likes > 0 ? '❤️ ' + likes : '') + '</span>';
+    // ⚠️ 按钮：只在「所有人的收获」里、且不是自己发的内容时显示
+    const showWarn = isShared && currentUser && item.user_id && item.user_id !== currentUser.id;
+    const warnBtn = showWarn
+      ? '<button class="gain-warn-btn" onclick="openWarnMenu(\'' + item.id + '\', \'' + item.user_id + '\')">⚠️</button>'
+      : '';
     return '<li class="gain-item ' + (isShared ? 'shared' : '') + '">' +
       '<span class="gain-text">' + escapeHtml(item.text) + '</span>' +
       '<div class="gain-footer">' +
       '<div style="display:flex;align-items:center;gap:6px;">' + badge +
       '<span class="gain-meta">' + formatRelTime(item.ts) + '</span></div>' +
-      likeBtn + '</div></li>';
+      '<div style="display:flex;align-items:center;">' + likeBtn + warnBtn + '</div></li>';
   }).join('');
 }
 
@@ -847,9 +890,17 @@ async function loadSharedGains() {
     const order = gainSortSb === 'likes' ? 'likes.desc,ts.desc' : 'ts.desc';
     let url = `/rest/v1/gain_entries?select=*&order=${order}&limit=${GAIN_MAX}`;
     if (gainSelectedFilterSb !== 'all') url += `&cat=eq.${encodeURIComponent(gainSelectedFilterSb)}`;
-    const items = await supaFetch(url);
-    if (titleEl) titleEl.textContent = tf('shared_gains', (items||[]).length);
-    renderGainList(sharedEl, items || [], true);
+    let items = await supaFetch(url);
+    // 过滤掉被屏蔽的用户/已举报的内容
+    const blockedUsers = getBlockedUsers();
+    const reportedIds  = getReportedIds();
+    items = (items || []).filter(it => {
+      if (it.user_id && blockedUsers.indexOf(it.user_id) !== -1) return false;
+      if (it.id && reportedIds.indexOf(it.id + '') !== -1) return false;
+      return true;
+    });
+    if (titleEl) titleEl.textContent = tf('shared_gains', items.length);
+    renderGainList(sharedEl, items, true);
   } catch(e) {
     console.error('Supabase error:', e);
     sharedEl.innerHTML = `<li class="gain-empty">加载失败</li>`;
@@ -955,6 +1006,75 @@ async function _submitGainEntry(text, cat) {
     });
   } catch(_) {}
 }
+
+// ════════════════════════════════════════
+// 举报 / 屏蔽（满足 Apple Guideline 1.2）
+// ════════════════════════════════════════
+function getBlockedUsers() {
+  try { return JSON.parse(localStorage.getItem('freed-blocked-users') || '[]'); }
+  catch(_) { return []; }
+}
+function saveBlockedUsers(list) {
+  try { localStorage.setItem('freed-blocked-users', JSON.stringify(list)); } catch(_) {}
+}
+function getReportedIds() {
+  try { return JSON.parse(localStorage.getItem('freed-reported-ids') || '[]'); }
+  catch(_) { return []; }
+}
+function saveReportedIds(list) {
+  try { localStorage.setItem('freed-reported-ids', JSON.stringify(list)); } catch(_) {}
+}
+
+let _warnTargetEntryId = null;
+let _warnTargetUserId  = null;
+
+window.openWarnMenu = function(entryId, userId) {
+  _warnTargetEntryId = entryId;
+  _warnTargetUserId  = userId;
+  document.getElementById('warn-menu-overlay').classList.add('show');
+};
+window.closeWarnMenu = function() {
+  document.getElementById('warn-menu-overlay').classList.remove('show');
+};
+
+window.doReportEntry = async function() {
+  if (!_warnTargetEntryId || !currentUser) { closeWarnMenu(); return; }
+  // 本地记下已举报的 id（立即从视图隐藏）
+  const reported = getReportedIds();
+  if (reported.indexOf(_warnTargetEntryId + '') === -1) {
+    reported.push(_warnTargetEntryId + '');
+    saveReportedIds(reported);
+  }
+  // 写入云端 gain_reports 表
+  try {
+    await supaFetch('/rest/v1/gain_reports', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=minimal' },
+      body: JSON.stringify({
+        entry_id: Number(_warnTargetEntryId),
+        reporter_id: currentUser.id,
+      }),
+      useAuth: true,
+    });
+  } catch(e) {
+    console.warn('举报上报失败（已本地隐藏）:', e);
+  }
+  closeWarnMenu();
+  showToast('已举报，该内容已从你的视图中移除');
+  loadSharedGains();
+};
+
+window.doBlockUser = function() {
+  if (!_warnTargetUserId) { closeWarnMenu(); return; }
+  const blocked = getBlockedUsers();
+  if (blocked.indexOf(_warnTargetUserId) === -1) {
+    blocked.push(_warnTargetUserId);
+    saveBlockedUsers(blocked);
+  }
+  closeWarnMenu();
+  showToast('已屏蔽该用户，其所有内容已隐藏');
+  loadSharedGains();
+};
 
 async function likeGain(id, btn) {
   if (likedKeys.has(id + '')) return;
@@ -1306,6 +1426,15 @@ function applyLoginGate() {
   setTimeout(() => loadSharedGains(), 200);
 })();
 </script>
+<!-- 举报/屏蔽 弹出菜单 -->
+<div id="warn-menu-overlay" onclick="if(event.target===this)closeWarnMenu()">
+  <div class="warn-menu">
+    <button class="danger" onclick="doReportEntry()">🚩 举报此内容</button>
+    <button class="danger" onclick="doBlockUser()">🚫 屏蔽此用户</button>
+    <button class="cancel" onclick="closeWarnMenu()">取消</button>
+  </div>
+</div>
+
 <script src="nav-orb.js"></script>
 </body>
 </html>
