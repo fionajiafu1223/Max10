@@ -100,15 +100,17 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
   .gain-like-count { font-weight: 600; }
   /* ⚠️ 举报/屏蔽按钮 */
   .gain-warn-btn {
-    padding: 3px 8px; border-radius: 14px;
-    border: 1.5px solid rgba(180,150,80,0.30);
+    padding: 3px 10px; border-radius: 14px;
+    border: 1.5px solid rgba(100,160,220,0.30);
     background: rgba(255,255,255,0.45);
-    font-size: 0.74rem; color: #a08020;
+    font-size: 0.9rem; color: #5a7aa0;
     cursor: pointer; transition: all 0.18s ease;
     line-height: 1;
     margin-left: 4px;
+    letter-spacing: 1px;
+    font-weight: 600;
   }
-  .gain-warn-btn:hover { background: rgba(255,200,80,0.12); border-color: rgba(180,150,80,0.5); }
+  .gain-warn-btn:hover { background: rgba(200,230,255,0.7); border-color: rgba(100,160,220,0.5); }
   /* 举报/屏蔽 弹出菜单 */
   #warn-menu-overlay {
     position: fixed; inset: 0; z-index: 9000;
@@ -823,7 +825,7 @@ function renderGainList(el, items, isShared) {
     // ⚠️ 按钮：只在「所有人的收获」里、且不是自己发的内容时显示
     const showWarn = isShared && currentUser && item.user_id && item.user_id !== currentUser.id;
     const warnBtn = showWarn
-      ? '<button class="gain-warn-btn" onclick="openWarnMenu(\'' + item.id + '\', \'' + item.user_id + '\')">⚠️</button>'
+      ? '<button class="gain-warn-btn" onclick="openWarnMenu(\'' + item.id + '\', \'' + item.user_id + '\')">⋯</button>'
       : '';
     return '<li class="gain-item ' + (isShared ? 'shared' : '') + '">' +
       '<span class="gain-text">' + escapeHtml(item.text) + '</span>' +
