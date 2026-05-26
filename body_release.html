@@ -7,15 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { width: 100%; height: 100%; }
-body { width: 100%; min-height: 100%; display: block; overflow: hidden; }
+html, body { width: 100%; height: 100%; display: block; overflow: hidden; }
 
 .card {
   position: relative; z-index: 1;
-  width: 100vw;
-  /* 铺满全屏包含 Home 条区域 */
-  min-height: 100vh;
-  min-height: 100dvh;
+  width: 100vw; height: 100vh; height: 100dvh;
   background: #e8f2ee;
   overflow: hidden;
 }
@@ -32,7 +28,7 @@ body { width: 100%; min-height: 100%; display: block; overflow: hidden; }
 }
 
 #questionEl {
-  position: fixed; left: 0; right: 0;
+  position: absolute; left: 0; right: 0;
   text-align: center;
   font-family: 'ZCOOL XiaoWei', serif; font-size: 13px; letter-spacing: 2px;
   color: rgba(40, 80, 60, 0.85); line-height: 2;
@@ -163,7 +159,7 @@ body { width: 100%; min-height: 100%; display: block; overflow: hidden; }
 .act-btn:hover { background: rgba(220, 245, 235, 0.65); }
 
 #bottomBar {
-  position: absolute; top: 0; left: 50%;
+  position: absolute; bottom: max(36px, env(safe-area-inset-bottom, 36px)); left: 50%;
   transform: translateX(-50%);
   z-index: 30; display: flex; align-items: center; gap: 10px;
   white-space: nowrap;
@@ -313,7 +309,7 @@ body { width: 100%; min-height: 100%; display: block; overflow: hidden; }
     <button id="resumeBtn">继续释放</button>
   </div>
 
-  <div class="caption"><p>觉察 · 允许 · 释放</p></div>
+  <div class="caption"><p>SEDONA METHOD · 觉察它，允许它，释放它</p></div>
 </div>
 
 <script>
@@ -520,74 +516,37 @@ const repeatHint    = document.getElementById('repeatHint');
 
 function toPx(sx,sy){ return {x:(sx/360)*card.offsetWidth, y:(sy/640)*card.offsetHeight}; }
 
-// 获取 safe area 数值（px）
-function getSafeArea(){
-  const el = document.createElement('div');
-  el.style.cssText='position:fixed;top:env(safe-area-inset-top,0px);left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);bottom:env(safe-area-inset-bottom,0px);pointer-events:none;';
-  document.body.appendChild(el);
-  const r = el.getBoundingClientRect();
-  document.body.removeChild(el);
-  const top    = r.top;
-  const bottom = window.innerHeight - r.bottom;
-  const left   = r.left;
-  const right  = window.innerWidth - r.right;
-  return { top: top||0, bottom: bottom||0, left: left||0, right: right||0 };
-}
-
 function positionUI(){
-  const sa = getSafeArea();
-  const cardW = card.offsetWidth;
+  const headTopPx = (143/640)*card.offsetHeight;
   const cardH = card.offsetHeight;
 
-  // 人体头顶在 SVG 360×640 坐标系里是 y=143
-  const headTopPx = (143 / 640) * cardH;
-
-  // A: section label & target name — 对齐情绪释放 top:22px
-  const headerTop  = Math.max(22, sa.top + 8);
-  const btnBottomY = sa.top + 88;  // F按钮(68px) + 间距(10px) + safe area
-  sLbl.style.top    = headerTop + 'px';
+  sLbl.style.top    = 'max(18px, env(safe-area-inset-top, 18px))';
   sLbl.style.bottom = 'auto';
-  tgtName.style.top    = (headerTop + 14) + 'px';
+
+  tgtName.style.top    = 'calc(max(18px, env(safe-area-inset-top, 18px)) + 28px)';
   tgtName.style.bottom = 'auto';
 
-  // B: 引导语 — bottom 动态计算，锚定在人体头顶上方
-  // 用视口高度计算，不受 card 高度影响
-  const viewH = window.innerHeight;
-  const headTopViewPx = (143 / 640) * viewH;
-  const qBottom = viewH - headTopViewPx + sa.top;
-  qEl.style.top       = btnBottomY + 'px';
-  qEl.style.bottom    = '';
-  qEl.style.maxHeight = '';
+  qEl.style.top    = '';
+  qEl.style.bottom = (cardH - headTopPx + 20) + 'px';
+  qEl.style.maxHeight = (headTopPx - 60) + 'px';
+  qEl.style.overflowY = 'auto';
 
-  // C: act buttons (可以/不可以) — 胸口位置 SVG y≈420
-  const chestY    = (420 / 640) * cardH;
-  const btnCenterX = cardW * 0.5;
-  const btnGap = 12;
-  btnA.style.top       = (chestY - 18) + 'px';
-  btnA.style.left      = (btnCenterX + btnGap) + 'px';
-  btnA.style.right     = 'auto';
-  btnA.style.transform = 'none';
-  btnD.style.top       = (chestY - 18) + 'px';
-  btnD.style.right     = (cardW - btnCenterX + btnGap) + 'px';
-  btnD.style.left      = 'auto';
-  btnD.style.transform = 'none';
-
-  // reflectBox — 胸口上方一点
+  // reflectBox: centered at chest (SVG y≈420)
+  const {y:chestY} = toPx(183, 390);
   const reflectEl = document.getElementById('reflectBox');
-  const reflectTop = chestY - 20;
-  reflectEl.style.top    = reflectTop + 'px';
+  reflectEl.style.top = chestY + 'px';
   reflectEl.style.bottom = '';
 
-  // D: bottomBar — 人体轮廓底部 SVG y=580，下方 16px
-  // cardH 包含 safe-area-bottom，要减掉才是实际可视高度
-  const visibleH = cardH - sa.bottom;
-  const bodyBottomPx = (580 / 640) * visibleH;
-  const bottomBar = document.getElementById('bottomBar');
-  bottomBar.style.bottom    = '';
-  bottomBar.style.top       = (bodyBottomPx + 6) + 'px';
-  bottomBar.style.left      = '50%';
-  bottomBar.style.transform = 'translateX(-50%)';
-  bottomBar.style.position  = 'absolute';
+  const {x:hx, y:hy} = toPx(183, 420);
+  const btnGap = 10;
+  btnD.style.top       = (hy - 18) + 'px';
+  btnD.style.right     = (card.offsetWidth - hx + btnGap) + 'px';
+  btnD.style.left      = 'auto';
+  btnD.style.transform = 'none';
+  btnA.style.top       = (hy - 18) + 'px';
+  btnA.style.left      = (hx + btnGap) + 'px';
+  btnA.style.right     = 'auto';
+  btnA.style.transform = 'none';
 }
 
 function showReflect(){ document.getElementById('reflectBox').classList.add('visible'); document.getElementById('reflectInput').value=''; }
@@ -863,7 +822,7 @@ function onClickDesire(b){
   requestAnimationFrame(fly);
 }
 
-function handleDecision(){
+function handleDecision(isA){
   if(phase==='yesno'){
     btnA.textContent='可以'; btnD.textContent='不可以';
     hideQ(); hideButtons();
@@ -871,7 +830,7 @@ function handleDecision(){
     const step=SECTIONS[currentSection].steps[currentStep];
     setTimeout(()=>{
       if(step&&step.finalStep) showFinalChoice();
-      else if(step&&step.skipNextOnA&&true){
+      else if(step&&step.skipNextOnA&&isA){
         // skip N steps ahead
         currentStep += step.skipNextOnA;
         if(currentStep>=SECTIONS[currentSection].steps.length){
@@ -897,8 +856,8 @@ function handleDecision(){
     runStep();
   }));
 }
-btnA.addEventListener('click',handleDecision);
-btnD.addEventListener('click',handleDecision);
+btnA.addEventListener('click',()=>handleDecision(true));
+btnD.addEventListener('click',()=>handleDecision(false));
 
 function showFinalChoice(){
   clearAllBubbles(()=>{
@@ -985,10 +944,7 @@ function loop(ts){
   requestAnimationFrame(loop);
 }
 
-function setVH(){
-  // 不用 JS 计算，直接用 CSS min-height 铺满全屏
-  // card 的高度由 CSS 控制，JS 只负责触发 positionUI
-}
+function setVH(){ document.querySelector('.card').style.height=window.innerHeight+'px'; }
 setVH();
 window.addEventListener('resize',()=>{setVH();positionUI();});
 loadProgress();
@@ -998,27 +954,5 @@ requestAnimationFrame(loop);
 </script>
 <script src="nav-orb.js"></script>
 <script src="music-btn.js"></script>
-<script>
-(function(){
-  const css = `
-    #nav-orb-btn {
-      top:  max(22px, calc(env(safe-area-inset-top, 0px) + 8px)) !important;
-      left: calc(env(safe-area-inset-left, 0px) + 12px) !important;
-    }
-    .fr-music-btn {
-      top:  max(22px, calc(env(safe-area-inset-top, 0px) + 8px)) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
-    }
-    @media (orientation: landscape) and (min-width: 600px) {
-      #questionEl { font-size: 15px; }
-      #pauseBtn, #nextSectionBtn { font-size: 13px; padding: 11px 26px; }
-    }
-    }
-  `;
-  const s = document.createElement('style');
-  s.textContent = css;
-  document.head.appendChild(s);
-})();
-</script>
 </body>
 </html>

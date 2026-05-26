@@ -17,7 +17,7 @@ html, body { width: 100%; height: 100%; display: block; overflow: hidden; }
 }
 
 #questionEl {
-  position: fixed; left: 0; right: 0;
+  position: absolute; left: 0; right: 0;
   text-align: center;
   font-family: 'ZCOOL XiaoWei', serif; font-size: 13px; letter-spacing: 2px;
   color: rgba(100, 40, 70, 0.85); line-height: 2;
@@ -298,7 +298,7 @@ html, body { width: 100%; height: 100%; display: block; overflow: hidden; }
     <button id="resumeBtn">继续释放</button>
   </div>
 
-  <div class="caption"><p>觉察 · 允许 · 释放</p></div>
+  <div class="caption"><p>SEDONA METHOD · 觉察它，允许它，释放它</p></div>
 </div>
 
 <script>
@@ -467,36 +467,18 @@ const repeatHint    = document.getElementById('repeatHint');
 
 function toPx(sx,sy){ return {x:(sx/360)*card.offsetWidth, y:(sy/640)*card.offsetHeight}; }
 
-
-function getSafeArea(){
-  const el = document.createElement('div');
-  el.style.cssText='position:fixed;top:env(safe-area-inset-top,0px);left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);bottom:env(safe-area-inset-bottom,0px);pointer-events:none;visibility:hidden;';
-  document.body.appendChild(el);
-  const r = el.getBoundingClientRect();
-  document.body.removeChild(el);
-  return { top: r.top||0, bottom: window.innerHeight-r.bottom||0, left: r.left||0, right: window.innerWidth-r.right||0 };
-}
-
 function positionUI(){
-  const sa = getSafeArea();
   const headTopPx = (143/640)*card.offsetHeight;
   const cardH = card.offsetHeight;
 
-  const headerTop = Math.max(22, sa.top + 8);
-  sLbl.style.top    = headerTop + 'px';
+  sLbl.style.top    = 'max(18px, env(safe-area-inset-top, 18px))';
   sLbl.style.bottom = 'auto';
-  tgtName.style.top    = (headerTop + 14) + 'px';
+
+  tgtName.style.top    = 'calc(max(18px, env(safe-area-inset-top, 18px)) + 28px)';
   tgtName.style.bottom = 'auto';
 
-  // 引导语 — bottom 动态计算，锚定在人体头顶上方
-  const btnBottomY = sa.top + 88;  // F按钮(68px) + 间距(10px) + safe area
-  const viewH = window.innerHeight;
-  const headTopViewPx = (143 / 640) * viewH;
-  const qBottom = viewH - headTopViewPx + sa.top;
-  const qElMaxH = Math.max(headTopViewPx - btnBottomY - 16, 40);
-  qEl.style.top       = btnBottomY + 'px';
-  qEl.style.bottom    = '';
-  qEl.style.maxHeight = '';
+  qEl.style.top    = '';
+  qEl.style.bottom = (cardH - headTopPx + 20) + 'px';
 
   // reflectBox: centered at chest (SVG y≈420)
   const {y:chestY} = toPx(183, 390);
@@ -924,22 +906,5 @@ requestAnimationFrame(loop);
 </script>
 <script src="nav-orb.js"></script>
 <script src="music-btn.js"></script>
-<script>
-(function(){
-  const css = `
-    #nav-orb-btn {
-      top:  max(22px, calc(env(safe-area-inset-top, 0px) + 8px)) !important;
-      left: calc(env(safe-area-inset-left, 0px) + 12px) !important;
-    }
-    .fr-music-btn {
-      top:  max(22px, calc(env(safe-area-inset-top, 0px) + 8px)) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
-    }
-  `;
-  const s = document.createElement('style');
-  s.textContent = css;
-  document.head.appendChild(s);
-})();
-</script>
 </body>
 </html>
