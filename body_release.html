@@ -39,6 +39,7 @@ body { width: 100%; min-height: 100%; display: block; overflow: hidden; }
   z-index: 30; opacity: 0; pointer-events: none;
   transition: opacity 0.6s ease;
   padding: 0 28px;
+  display: flex; flex-direction: column; justify-content: flex-end;
 }
 #questionEl.visible { opacity: 1; }
 #questionEl em { font-style: normal; color: rgba(40, 140, 90, 0.95); font-size: 15px; }
@@ -555,10 +556,9 @@ function positionUI(){
   const viewH = window.innerHeight;
   const headTopViewPx = (143 / 640) * viewH;
   const qBottom = viewH - headTopViewPx + sa.top;
-  const qElMaxH = Math.max(headTopViewPx - btnBottomY - 16, 40);
-  qEl.style.top       = '';
+  qEl.style.top       = btnBottomY + 'px';
   qEl.style.bottom    = qBottom + 'px';
-  qEl.style.maxHeight = Math.max(qElMaxH, 40) + 'px';
+  qEl.style.maxHeight = '';
   qEl.style.overflowY = 'auto';
 
   // C: act buttons (可以/不可以) — 胸口位置 SVG y≈420
