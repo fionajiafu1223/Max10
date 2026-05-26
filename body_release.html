@@ -7,11 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { width: 100%; height: 100%; display: block; overflow: hidden; }
+html { width: 100%; height: 100%; }
+body { width: 100%; min-height: 100%; display: block; overflow: hidden; }
 
 .card {
   position: relative; z-index: 1;
-  width: 100vw; height: 100vh;
+  width: 100vw;
+  /* 铺满全屏包含 Home 条区域 */
+  min-height: 100vh;
+  min-height: 100dvh;
   background: #e8f2ee;
   overflow: hidden;
 }
@@ -28,7 +32,7 @@ html, body { width: 100%; height: 100%; display: block; overflow: hidden; }
 }
 
 #questionEl {
-  position: absolute; left: 0; right: 0;
+  position: fixed; left: 0; right: 0;
   text-align: center;
   font-family: 'ZCOOL XiaoWei', serif; font-size: 13px; letter-spacing: 2px;
   color: rgba(40, 80, 60, 0.85); line-height: 2;
@@ -159,7 +163,7 @@ html, body { width: 100%; height: 100%; display: block; overflow: hidden; }
 .act-btn:hover { background: rgba(220, 245, 235, 0.65); }
 
 #bottomBar {
-  position: absolute; bottom: 24px; left: 50%;
+  position: absolute; top: 0; left: 50%;
   transform: translateX(-50%);
   z-index: 30; display: flex; align-items: center; gap: 10px;
   white-space: nowrap;
@@ -535,46 +539,57 @@ function positionUI(){
   const cardW = card.offsetWidth;
   const cardH = card.offsetHeight;
 
-  // Zone A: Header = safe-area-top + 44px
-  const zoneAH = sa.top + 44;
-  // Zone D: Bottom CTA = 24px button gap + safe-area-bottom
-  const zoneDH = sa.bottom + 24;
-  // Zone B: Intro/Question = up to 18% of remaining space
-  const remaining = cardH - zoneAH - zoneDH;
-  const zoneBH = Math.round(remaining * 0.18);
-  // Zone C: Main = everything else
-  const zoneCTop = zoneAH + zoneBH;
+  // 人体头顶在 SVG 360×640 坐标系里是 y=143
+  const headTopPx = (143 / 640) * cardH;
 
-  // A: section label & target name
-  sLbl.style.top    = (sa.top + 14) + 'px';
+  // A: section label & target name — 对齐情绪释放 top:22px
+  const headerTop  = Math.max(22, sa.top + 8);
+  const btnBottomY = sa.top + 44;
+  sLbl.style.top    = headerTop + 'px';
   sLbl.style.bottom = 'auto';
-  tgtName.style.top    = (sa.top + 30) + 'px';
+  tgtName.style.top    = (headerTop + 14) + 'px';
   tgtName.style.bottom = 'auto';
 
-  // B: intro / question — sits in zone B
-  qEl.style.top       = zoneAH + 'px';
-  qEl.style.bottom    = '';
-  qEl.style.maxHeight = zoneBH + 'px';
+  // B: 引导语 — bottom 动态计算，锚定在人体头顶上方
+  // 用视口高度计算，不受 card 高度影响
+  const viewH = window.innerHeight;
+  const headTopViewPx = (143 / 640) * viewH;
+  const qBottom = viewH - headTopViewPx + sa.top;
+  const qElMaxH = Math.max(headTopViewPx - btnBottomY - 16, 40);
+  qEl.style.top       = '';
+  qEl.style.bottom    = qBottom + 'px';
+  qEl.style.maxHeight = Math.max(qElMaxH, 40) + 'px';
   qEl.style.overflowY = 'auto';
 
-  // C: body SVG is full-screen (position:absolute inset:0), no change needed
-  // Act buttons (可以/不可以) — center of zone C
-  const btnCenterY = zoneCTop + remaining * 0.52; // ~52% down zone C = chest level
+  // C: act buttons (可以/不可以) — 胸口位置 SVG y≈420
+  const chestY    = (420 / 640) * cardH;
   const btnCenterX = cardW * 0.5;
   const btnGap = 12;
-  btnA.style.top       = (btnCenterY - 18) + 'px';
+  btnA.style.top       = (chestY - 18) + 'px';
   btnA.style.left      = (btnCenterX + btnGap) + 'px';
   btnA.style.right     = 'auto';
   btnA.style.transform = 'none';
-  btnD.style.top       = (btnCenterY - 18) + 'px';
+  btnD.style.top       = (chestY - 18) + 'px';
   btnD.style.right     = (cardW - btnCenterX + btnGap) + 'px';
   btnD.style.left      = 'auto';
   btnD.style.transform = 'none';
 
-  // reflectBox — same center as act buttons
+  // reflectBox — 胸口上方一点
   const reflectEl = document.getElementById('reflectBox');
-  reflectEl.style.top    = (btnCenterY - 20) + 'px';
+  const reflectTop = chestY - 20;
+  reflectEl.style.top    = reflectTop + 'px';
   reflectEl.style.bottom = '';
+
+  // D: bottomBar — 人体轮廓底部 SVG y=580，下方 16px
+  // cardH 包含 safe-area-bottom，要减掉才是实际可视高度
+  const visibleH = cardH - sa.bottom;
+  const bodyBottomPx = (580 / 640) * visibleH;
+  const bottomBar = document.getElementById('bottomBar');
+  bottomBar.style.bottom    = '';
+  bottomBar.style.top       = (bodyBottomPx + 6) + 'px';
+  bottomBar.style.left      = '50%';
+  bottomBar.style.transform = 'translateX(-50%)';
+  bottomBar.style.position  = 'absolute';
 }
 
 function showReflect(){ document.getElementById('reflectBox').classList.add('visible'); document.getElementById('reflectInput').value=''; }
@@ -973,11 +988,8 @@ function loop(ts){
 }
 
 function setVH(){
-  const h = window.innerHeight;
-  const c = document.querySelector('.card');
-  c.style.height = h + 'px';
-  c.style.paddingTop    = 'env(safe-area-inset-top, 0px)';
-  c.style.paddingBottom = 'env(safe-area-inset-bottom, 0px)';
+  // 不用 JS 计算，直接用 CSS min-height 铺满全屏
+  // card 的高度由 CSS 控制，JS 只负责触发 positionUI
 }
 setVH();
 window.addEventListener('resize',()=>{setVH();positionUI();});
@@ -992,16 +1004,17 @@ requestAnimationFrame(loop);
 (function(){
   const css = `
     #nav-orb-btn {
-      top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+      top:  max(22px, calc(env(safe-area-inset-top, 0px) + 8px)) !important;
       left: calc(env(safe-area-inset-left, 0px) + 12px) !important;
     }
-    .music-btn {
-      top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+    .fr-music-btn {
+      top:  max(22px, calc(env(safe-area-inset-top, 0px) + 8px)) !important;
       right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
     }
     @media (orientation: landscape) and (min-width: 600px) {
       #questionEl { font-size: 15px; }
       #pauseBtn, #nextSectionBtn { font-size: 13px; padding: 11px 26px; }
+    }
     }
   `;
   const s = document.createElement('style');
