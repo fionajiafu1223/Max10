@@ -482,7 +482,7 @@ draw();
   <!-- 写新收获 -->
   <div style="font-size:0.72rem;color:#5a7aa0;font-family:'Noto Sans SC',sans-serif;margin-bottom:10px;letter-spacing:0.04em;">记录每一次释放后的收获与领悟</div>
   <div class="gain-cats" id="gainCatsSb">
-    <button class="gain-cat active" data-cat="健康" onclick="selectCat(this,'sb')">🌿 健康</button>
+    <button class="gain-cat" data-cat="健康" onclick="selectCat(this,'sb')">🌿 健康</button>
     <button class="gain-cat" data-cat="财富" onclick="selectCat(this,'sb')">💰 财富</button>
     <button class="gain-cat" data-cat="SP" onclick="selectCat(this,'sb')">💞 SP</button>
     <button class="gain-cat" data-cat="人际关系" onclick="selectCat(this,'sb')">🤝 人际关系</button>
@@ -555,7 +555,7 @@ let migrationDone = false;       // 防止重复迁移本地数据
 // ════════════════════════════════════════
 // 状态
 // ════════════════════════════════════════
-let gainSelectedCat = '健康';
+let gainSelectedCat = '';
 
 // ════════════════════════════════════════
 // 本地存储工具
@@ -694,11 +694,16 @@ async function loadMyData() {
 
   cachedMyItems = myItems;
 
-  // 更新列表（按时间倒序，所以直接用）
-  if (myTitleEl) myTitleEl.textContent = tf('my_gains', myItems.length);
-  renderGainList(myEl, myItems);
+  // 根据当前选中的分类过滤显示（未选 = 显示全部）
+  const displayItems = gainSelectedCat
+    ? myItems.filter(it => it.cat === gainSelectedCat)
+    : myItems;
 
-  // 更新统计
+  // 更新列表标题（用过滤后的数量）和列表
+  if (myTitleEl) myTitleEl.textContent = tf('my_gains', displayItems.length);
+  renderGainList(myEl, displayItems);
+
+  // 更新统计（统计始终基于全部数据）
   renderStatsFromCache();
 }
 
@@ -708,15 +713,40 @@ async function loadMyGains() { return loadMyData(); }
 function selectCat(btn, ctx) {
   const scopeId = ctx === 'sb' ? 'gainCatsSb' : 'gainCats';
   const scope = document.getElementById(scopeId);
+  const isActive = btn.classList.contains('active');
+  // 先清空所有 active 状态
   if (scope) scope.querySelectorAll('.gain-cat').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  gainSelectedCat = btn.dataset.cat;
+
+  if (isActive) {
+    // 再点一次已选中的 → 取消选中（显示全部）
+    gainSelectedCat = '';
+  } else {
+    // 切换到这个分类
+    btn.classList.add('active');
+    gainSelectedCat = btn.dataset.cat;
+  }
+  // 刷新列表（用缓存,不用重新请求）
+  if (cachedMyItems !== null) {
+    const myEl = document.getElementById('myGainListSb');
+    const myTitleEl = document.getElementById('myGainTitleSb');
+    const displayItems = gainSelectedCat
+      ? cachedMyItems.filter(it => it.cat === gainSelectedCat)
+      : cachedMyItems;
+    if (myTitleEl) myTitleEl.textContent = tf('my_gains', displayItems.length);
+    renderGainList(myEl, displayItems);
+  }
 }
 
 async function submitGainSb() {
   const input = document.getElementById('gainInputSb');
   const text  = input.value.trim();
   if (!text) return;
+
+  // 必须选择分类
+  if (!gainSelectedCat) {
+    showToast('请先选择分类');
+    return;
+  }
 
   input.value = '';
   await _submitGainEntry(text, gainSelectedCat);
