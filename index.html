@@ -830,6 +830,7 @@ const _origDraw = draw;
 <!-- 登出菜单 -->
 <div id="auth-menu">
   <button onclick="doLogout()">登出</button>
+  <button onclick="openDeleteAccountModal()" style="color:#c43a3a;">删除账号</button>
 </div>
 
 <!-- 登录/注册弹窗 -->
@@ -1215,6 +1216,206 @@ const _origDraw = draw;
 <script>
 window.openEulaModal = function() { document.getElementById('eula-overlay').classList.add('show'); };
 window.closeEulaModal = function() { document.getElementById('eula-overlay').classList.remove('show'); };
+</script>
+
+<!-- ════════════════════════════════════════
+     删除账号确认弹窗
+     ════════════════════════════════════════ -->
+<style>
+#delete-overlay {
+  position: fixed; inset: 0;
+  background: rgba(20,60,110,0.55);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  z-index: 10001; display: none;
+  align-items: center; justify-content: center; padding: 24px;
+}
+#delete-overlay.show { display: flex; }
+.delete-card {
+  background: rgba(255,255,255,0.96); border-radius: 18px;
+  max-width: 380px; width: 100%;
+  padding: 26px 24px 22px;
+  box-shadow: 0 8px 32px rgba(20,60,110,0.25);
+}
+.delete-title {
+  font-family:'Noto Serif SC',serif;
+  font-size: 1.0rem; color:#c43a3a;
+  font-weight:600; margin-bottom: 12px;
+  text-align: center;
+}
+.delete-body {
+  font-family:'Noto Sans SC',sans-serif;
+  font-size: 0.82rem; color: rgba(20,60,110,0.85);
+  line-height: 1.7; margin-bottom: 16px;
+}
+.delete-body ul { padding-left: 20px; margin: 8px 0; }
+.delete-body li { margin-bottom: 4px; }
+.delete-input {
+  width: 100%; padding: 10px 14px; margin: 8px 0 14px;
+  border: 1.5px solid rgba(196,58,58,0.40); border-radius: 10px;
+  background: rgba(255,255,255,0.85);
+  font-family:'Noto Sans SC',sans-serif;
+  font-size: 0.85rem; outline: none;
+}
+.delete-input:focus { border-color: rgba(196,58,58,0.85); }
+.delete-actions {
+  display: flex; gap: 10px; margin-top: 10px;
+}
+.delete-btn {
+  flex: 1; padding: 11px 0; border: none; border-radius: 12px;
+  font-family:'Noto Serif SC',serif;
+  font-size: 0.88rem; cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.delete-btn:active { transform: scale(0.97); }
+.delete-btn-cancel {
+  background: rgba(20,60,110,0.10); color: rgba(20,60,110,0.85);
+}
+.delete-btn-confirm {
+  background: #c43a3a; color: #fff;
+}
+.delete-btn-confirm:disabled { opacity: 0.45; cursor: not-allowed; }
+.delete-msg {
+  margin-top: 12px; padding: 8px 12px; border-radius: 10px;
+  font-family:'Noto Sans SC',sans-serif;
+  font-size: 0.78rem; text-align: center; display: none;
+}
+.delete-msg.error {
+  display: block; background: rgba(196,58,58,0.12);
+  color: #a02020; border: 1px solid rgba(196,58,58,0.30);
+}
+.delete-msg.success {
+  display: block; background: rgba(80,180,130,0.15);
+  color: #1a6f48; border: 1px solid rgba(80,180,130,0.30);
+}
+</style>
+
+<div id="delete-overlay" onclick="if(event.target===this)closeDeleteModal()">
+  <div class="delete-card">
+    <!-- 第一步:警告 -->
+    <div id="delete-step-1">
+      <div class="delete-title">⚠️ 删除账号</div>
+      <div class="delete-body">
+        删除账号后，以下数据将<strong>永久删除，无法恢复</strong>:
+        <ul>
+          <li>你的账号信息</li>
+          <li>所有目标记录</li>
+          <li>所有收获记录</li>
+        </ul>
+        请确认你真的想这么做。
+      </div>
+      <div class="delete-actions">
+        <button class="delete-btn delete-btn-cancel" onclick="closeDeleteModal()">取消</button>
+        <button class="delete-btn delete-btn-confirm" onclick="goToDeleteStep2()">继续删除</button>
+      </div>
+    </div>
+
+    <!-- 第二步:输入邮箱确认 -->
+    <div id="delete-step-2" style="display:none;">
+      <div class="delete-title">最后确认</div>
+      <div class="delete-body">
+        请输入你的邮箱地址以确认删除:<br>
+        <span style="color:rgba(20,60,110,0.55);font-size:0.75rem;" id="delete-email-hint">(你登录时使用的邮箱)</span>
+      </div>
+      <input type="email" id="delete-email-input" class="delete-input" placeholder="邮箱地址" autocomplete="off" oninput="updateDeleteBtnState()" />
+      <div class="delete-actions">
+        <button class="delete-btn delete-btn-cancel" onclick="closeDeleteModal()">取消</button>
+        <button class="delete-btn delete-btn-confirm" id="delete-confirm-btn" onclick="doDeleteAccount()" disabled>确认删除</button>
+      </div>
+      <div class="delete-msg" id="delete-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  let currentUserEmail = '';
+
+  window.openDeleteAccountModal = async function() {
+    document.getElementById('auth-menu').classList.remove('show');
+
+    // 拿当前用户邮箱
+    try {
+      const { data: { session } } = await window.freedSupa.auth.getSession();
+      if (!session) {
+        alert('请先登录');
+        return;
+      }
+      currentUserEmail = session.user.email || '';
+    } catch(e) {
+      alert('无法读取登录信息');
+      return;
+    }
+
+    // 重置弹窗到第一步
+    document.getElementById('delete-step-1').style.display = 'block';
+    document.getElementById('delete-step-2').style.display = 'none';
+    document.getElementById('delete-email-input').value = '';
+    document.getElementById('delete-confirm-btn').disabled = true;
+    const msg = document.getElementById('delete-msg');
+    msg.textContent = ''; msg.className = 'delete-msg';
+
+    document.getElementById('delete-overlay').classList.add('show');
+  };
+
+  window.closeDeleteModal = function() {
+    document.getElementById('delete-overlay').classList.remove('show');
+  };
+
+  window.goToDeleteStep2 = function() {
+    document.getElementById('delete-step-1').style.display = 'none';
+    document.getElementById('delete-step-2').style.display = 'block';
+    document.getElementById('delete-email-hint').textContent = '(' + currentUserEmail.replace(/(.{2}).+(@.+)/, '$1***$2') + ')';
+  };
+
+  window.updateDeleteBtnState = function() {
+    const input = document.getElementById('delete-email-input').value.trim().toLowerCase();
+    const btn = document.getElementById('delete-confirm-btn');
+    btn.disabled = (input !== currentUserEmail.toLowerCase());
+  };
+
+  window.doDeleteAccount = async function() {
+    const btn = document.getElementById('delete-confirm-btn');
+    const msg = document.getElementById('delete-msg');
+    btn.disabled = true;
+    btn.textContent = '删除中…';
+    msg.textContent = ''; msg.className = 'delete-msg';
+
+    try {
+      const { data: { session } } = await window.freedSupa.auth.getSession();
+      if (!session) throw new Error('登录已过期，请重新登录');
+
+      const res = await fetch('https://api.freedreleasing.com/delete-account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token,
+        },
+        body: JSON.stringify({}),
+      });
+
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || '删除失败');
+      }
+
+      msg.textContent = '账号已删除，再见 🌊';
+      msg.className = 'delete-msg success';
+
+      // 登出 + 清理本地 + 刷新
+      setTimeout(async () => {
+        try { await window.freedSupa.auth.signOut(); } catch(_) {}
+        localStorage.removeItem('sb-ryoaxziysgdkjcjiuqti-auth-token');
+        location.reload();
+      }, 1500);
+
+    } catch (err) {
+      msg.textContent = '删除失败: ' + (err.message || '未知错误');
+      msg.className = 'delete-msg error';
+      btn.disabled = false;
+      btn.textContent = '确认删除';
+    }
+  };
+})();
 </script>
 
 </body>
