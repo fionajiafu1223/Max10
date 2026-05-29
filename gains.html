@@ -85,18 +85,6 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
     margin-top: 2px;
   }
   .gain-meta { font-size: 0.64rem; color: #7a9ab0; font-family: 'Noto Sans SC', sans-serif; }
-  .gain-like-btn {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: none; border: 1px solid rgba(100,160,220,0.25);
-    border-radius: 20px; padding: 3px 10px;
-    font-size: 0.7rem; color: #7a9ab0;
-    font-family: 'Noto Sans SC', sans-serif;
-    cursor: pointer; transition: all 0.18s ease;
-    line-height: 1;
-  }
-  .gain-like-btn:hover { background: rgba(255,100,130,0.08); border-color: rgba(255,100,130,0.4); color: #e05080; }
-  .gain-like-btn.liked { background: rgba(255,100,130,0.12); border-color: rgba(255,100,130,0.5); color: #e05080; }
-  .gain-like-count { font-weight: 600; }
   .gain-loading { font-size: 0.78rem; color: #8aaac0; text-align: center; padding: 10px 0; }
   .gain-close-btn {
     position: absolute; top: 14px; right: 16px;
@@ -568,7 +556,6 @@ let migrationDone = false;       // 防止重复迁移本地数据
 // 状态
 // ════════════════════════════════════════
 let gainSelectedCat = '健康';
-const likedKeys = new Set();
 
 // ════════════════════════════════════════
 // 本地存储工具
