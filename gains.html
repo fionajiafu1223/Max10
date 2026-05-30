@@ -108,9 +108,9 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
   }
   .gain-share-btn:hover { background: rgba(200,230,255,0.8); }
   .gain-share-btn.shared {
-    border-color: rgba(100,160,100,0.35);
-    color: #5a9a6a; background: rgba(200,240,210,0.4);
-    cursor: not-allowed; opacity: 0.8;
+    border-color: rgba(74,159,212,0.45);
+    color: #2a7abf; background: rgba(255,255,255,0.6);
+    cursor: not-allowed;
   }
   /* 已贴上标签（非按钮，纯展示） */
   .gain-shared-tag {
@@ -879,10 +879,10 @@ function renderGainList(el, items, isShared) {
 
     // ── 我的收获 ──
     const isAlreadyShared = currentUser && cachedSharedIds.has(String(item.id));
-    const likeMeta = likes > 0 ? '<span class="gain-meta" style="color:#e05080;">❤️ ' + likes + '</span>' : '';
+    const likeStr = likes > 0 ? ' ❤️ ' + likes : '';
     const shareBtn = currentUser
       ? (isAlreadyShared
-          ? '<button class="gain-share-btn shared" disabled>🌟 已上墙</button>'
+          ? '<button class="gain-share-btn shared" disabled>🌟 已上墙' + likeStr + '</button>'
           : '<button class="gain-share-btn" onclick="shareGain(\'' + item.id + '\', this)">📝 贴上收获墙</button>')
       : '';
     return '<li class="gain-item">' +
@@ -890,7 +890,7 @@ function renderGainList(el, items, isShared) {
       '<div class="gain-footer">' +
       '<div style="display:flex;align-items:center;gap:6px;">' + badge +
       '<span class="gain-meta">' + formatRelTime(item.ts) + '</span></div>' +
-      '<div style="display:flex;align-items:center;gap:6px;">' + likeMeta + shareBtn + '</div>' +
+      '<div style="display:flex;align-items:center;gap:6px;">' + shareBtn + '</div>' +
       '</div></li>';
   }).join('');
 }
