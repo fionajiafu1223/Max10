@@ -882,8 +882,8 @@ function renderGainList(el, items, isShared) {
     const likeMeta = likes > 0 ? '<span class="gain-meta" style="color:#e05080;">❤️ ' + likes + '</span>' : '';
     const shareBtn = currentUser
       ? (isAlreadyShared
-          ? '<span class="gain-shared-tag">已贴上</span>'
-          : '<button class="gain-share-btn" onclick="shareGain(\'' + item.id + '\', this)">🌟 贴上收获墙</button>')
+          ? '<button class="gain-share-btn shared" disabled>🌟 已上墙</button>'
+          : '<button class="gain-share-btn" onclick="shareGain(\'' + item.id + '\', this)">📝 贴上收获墙</button>')
       : '';
     return '<li class="gain-item">' +
       '<span class="gain-text">' + escapeHtml(item.text) + '</span>' +
@@ -956,7 +956,7 @@ async function shareGain(entryId, btn) {
   const item = (cachedMyItems || []).find(it => String(it.id) === String(entryId));
   if (!item) {
     btn.disabled = false;
-    btn.textContent = '🌟 贴上收获墙';
+    btn.textContent = '📝 贴上收获墙';
     showToast('找不到这条收获，请刷新后重试');
     return;
   }
@@ -979,14 +979,14 @@ async function shareGain(entryId, btn) {
     // 更新已贴上缓存
     cachedSharedIds.add(String(entryId));
     // 按钮变成"已贴上"
-    btn.textContent = '已贴上';
+    btn.textContent = '🌟 已上墙';
     btn.classList.add('shared');
     btn.disabled = true;
     showToast('🌟 已贴上收获墙，鼓励了更多人');
   } catch(e) {
     console.error('Share gain error:', e);
     btn.disabled = false;
-    btn.textContent = '🌟 贴上收获墙';
+    btn.textContent = '📝 贴上收获墙';
     showToast('贴上失败，请重试');
   }
 }
@@ -1559,7 +1559,7 @@ function applyLoginGate() {
 <!-- 收获墙"我的内容"操作菜单 -->
 <div id="my-public-menu-overlay" onclick="if(event.target===this)closeMyPublicMenu()">
   <div class="warn-menu">
-    <button onclick="doWithdrawFromWall()" style="color:#c05050;">从收获墙撤回</button>
+    <button onclick="doWithdrawFromWall()" style="color:#3a5a80;">从收获墙撤回</button>
     <div class="warn-divider"></div>
     <button class="cancel" onclick="closeMyPublicMenu()">取消</button>
   </div>
