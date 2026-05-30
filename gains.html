@@ -112,6 +112,16 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
     color: #5a9a6a; background: rgba(200,240,210,0.4);
     cursor: not-allowed; opacity: 0.8;
   }
+  /* 已贴上标签（非按钮，纯展示） */
+  .gain-shared-tag {
+    font-size: 0.68rem;
+    color: #5a9a6a;
+    font-family: 'Noto Sans SC', sans-serif;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(200,240,210,0.45);
+    border: 1px solid rgba(100,160,100,0.30);
+  }
   /* ⚠️ 举报/屏蔽按钮 */
   .gain-warn-btn {
     padding: 3px 10px; border-radius: 14px;
@@ -132,6 +142,12 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
     display: none; align-items: center; justify-content: center;
   }
   #warn-menu-overlay.show { display: flex; }
+  #my-public-menu-overlay {
+    position: fixed; inset: 0; z-index: 9000;
+    background: rgba(20,60,110,0.30);
+    display: none; align-items: center; justify-content: center;
+  }
+  #my-public-menu-overlay.show { display: flex; }
   .warn-menu {
     background: rgba(255,255,255,0.96);
     border-radius: 18px; padding: 8px;
@@ -838,30 +854,44 @@ function renderGainList(el, items, isShared) {
     const icon = CAT_ICONS[item.cat] || '🌸';
     const badge = item.cat ? '<span class="gain-badge">' + icon + ' ' + item.cat + '</span>' : '';
     const likes = item.likes || 0;
-    const itemId = isShared ? (item.id + '') : (item.ts + '');
-    const liked = likedKeys.has(itemId);
-    const likeBtn = isShared
-      ? '<button class="gain-like-btn ' + (liked ? 'liked' : '') + '" onclick="likeGain(\'' + item.id + '\', this)">' +
-        (liked ? '❤️' : '🤍') + ' <span class="gain-like-count">' + (likes > 0 ? likes : '赞') + '</span></button>'
-      : '<span class="gain-meta">' + (likes > 0 ? '❤️ ' + likes : '') + '</span>';
-    // ⚠️ 按钮：只在「所有人的收获」里、且不是自己发的内容时显示
-    const showWarn = isShared && currentUser && item.user_id && item.user_id !== currentUser.id;
-    const warnBtn = showWarn
-      ? '<button class="gain-warn-btn" onclick="openWarnMenu(\'' + item.id + '\', \'' + item.user_id + '\')">⋯</button>'
-      : '';
-    // 分享按钮：只在「我的收获」里显示，已分享的显示"已分享"（灰掉）
-    const isAlreadyShared = !isShared && currentUser && cachedSharedIds.has(String(item.id));
-    const shareBtn = (!isShared && currentUser)
+
+    // ── 收获墙 ──
+    if (isShared) {
+      const itemId = item.id + '';
+      const liked = likedKeys.has(itemId);
+      const likeBtn = '<button class="gain-like-btn ' + (liked ? 'liked' : '') + '" onclick="likeGain(\'' + item.id + '\', this)">' +
+        (liked ? '❤️' : '🤍') + ' <span class="gain-like-count">' + (likes > 0 ? likes : '赞') + '</span></button>';
+      // ⋯ 菜单：别人的内容 = 举报/屏蔽；自己的内容 = 从收获墙撤回
+      const isOwn = currentUser && item.user_id && item.user_id === currentUser.id;
+      const moreBtn = isOwn
+        ? '<button class="gain-warn-btn" onclick="openMyPublicMenu(\'' + item.id + '\')">⋯</button>'
+        : (currentUser && item.user_id && item.user_id !== currentUser.id
+            ? '<button class="gain-warn-btn" onclick="openWarnMenu(\'' + item.id + '\', \'' + item.user_id + '\')">⋯</button>'
+            : '');
+      return '<li class="gain-item shared">' +
+        '<span class="gain-text">' + escapeHtml(item.text) + '</span>' +
+        '<div class="gain-footer">' +
+        '<div style="display:flex;align-items:center;gap:6px;">' + badge +
+        '<span class="gain-meta">' + formatRelTime(item.ts) + '</span></div>' +
+        '<div style="display:flex;align-items:center;gap:4px;">' + likeBtn + moreBtn + '</div>' +
+        '</div></li>';
+    }
+
+    // ── 我的收获 ──
+    const isAlreadyShared = currentUser && cachedSharedIds.has(String(item.id));
+    const likeMeta = likes > 0 ? '<span class="gain-meta" style="color:#e05080;">❤️ ' + likes + '</span>' : '';
+    const shareBtn = currentUser
       ? (isAlreadyShared
-          ? '<button class="gain-share-btn shared" disabled>已贴上</button>'
+          ? '<span class="gain-shared-tag">已贴上</span>'
           : '<button class="gain-share-btn" onclick="shareGain(\'' + item.id + '\', this)">🌟 贴上收获墙</button>')
       : '';
-    return '<li class="gain-item ' + (isShared ? 'shared' : '') + '">' +
+    return '<li class="gain-item">' +
       '<span class="gain-text">' + escapeHtml(item.text) + '</span>' +
       '<div class="gain-footer">' +
       '<div style="display:flex;align-items:center;gap:6px;">' + badge +
       '<span class="gain-meta">' + formatRelTime(item.ts) + '</span></div>' +
-      '<div style="display:flex;align-items:center;gap:4px;">' + shareBtn + likeBtn + warnBtn + '</div></li>';
+      '<div style="display:flex;align-items:center;gap:6px;">' + likeMeta + shareBtn + '</div>' +
+      '</div></li>';
   }).join('');
 }
 
@@ -1525,6 +1555,48 @@ function applyLoginGate() {
     <button class="cancel" onclick="closeWarnMenu()">取消</button>
   </div>
 </div>
+
+<!-- 收获墙"我的内容"操作菜单 -->
+<div id="my-public-menu-overlay" onclick="if(event.target===this)closeMyPublicMenu()">
+  <div class="warn-menu">
+    <button onclick="doWithdrawFromWall()" style="color:#c05050;">从收获墙撤回</button>
+    <div class="warn-divider"></div>
+    <button class="cancel" onclick="closeMyPublicMenu()">取消</button>
+  </div>
+</div>
+
+<script>
+let _myPublicTargetId = null;
+
+window.openMyPublicMenu = function(entryId) {
+  _myPublicTargetId = entryId;
+  document.getElementById('my-public-menu-overlay').classList.add('show');
+};
+window.closeMyPublicMenu = function() {
+  document.getElementById('my-public-menu-overlay').classList.remove('show');
+};
+
+window.doWithdrawFromWall = async function() {
+  if (!_myPublicTargetId || !currentUser) { closeMyPublicMenu(); return; }
+  closeMyPublicMenu();
+  try {
+    await supaFetch('/rest/v1/gain_public?id=eq.' + _myPublicTargetId, {
+      method: 'DELETE',
+      useAuth: true,
+    });
+    // 从已分享缓存里移除
+    cachedSharedIds.delete(String(_myPublicTargetId));
+    showToast('已从收获墙撤回');
+    // 刷新收获墙 + 我的收获(让分享按钮恢复)
+    loadSharedGains();
+    cachedMyItems = null;
+    loadMyData();
+  } catch(e) {
+    console.error('Withdraw error:', e);
+    showToast('撤回失败，请重试');
+  }
+};
+</script>
 
 <script src="nav-orb.js"></script>
 </body>
