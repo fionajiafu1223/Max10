@@ -30,11 +30,20 @@
 
   function getToken() {
     try {
+      // 直接读已知的 key
+      const direct = localStorage.getItem('sb-ryoaxziysgdkjcjiuqti-auth-token');
+      if (direct) {
+        const val = JSON.parse(direct);
+        const token = val?.access_token || val?.session?.access_token;
+        if (token) return token;
+      }
+      // 兼容旧格式：遍历查找
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.includes('supabase') && key.includes('auth')) {
+        if (key && (key.includes('supabase') || key.includes('sb-')) && key.includes('auth')) {
           const val = JSON.parse(localStorage.getItem(key));
-          return val?.access_token || val?.session?.access_token || null;
+          const token = val?.access_token || val?.session?.access_token;
+          if (token) return token;
         }
       }
     } catch(_) {}
@@ -58,13 +67,8 @@
     } catch(_) { _premiumCache = false; _cacheTime = now; return false; }
   }
 
-  // ─── 未登录跳登录页，已登录未付费弹付费墙 ───────────────
+  // ─── 需要付费权限的入口 ───────────────────────────────
   async function requirePremium(onGranted) {
-    const token = getToken();
-    if (!token) {
-      window.location.href = 'index.html?login=1';
-      return;
-    }
     const isPremium = await checkPremium();
     if (isPremium) {
       if (typeof onGranted === 'function') onGranted();
@@ -315,11 +319,18 @@
 
   function getUserId() {
     try {
+      const direct = localStorage.getItem('sb-ryoaxziysgdkjcjiuqti-auth-token');
+      if (direct) {
+        const val = JSON.parse(direct);
+        const id = val?.user?.id || val?.session?.user?.id;
+        if (id) return id;
+      }
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.includes('supabase') && key.includes('auth')) {
+        if (key && (key.includes('supabase') || key.includes('sb-')) && key.includes('auth')) {
           const val = JSON.parse(localStorage.getItem(key));
-          return val?.user?.id || val?.session?.user?.id || null;
+          const id = val?.user?.id || val?.session?.user?.id;
+          if (id) return id;
         }
       }
     } catch(_) {}
