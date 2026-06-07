@@ -84,21 +84,21 @@
     style.textContent = `
       #pw-overlay {
         position: fixed; inset: 0; z-index: 9999;
-        background: rgba(60,120,180,0.20);
-        backdrop-filter: blur(12px);
+        background: linear-gradient(180deg, rgba(8,28,60,0.88) 0%, rgba(10,40,80,0.92) 100%);
+        backdrop-filter: blur(14px);
         display: flex; align-items: flex-end; justify-content: center;
         animation: pwFadeIn 0.25s ease;
       }
       @keyframes pwFadeIn { from{opacity:0} to{opacity:1} }
       #pw-sheet {
         width: 100%; max-width: 480px;
-        background: #fff;
+        background: rgba(255,255,255,0.97);
         border-radius: 28px 28px 0 0;
         padding: 24px 20px 44px;
-        max-height: 92vh; overflow-y: auto;
+        max-height: 88vh; overflow-y: auto;
         animation: pwSlideUp 0.32s cubic-bezier(0.22,1,0.36,1);
         font-family: 'Noto Serif SC', serif;
-        box-shadow: 0 -2px 24px rgba(0,80,160,0.10);
+        box-shadow: 0 -4px 40px rgba(0,40,100,0.25);
       }
       @keyframes pwSlideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
       #pw-close {
