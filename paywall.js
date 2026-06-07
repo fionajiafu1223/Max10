@@ -84,94 +84,98 @@
     style.textContent = `
       #pw-overlay {
         position: fixed; inset: 0; z-index: 9999;
-        background: rgba(40,90,140,0.25);
-        backdrop-filter: blur(10px);
+        background: rgba(60,120,180,0.20);
+        backdrop-filter: blur(12px);
         display: flex; align-items: flex-end; justify-content: center;
         animation: pwFadeIn 0.25s ease;
       }
       @keyframes pwFadeIn { from{opacity:0} to{opacity:1} }
       #pw-sheet {
         width: 100%; max-width: 480px;
-        background: rgba(255,255,255,0.92);
-        backdrop-filter: blur(20px);
-        border-radius: 24px 24px 0 0;
-        padding: 24px 20px 40px;
+        background: #fff;
+        border-radius: 28px 28px 0 0;
+        padding: 24px 20px 44px;
         max-height: 92vh; overflow-y: auto;
         animation: pwSlideUp 0.32s cubic-bezier(0.22,1,0.36,1);
         font-family: 'Noto Serif SC', serif;
-        border-top: 1px solid rgba(255,255,255,0.98);
-        box-shadow: 0 -4px 32px rgba(0,60,120,0.10);
+        box-shadow: 0 -2px 24px rgba(0,80,160,0.10);
       }
       @keyframes pwSlideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
       #pw-close {
-        position: absolute; top: 16px; right: 20px;
-        width: 30px; height: 30px; border-radius: 50%;
-        background: rgba(100,160,220,0.12); border: none;
-        color: rgba(42,80,128,0.5); font-size: 0.95rem;
+        position: absolute; top: 16px; right: 18px;
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(180,210,240,0.45); border: none;
+        color: #5a7aa0; font-size: 0.9rem;
         cursor: pointer; display: flex; align-items: center; justify-content: center;
       }
       #pw-sheet h2 {
         text-align: center; font-size: 1.1rem; letter-spacing: 0.14em;
-        color: #0e2840; margin-bottom: 4px;
+        color: #1a3a5c; margin-bottom: 4px;
       }
       #pw-sheet .pw-sub {
-        text-align: center; font-size: 0.78rem; color: #5a7aa0;
-        font-family: 'Noto Sans SC', sans-serif; margin-bottom: 20px; letter-spacing: 0.04em;
+        text-align: center; font-size: 0.78rem; color: #6a8aaa;
+        font-family: 'Noto Sans SC', sans-serif; margin-bottom: 18px; letter-spacing: 0.04em;
       }
-      .pw-features { display: flex; gap: 10px; margin-bottom: 20px; }
-      .pw-feat-col { flex: 1; border-radius: 12px; padding: 12px 10px; }
-      .pw-feat-col.free { background: rgba(245,250,255,0.7); border: 1px solid rgba(100,160,220,0.18); }
-      .pw-feat-col.paid { background: rgba(235,245,255,0.85); border: 1.5px solid rgba(74,159,212,0.35); }
+      .pw-features { display: flex; gap: 10px; margin-bottom: 18px; }
+      .pw-feat-col { flex: 1; border-radius: 16px; padding: 12px 10px; }
+      .pw-feat-col.free {
+        background: #f4f8fc;
+        border: 1px solid rgba(160,200,235,0.5);
+      }
+      .pw-feat-col.paid {
+        background: linear-gradient(160deg, #e8f4ff 0%, #ddeeff 100%);
+        border: 1.5px solid rgba(74,159,212,0.45);
+      }
       .pw-feat-title { font-size: 0.72rem; letter-spacing: 0.08em; margin-bottom: 8px; text-align: center; font-family: 'Noto Sans SC', sans-serif; }
-      .pw-feat-col.free .pw-feat-title { color: #5a7aa0; }
-      .pw-feat-col.paid .pw-feat-title { color: #2a5080; }
-      .pw-feat-item { font-size: 0.72rem; font-family: 'Noto Sans SC', sans-serif; line-height: 1.9; padding-left: 2px; }
-      .pw-feat-col.free .pw-feat-item { color: #5a7aa0; }
+      .pw-feat-col.free .pw-feat-title { color: #8aaac0; }
+      .pw-feat-col.paid .pw-feat-title { color: #2a7abf; }
+      .pw-feat-item { font-size: 0.72rem; font-family: 'Noto Sans SC', sans-serif; line-height: 2.0; padding-left: 2px; }
+      .pw-feat-col.free .pw-feat-item { color: #8aaac0; }
       .pw-feat-col.paid .pw-feat-item { color: #2a5080; }
-      .pw-plans { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+      .pw-plans { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
       .pw-plan {
-        border-radius: 14px; padding: 14px 16px;
-        border: 1.5px solid rgba(100,160,220,0.25);
-        background: rgba(255,255,255,0.75);
+        border-radius: 16px; padding: 14px 16px;
+        border: 1.5px solid rgba(160,200,235,0.6);
+        background: #f8fbff;
         cursor: pointer; transition: all 0.18s;
         display: flex; align-items: center; justify-content: space-between;
         position: relative;
       }
-      .pw-plan:hover { background: rgba(200,228,255,0.4); border-color: rgba(74,159,212,0.4); }
-      .pw-plan.selected { border-color: rgba(74,159,212,0.7); background: rgba(200,228,255,0.45); }
-      .pw-plan.highlight { border-color: rgba(74,159,212,0.35); background: rgba(235,245,255,0.6); }
-      .pw-plan.highlight.selected { border-color: rgba(74,159,212,0.75); background: rgba(200,228,255,0.50); }
+      .pw-plan:hover { background: #eaf4ff; border-color: rgba(74,159,212,0.5); }
+      .pw-plan.selected { border-color: #4a9fd4; background: #e4f2ff; box-shadow: 0 2px 12px rgba(74,159,212,0.18); }
+      .pw-plan.highlight { border-color: rgba(74,159,212,0.45); background: #eef7ff; }
+      .pw-plan.highlight.selected { border-color: #4a9fd4; background: #e4f2ff; box-shadow: 0 2px 12px rgba(74,159,212,0.20); }
       .pw-plan-badge {
         position: absolute; top: -9px; right: 12px;
         background: linear-gradient(135deg, #4a9fd4, #2a7abf);
-        color: #fff; font-size: 0.65rem; padding: 2px 10px;
+        color: #fff; font-size: 0.65rem; padding: 3px 10px;
         border-radius: 99px; letter-spacing: 0.06em; font-family: 'Noto Sans SC', sans-serif;
       }
-      .pw-plan-left { display: flex; flex-direction: column; gap: 2px; }
-      .pw-plan-name { font-size: 0.9rem; color: #0e2840; letter-spacing: 0.06em; }
-      .pw-plan-sub { font-size: 0.7rem; color: #5a7aa0; font-family:'Noto Sans SC',sans-serif; }
+      .pw-plan-left { display: flex; flex-direction: column; gap: 3px; }
+      .pw-plan-name { font-size: 0.92rem; color: #1a3a5c; letter-spacing: 0.06em; }
+      .pw-plan-sub { font-size: 0.7rem; color: #8aaac0; font-family:'Noto Sans SC',sans-serif; }
       .pw-plan-right { display: flex; align-items: baseline; gap: 3px; }
-      .pw-plan-price { font-size: 1.3rem; color: #2a5080; font-weight: 400; }
-      .pw-plan-period { font-size: 0.72rem; color: #5a7aa0; font-family:'Noto Sans SC',sans-serif; }
+      .pw-plan-price { font-size: 1.35rem; color: #2a7abf; }
+      .pw-plan-period { font-size: 0.72rem; color: #8aaac0; font-family:'Noto Sans SC',sans-serif; }
       .pw-btn {
-        width: 100%; padding: 14px; border: none; border-radius: 14px;
-        background: linear-gradient(135deg, #4a9fd4, #2a7abf);
+        width: 100%; padding: 15px; border: none; border-radius: 16px;
+        background: linear-gradient(135deg, #4a9fd4 0%, #2a7abf 100%);
         color: #fff; font-family: 'Noto Serif SC', serif;
         font-size: 1rem; letter-spacing: 0.1em; cursor: pointer;
-        transition: opacity 0.2s, transform 0.15s; margin-bottom: 12px;
-        box-shadow: 0 4px 16px rgba(42,122,191,0.30);
+        transition: opacity 0.2s, transform 0.15s; margin-bottom: 14px;
+        box-shadow: 0 4px 18px rgba(42,122,191,0.32);
       }
       .pw-btn:hover { opacity: 0.88; transform: scale(1.02); }
       .pw-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
       .pw-restore {
-        text-align: center; font-size: 0.75rem; color: #5a7aa0;
+        text-align: center; font-size: 0.75rem; color: #8aaac0;
         cursor: pointer; font-family: 'Noto Sans SC', sans-serif;
         letter-spacing: 0.04em; background: none; border: none; width: 100%;
       }
-      .pw-restore:hover { color: #2a5080; }
-      .pw-msg { text-align: center; font-size: 0.78rem; margin-top: 10px; font-family: 'Noto Sans SC', sans-serif; min-height: 20px; color: #5a7aa0; }
-      .pw-msg.error { color: rgba(180,50,50,0.85); }
-      .pw-msg.success { color: #2a7abf; }
+      .pw-restore:hover { color: #4a9fd4; }
+      .pw-msg { text-align: center; font-size: 0.78rem; margin-top: 10px; font-family: 'Noto Sans SC', sans-serif; min-height: 20px; color: #8aaac0; }
+      .pw-msg.error { color: #d05050; }
+      .pw-msg.success { color: #4a9fd4; }
     `;
     document.head.appendChild(style);
   }
