@@ -30,16 +30,16 @@
   let _cacheTime = 0;
   const CACHE_TTL = 5 * 60 * 1000;
 
-  function getToken() {
+  async function getToken() {
+    // 优先用 window.freedSupa（和 index.html 共用同一实例）
     try {
-      // 直接读已知的 key
-      const direct = localStorage.getItem('sb-ryoaxziysgdkjcjiuqti-auth-token');
-      if (direct) {
-        const val = JSON.parse(direct);
-        const token = val?.access_token || val?.session?.access_token;
-        if (token) return token;
+      if (window.freedSupa) {
+        const { data: { session } } = await window.freedSupa.auth.getSession();
+        if (session?.access_token) return session.access_token;
       }
-      // 兼容旧格式：遍历查找
+    } catch(_) {}
+    // 兜底：遍历 localStorage
+    try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && (key.includes('supabase') || key.includes('sb-')) && key.includes('auth')) {
@@ -55,7 +55,7 @@
   async function checkPremium(forceRefresh) {
     const now = Date.now();
     if (!forceRefresh && _premiumCache !== null && (now - _cacheTime) < CACHE_TTL) return _premiumCache;
-    const token = getToken();
+    const token = await getToken();
     if (!token) { _premiumCache = false; _cacheTime = now; return false; }
     try {
       const res = await fetch(`${WORKER_URL}/subscription/status`, {
