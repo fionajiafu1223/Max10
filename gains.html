@@ -1101,9 +1101,21 @@ function applyLoginGate() {
 })();
 </script>
 
+<script>
+(async function() {
+  const isPremium = await FreedPaywall.checkPremium();
+  if (!isPremium) {
+    FreedPaywall.showPaywall(function() {
+      window.location.reload();
+    });
+  }
+})();
+</script>
 <script src="paywall.js"></script>
 <script>
 (async function() {
+  const loggedIn = await FreedPaywall.requireLogin();
+  if (!loggedIn) return;
   const isPremium = await FreedPaywall.checkPremium();
   if (!isPremium) {
     FreedPaywall.showPaywall(function() {
