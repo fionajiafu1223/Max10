@@ -145,10 +145,10 @@
         text-align: center; font-family: 'Noto Sans SC', sans-serif;
       }
       .pw-feat-col.free .pw-feat-title { color: #5a7aa0; }
-      .pw-feat-col.paid .pw-feat-title { color: #2a7abf; }
+      .pw-feat-col.paid .pw-feat-title { color: #5a7aa0; }
       .pw-feat-item {
         font-size: 0.67rem; font-family: 'Noto Sans SC', sans-serif;
-        line-height: 1.95; padding-left: 2px; color: #3a6080;
+        line-height: 1.95; padding-left: 2px; color: #2a4a6a;
         white-space: nowrap;
       }
 
@@ -157,11 +157,11 @@
       .pw-paid-col { flex: 1; display: flex; flex-direction: column; gap: 6px; }
       .pw-paid-group { display: flex; flex-direction: column; }
       .pw-paid-group-label {
-        font-size: 0.63rem; color: #2a7abf; font-family: 'Noto Sans SC', sans-serif;
+        font-size: 0.63rem; color: #4a9fd4; font-family: 'Noto Sans SC', sans-serif;
         letter-spacing: 0.05em; margin-bottom: 2px; white-space: nowrap;
       }
       .pw-paid-group-item {
-        font-size: 0.66rem; color: #1a4070; font-family: 'Noto Sans SC', sans-serif;
+        font-size: 0.66rem; color: #2a4a6a; font-family: 'Noto Sans SC', sans-serif;
         line-height: 1.85; white-space: nowrap;
       }
 
@@ -189,11 +189,11 @@
         box-shadow: 0 2px 8px rgba(58,184,160,0.40);
       }
       .pw-plan-left { display: flex; flex-direction: column; gap: 2px; }
-      .pw-plan-name { font-size: 0.86rem; color: #1a3a5c; letter-spacing: 0.06em; }
-      .pw-plan-sub { font-size: 0.65rem; color: #7a9ab8; font-family:'Noto Sans SC',sans-serif; }
+      .pw-plan-name { font-size: 0.86rem; color: #2a4a6a; letter-spacing: 0.06em; }
+      .pw-plan-sub { font-size: 0.65rem; color: #5a7aa0; font-family:'Noto Sans SC',sans-serif; }
       .pw-plan-right { display: flex; align-items: baseline; gap: 2px; }
-      .pw-plan-price { font-size: 1.22rem; color: #2a7abf; }
-      .pw-plan-period { font-size: 0.65rem; color: #7a9ab8; font-family:'Noto Sans SC',sans-serif; }
+      .pw-plan-price { font-size: 1.22rem; color: #4a9fd4; }
+      .pw-plan-period { font-size: 0.65rem; color: #5a7aa0; font-family:'Noto Sans SC',sans-serif; }
 
       /* ── 按钮 ── */
       .pw-btn {
