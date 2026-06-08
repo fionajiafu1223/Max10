@@ -24,43 +24,51 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
   position: fixed; inset: 0; z-index: 10; pointer-events: none;
 }
 
-/* ── 球 + 标签组合 ── */
+/* ── 球（完全复用 nav-bubble 样式）── */
 .asst-orb-wrap {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  pointer-events: auto; cursor: pointer;
-  animation: orbBob var(--bob-dur, 3.5s) ease-in-out infinite;
-  animation-delay: var(--bob-delay, 0s);
-  animation-fill-mode: both;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-.asst-orb-wrap.visible { opacity: 1; }
-.asst-orb-wrap:active .asst-orb { transform: scale(0.92); }
-
-@keyframes orbBob {
-  0%,100% { margin-top: 0px; }
-  50%      { margin-top: -10px; }
-}
-
-.asst-orb {
-  width: 96px; height: 96px;
+  position: fixed;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 2rem;
-  backdrop-filter: blur(3px);
-  transition: transform 0.18s;
+  text-align: center;
+  cursor: pointer;
+  pointer-events: auto;
+  font-family: 'ITC Bauhaus','Josefin Sans',sans-serif;
+  font-weight: 500;
+  color: rgba(220,245,255,0.92);
+  text-shadow: 0 1px 6px rgba(0,60,120,0.4);
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  width: 88px; height: 88px;
+  font-size: 0.72rem;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+  opacity: 0;
   user-select: none;
+  backdrop-filter: blur(3px);
+  flex-direction: column; gap: 4px;
+}
+.asst-orb-wrap.visible {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  animation: navBob var(--bob-dur, 3.5s) ease-in-out infinite;
+  animation-delay: var(--bob-delay, 0s);
+  animation-fill-mode: both;
+}
+.asst-orb-wrap:active { transform: translate(-50%, -50%) scale(0.92); }
+
+@keyframes navBob {
+  0%,100% { margin-top: 0px; }
+  50%      { margin-top: -8px; }
 }
 
+.asst-orb { display: none; } /* emoji不再用，用文字代替 */
+
 .asst-orb-name {
-  font-size: 0.82rem; letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.88);
-  font-family: 'Noto Serif SC', serif;
-  text-align: center; line-height: 1.5;
-  text-shadow: 0 1px 6px rgba(0,60,120,0.35);
+  font-size: 0.72rem; letter-spacing: 0.06em;
+  color: rgba(220,245,255,0.92);
+  font-family: 'ITC Bauhaus','Josefin Sans',sans-serif;
+  text-align: center; line-height: 1.3;
+  text-shadow: 0 1px 6px rgba(0,60,120,0.4);
 }
 
 /* ── 展开面板 ── */
@@ -140,17 +148,79 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
 
 <script>
 (function() {
-var canvas = document.createElement('canvas');
-canvas.id = 'bgCanvas';
+const canvas = document.createElement('canvas');
 canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;';
 document.body.insertBefore(canvas, document.body.firstChild);
-var ctx = canvas.getContext('2d');
-var W, H, t = 0;
+const ctx = canvas.getContext('2d');
+let W, H, t = 0;
+
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+function drawBg() {
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0.00, '#c2ecf8');
+  bg.addColorStop(0.25, '#8ed4ee');
+  bg.addColorStop(0.55, '#4aaed8');
+  bg.addColorStop(0.80, '#1a7ab5');
+  bg.addColorStop(1.00, '#0d4870');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function drawRays(t) {
+  ctx.save();
+  const rayColors = [
+    'rgba(180,240,255,0.04)',
+    'rgba(160,230,255,0.03)',
+    'rgba(200,245,255,0.035)',
+  ];
+  const rays = [
+    {x:0.25, width:0.12, drift:0.015},
+    {x:0.45, width:0.08, drift:-0.010},
+    {x:0.62, width:0.14, drift:0.012},
+    {x:0.80, width:0.07, drift:-0.008},
+    {x:0.15, width:0.06, drift:0.018},
+  ];
+  rays.forEach((r, i) => {
+    const cx = (r.x + Math.sin(t*0.3 + i) * r.drift) * W;
+    const hw = r.width * W * 0.5;
+    const grad = ctx.createLinearGradient(0, 0, 0, H*0.75);
+    grad.addColorStop(0,   rayColors[i % rayColors.length].replace('0.04', String(0.055 + Math.sin(t*0.4+i)*0.015)));
+    grad.addColorStop(0.6, rayColors[i % rayColors.length]);
+    grad.addColorStop(1,   'rgba(180,240,255,0)');
+    ctx.beginPath();
+    ctx.moveTo(cx - hw*0.2, 0); ctx.lineTo(cx + hw*0.2, 0);
+    ctx.lineTo(cx + hw, H*0.75); ctx.lineTo(cx - hw, H*0.75);
+    ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+  });
+  ctx.restore();
+}
+
+function drawCaustics(t) {
+  ctx.save();
+  ctx.globalAlpha = 0.06;
+  for (let i = 0; i < 8; i++) {
+    const x = (0.1 + i*0.12 + Math.sin(t*0.5+i)*0.04) * W;
+    const y = H*0.88 + Math.sin(t*0.6+i*1.3)*12;
+    const r = (20 + Math.sin(t*0.4+i)*8);
+    const g = ctx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,'rgba(180,240,255,0.8)');
+    g.addColorStop(1,'rgba(180,240,255,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
 const EMOTION_COLORS = [
   {r:144,g:96,b:208},{r:48,g:80,b:176},{r:80,g:110,b:160},
   {r:192,g:96,b:16},{r:192,g:32,b:32},{r:176,g:128,b:0},
   {r:16,g:160,b:144},{r:16,g:160,b:80},{r:74,g:176,b:224},
 ];
+
 class Bubble {
   constructor(fromBottom) { this.reset(fromBottom); }
   reset(s) {
@@ -184,19 +254,25 @@ class Bubble {
     const sp=ctx.createRadialGradient(x-r*0.35,y-r*0.35,0,x-r*0.30,y-r*0.30,r*0.32);
     sp.addColorStop(0,`rgba(255,255,255,${Math.min(1,a*1.6)})`);sp.addColorStop(1,`rgba(255,255,255,0)`);
     ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=sp;ctx.fill();
+    const sp2=ctx.createRadialGradient(x+r*0.38,y+r*0.30,0,x+r*0.38,y+r*0.30,r*0.14);
+    sp2.addColorStop(0,`rgba(255,255,255,${a*0.38})`);sp2.addColorStop(1,`rgba(255,255,255,0)`);
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=sp2;ctx.fill();
   }
 }
-const BUBBLES=Array.from({length:55},(_,i)=>new Bubble(i>20));
-function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
-function draw(){
-  requestAnimationFrame(draw);t+=0.01;ctx.clearRect(0,0,W,H);
-  var bg=ctx.createLinearGradient(0,0,0,H);
-  bg.addColorStop(0,'#cdeeff');bg.addColorStop(0.4,'#a8d8f0');
-  bg.addColorStop(0.7,'#7abde0');bg.addColorStop(1,'#4a8fbf');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  BUBBLES.forEach(b=>{b.update(t);b.draw();});
+
+const BUBBLES = Array.from({length:55}, (_,i) => new Bubble(i>20));
+
+function draw() {
+  requestAnimationFrame(draw);
+  t += 0.012;
+  drawBg();
+  drawRays(t);
+  drawCaustics(t);
+  ctx.globalAlpha = 0.45;
+  BUBBLES.forEach(b => { b.update(t); b.draw(); });
+  ctx.globalAlpha = 1;
 }
-window.addEventListener('resize',resize);resize();draw();
+draw();
 })();
 </script>
 
@@ -206,26 +282,23 @@ window.addEventListener('resize',resize);resize();draw();
 
   <!-- 上：卡点释放 -->
   <div class="asst-orb-wrap" id="wrap-blockpoint"
-       style="--bob-dur:3.4s;--bob-delay:0.0s;top:30%;"
+       style="--bob-dur:3.4s;--bob-delay:0.0s;left:50%;top:30%;"
        onclick="openBlockPoint()">
-    <div class="asst-orb" id="orb-blockpoint">🔍</div>
-    <div class="asst-orb-name">卡点释放</div>
+    <div class="asst-orb-name">卡点<br>释放</div>
   </div>
 
   <!-- 中：限制性信念释放 -->
   <div class="asst-orb-wrap" id="wrap-beliefs"
-       style="--bob-dur:3.9s;--bob-delay:0.5s;top:55%;"
+       style="--bob-dur:3.9s;--bob-delay:0.5s;left:50%;top:52%;"
        onclick="openBeliefs()">
-    <div class="asst-orb" id="orb-beliefs">🧠</div>
-    <div class="asst-orb-name">限制性信念释放</div>
+    <div class="asst-orb-name">限制性信念<br>释放</div>
   </div>
 
   <!-- 下：自我允许释放 -->
   <div class="asst-orb-wrap" id="wrap-allowance"
-       style="--bob-dur:3.6s;--bob-delay:1.0s;top:80%;"
+       style="--bob-dur:3.6s;--bob-delay:1.0s;left:50%;top:74%;"
        onclick="openAllowance()">
-    <div class="asst-orb" id="orb-allowance">🌱</div>
-    <div class="asst-orb-name">自我允许释放</div>
+    <div class="asst-orb-name">自我允许<br>释放</div>
   </div>
 
 </div>
@@ -255,30 +328,36 @@ const DESIRE_INFO = {
 };
 let asstPoints = [];
 
-// ── 柔和治愈球颜色 ──
-const ORB_COLORS = {
-  'orb-blockpoint': { glow:'120,180,220', alpha:'0.38' },  // 雾蓝
-  'orb-beliefs':    { glow:'200,155,180', alpha:'0.35' },  // 藕粉
-  'orb-allowance':  { glow:'115,185,160', alpha:'0.36' },  // 薄荷绿
+// ── 球颜色（完全复用 nav-bubble 的 setNavBubbleColors 逻辑）──
+const ASST_GLOWS = {
+  'wrap-blockpoint': 'rgba(100,200,120,0.36)',   // 嫩绿 — 卡点释放
+  'wrap-beliefs':    'rgba(170,140,210,0.34)',    // 薰衣草紫 — 限制性信念释放
+  'wrap-allowance':  'rgba(230,155,100,0.34)',    // 淡橘 — 自我允许释放
 };
 
+function setAsstBubbleColors() {
+  document.querySelectorAll('.asst-orb-wrap').forEach(b => {
+    const glow = ASST_GLOWS[b.id] || 'rgba(80,160,255,0.35)';
+    b.style.background = [
+      'radial-gradient(circle at 32% 28%,',
+      '  rgba(255,255,255,0.75) 0%,',
+      '  rgba(220,225,230,0.45) 22%,',
+      '  ' + glow.replace('0.42','0.32') + ' 50%,',
+      '  ' + glow.replace('0.42','0.22') + ' 75%,',
+      '  ' + glow.replace('0.42','0.10') + ' 100%)',
+    ].join('');
+    b.style.border = 'none';
+    b.style.boxShadow = [
+      'inset 0 0 38px ' + glow.replace('0.36','0.72').replace('0.34','0.68'),
+      'inset 0 0 16px ' + glow.replace('0.36','0.58').replace('0.34','0.55'),
+      '0 4px 28px '     + glow.replace('0.36','0.75').replace('0.34','0.70'),
+      '0 0 44px '       + glow.replace('0.36','0.40').replace('0.34','0.38'),
+    ].join(', ');
+  });
+}
+
 window.addEventListener('DOMContentLoaded', function() {
-  // 雾蓝 — 卡点释放
-  const orb1 = document.getElementById('orb-blockpoint');
-  orb1.style.background = 'radial-gradient(circle at 32% 28%, rgba(255,255,255,0.80) 0%, rgba(200,225,245,0.50) 20%, rgba(120,180,220,0.30) 50%, rgba(120,180,220,0.18) 75%, rgba(120,180,220,0.08) 100%)';
-  orb1.style.boxShadow = 'inset 0 0 28px rgba(120,180,220,0.60), inset 0 0 10px rgba(120,180,220,0.45), 0 4px 24px rgba(120,180,220,0.65), 0 0 36px rgba(120,180,220,0.40)';
-
-  // 藕粉 — 限制性信念释放
-  const orb2 = document.getElementById('orb-beliefs');
-  orb2.style.background = 'radial-gradient(circle at 32% 28%, rgba(255,255,255,0.80) 0%, rgba(245,220,235,0.50) 20%, rgba(200,155,180,0.28) 50%, rgba(200,155,180,0.16) 75%, rgba(200,155,180,0.07) 100%)';
-  orb2.style.boxShadow = 'inset 0 0 28px rgba(200,155,180,0.58), inset 0 0 10px rgba(200,155,180,0.42), 0 4px 24px rgba(200,155,180,0.62), 0 0 36px rgba(200,155,180,0.38)';
-
-  // 薄荷绿 — 自我允许释放
-  const orb3 = document.getElementById('orb-allowance');
-  orb3.style.background = 'radial-gradient(circle at 32% 28%, rgba(255,255,255,0.80) 0%, rgba(200,238,225,0.50) 20%, rgba(115,185,160,0.28) 50%, rgba(115,185,160,0.16) 75%, rgba(115,185,160,0.07) 100%)';
-  orb3.style.boxShadow = 'inset 0 0 28px rgba(115,185,160,0.58), inset 0 0 10px rgba(115,185,160,0.42), 0 4px 24px rgba(115,185,160,0.62), 0 0 36px rgba(115,185,160,0.38)';
-
-  // 球出现动画
+  setAsstBubbleColors();
   document.querySelectorAll('.asst-orb-wrap').forEach((wrap, i) => {
     setTimeout(() => wrap.classList.add('visible'), 150 + i * 120);
   });
