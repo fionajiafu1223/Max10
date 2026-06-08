@@ -98,7 +98,7 @@
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
         border-radius: 24px;
-        padding: 22px 16px 26px;
+        padding: 22px 16px 20px;
         max-height: 88vh; overflow-y: auto;
         animation: pwPopIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
         font-family: 'Noto Serif SC', serif;
@@ -126,40 +126,39 @@
       }
 
       /* ── 功能对比 ── */
-      .pw-features { display: flex; gap: 8px; margin-bottom: 14px; }
-      .pw-feat-col {
-        flex: 1; border-radius: 14px; padding: 11px 10px;
-      }
+      .pw-features { display: flex; gap: 8px; margin-bottom: 14px; align-items: stretch; }
+      .pw-feat-col { border-radius: 14px; padding: 11px 10px; }
       .pw-feat-col.free {
+        flex: 0 0 34%;
         background: rgba(220,235,250,0.92);
         border: 1px solid rgba(160,200,235,0.5);
       }
       .pw-feat-col.paid {
+        flex: 1;
         background: rgba(230,242,255,0.95);
         border: 1px solid rgba(74,159,212,0.35);
       }
       .pw-feat-title {
-        font-size: 0.70rem; letter-spacing: 0.08em; margin-bottom: 8px;
+        font-size: 0.68rem; letter-spacing: 0.06em; margin-bottom: 7px;
         text-align: center; font-family: 'Noto Sans SC', sans-serif;
       }
       .pw-feat-col.free .pw-feat-title { color: #7a9ab8; }
       .pw-feat-col.paid .pw-feat-title { color: #2a7abf; }
       .pw-feat-item {
-        font-size: 0.68rem; font-family: 'Noto Sans SC', sans-serif;
-        line-height: 1.9; padding-left: 2px;
+        font-size: 0.67rem; font-family: 'Noto Sans SC', sans-serif;
+        line-height: 1.95; padding-left: 2px; color: #7a9ab8;
+        white-space: nowrap;
       }
-      .pw-feat-col.free .pw-feat-item { color: #7a9ab8; }
 
-      /* 会员功能分组 */
-      .pw-paid-groups { display: flex; flex-wrap: wrap; gap: 6px; }
-      .pw-paid-group { width: calc(50% - 3px); }
+      /* 会员功能分组 — 两列 */
+      .pw-paid-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
       .pw-paid-group-label {
-        font-size: 0.66rem; color: #2a7abf; font-family: 'Noto Sans SC', sans-serif;
-        letter-spacing: 0.06em; margin-bottom: 3px; padding-left: 2px;
+        font-size: 0.63rem; color: #2a7abf; font-family: 'Noto Sans SC', sans-serif;
+        letter-spacing: 0.05em; margin-bottom: 3px; white-space: nowrap;
       }
       .pw-paid-group-item {
-        font-size: 0.68rem; color: #1a4070; font-family: 'Noto Sans SC', sans-serif;
-        line-height: 1.85; padding-left: 2px;
+        font-size: 0.66rem; color: #1a4070; font-family: 'Noto Sans SC', sans-serif;
+        line-height: 1.85; white-space: nowrap;
       }
 
       /* ── 套餐 ── */
