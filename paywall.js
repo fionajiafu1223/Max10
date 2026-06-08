@@ -30,16 +30,16 @@
   let _cacheTime = 0;
   const CACHE_TTL = 5 * 60 * 1000;
 
-  async function getToken() {
-    // 优先用 window.freedSupa（和 index.html 共用同一实例）
+  function getToken() {
     try {
-      if (window.freedSupa) {
-        const { data: { session } } = await window.freedSupa.auth.getSession();
-        if (session?.access_token) return session.access_token;
+      // 直接读已知的 key
+      const direct = localStorage.getItem('sb-ryoaxziysgdkjcjiuqti-auth-token');
+      if (direct) {
+        const val = JSON.parse(direct);
+        const token = val?.access_token || val?.session?.access_token;
+        if (token) return token;
       }
-    } catch(_) {}
-    // 兜底：遍历 localStorage
-    try {
+      // 兼容旧格式：遍历查找
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && (key.includes('supabase') || key.includes('sb-')) && key.includes('auth')) {
@@ -55,24 +55,18 @@
   async function checkPremium(forceRefresh) {
     const now = Date.now();
     if (!forceRefresh && _premiumCache !== null && (now - _cacheTime) < CACHE_TTL) return _premiumCache;
-    const token = await getToken();
-    console.log('[Paywall] token:', token ? '✓ found' : '✗ not found');
+    const token = getToken();
     if (!token) { _premiumCache = false; _cacheTime = now; return false; }
     try {
       const res = await fetch(`${WORKER_URL}/subscription/status`, {
         method: 'GET', headers: { 'Authorization': `Bearer ${token}` },
       });
-      console.log('[Paywall] status response:', res.status);
       if (!res.ok) { _premiumCache = false; _cacheTime = now; return false; }
       const data = await res.json();
-      console.log('[Paywall] is_premium:', data.is_premium);
       _premiumCache = data.is_premium === true;
       _cacheTime = now;
       return _premiumCache;
-    } catch(e) { 
-      console.log('[Paywall] error:', e.message);
-      _premiumCache = false; _cacheTime = now; return false; 
-    }
+    } catch(_) { _premiumCache = false; _cacheTime = now; return false; }
   }
 
   // ─── 需要付费权限的入口 ───────────────────────────────
@@ -409,8 +403,26 @@
     return null;
   }
 
-  window.FreedPaywall = { checkPremium, requirePremium, showPaywall, closePaywall };
+  // ─── 登录检查：未登录跳回主页弹登录框 ───────────────────
+  async function requireLogin() {
+    const token = getToken();
+    if (token) return true;
+    const redirect = encodeURIComponent(window.location.href);
+    window.location.href = 'index.html?login=1&redirect=' + redirect;
+    return false;
+  }
+
+  // ─── 登录+付费双重检查 ────────────────────────────────
+  async function requireLoginAndPremium(onGranted) {
+    const loggedIn = await requireLogin();
+    if (!loggedIn) return;
+    await requirePremium(onGranted);
+  }
+
+  window.FreedPaywall = { checkPremium, requirePremium, showPaywall, closePaywall, requireLogin, requireLoginAndPremium };
   window.checkPremium = checkPremium;
   window.requirePremium = requirePremium;
+  window.requireLogin = requireLogin;
+  window.requireLoginAndPremium = requireLoginAndPremium;
 
 })();
