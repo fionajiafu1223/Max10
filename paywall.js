@@ -403,8 +403,26 @@
     return null;
   }
 
-  window.FreedPaywall = { checkPremium, requirePremium, showPaywall, closePaywall };
+  // ─── 登录检查：未登录跳回主页弹登录框 ───────────────────
+  async function requireLogin() {
+    const token = getToken();
+    if (token) return true;
+    const redirect = encodeURIComponent(window.location.href);
+    window.location.href = 'index.html?login=1&redirect=' + redirect;
+    return false;
+  }
+
+  // ─── 登录+付费双重检查 ────────────────────────────────
+  async function requireLoginAndPremium(onGranted) {
+    const loggedIn = await requireLogin();
+    if (!loggedIn) return;
+    await requirePremium(onGranted);
+  }
+
+  window.FreedPaywall = { checkPremium, requirePremium, showPaywall, closePaywall, requireLogin, requireLoginAndPremium };
   window.checkPremium = checkPremium;
   window.requirePremium = requirePremium;
+  window.requireLogin = requireLogin;
+  window.requireLoginAndPremium = requireLoginAndPremium;
 
 })();
