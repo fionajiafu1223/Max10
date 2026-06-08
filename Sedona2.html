@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>识别即释放 · Freed Releasing</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Noto+Sans+SC:wght@300;400&display=swap');
@@ -77,7 +77,7 @@
   .header {
     position: relative; z-index: 20;
     text-align: center;
-    padding: 20px 20px 4px;
+    padding: max(22px, calc(env(safe-area-inset-top, 0px) + 8px)) 20px 4px;
   }
   .header h1 {
     font-family: 'Noto Serif SC', serif;

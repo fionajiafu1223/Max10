@@ -3,7 +3,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>目标表 · Freed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Noto+Sans+SC:wght@300;400&display=swap">
@@ -693,6 +693,21 @@ async function addGoal() {
   var input = document.getElementById('goalInput');
   var text = input.value.trim();
   if (!text) return;
+
+  // 付费检查：超过3个目标需要会员
+  var existingGoals = getGoals();
+  if (existingGoals.length >= 3) {
+    var isPremium = await FreedPaywall.checkPremium();
+    if (!isPremium) {
+      input.value = text; // 保留用户输入
+      FreedPaywall.showPaywall(function() {
+        // 付费成功后自动提交
+        addGoal();
+      });
+      return;
+    }
+  }
+
   input.value = '';
 
   var u = readGoalsUserFromStorage();
@@ -1006,6 +1021,7 @@ async function dropGoal(i) {
 })();
 </script>
 
+<script src="paywall.js"></script>
 <script src="nav-orb.js"></script>
 </body>
 </html>
