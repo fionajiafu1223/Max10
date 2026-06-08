@@ -17,8 +17,10 @@
   ];
 
   const FEATURES_FREE = ['情绪释放', '欲望释放', '目标表（最多3个）'];
-  const FEATURES_PAID_GROUPS = [
+  const FEATURES_PAID_LEFT = [
     { label: '释放工具', items: ['识别即释放', '情绪欲望释放', '好处坏处释放', '财富释放', '人际关系释放', '身体健康释放'] },
+  ];
+  const FEATURES_PAID_RIGHT = [
     { label: '释放助手', items: ['卡点释放', '限制性信念释放', '自我允许释放'] },
     { label: '目标表', items: ['无限目标'] },
     { label: '收获本', items: ['收获记录'] },
@@ -129,32 +131,34 @@
       .pw-features { display: flex; gap: 8px; margin-bottom: 14px; align-items: stretch; }
       .pw-feat-col { border-radius: 14px; padding: 11px 10px; }
       .pw-feat-col.free {
-        flex: 0 0 34%;
-        background: rgba(220,235,250,0.92);
-        border: 1px solid rgba(160,200,235,0.5);
+        flex: 0 0 32%;
+        background: rgba(255,255,255,0.88);
+        border: 1px solid rgba(160,200,235,0.45);
       }
       .pw-feat-col.paid {
         flex: 1;
-        background: rgba(230,242,255,0.95);
-        border: 1px solid rgba(74,159,212,0.35);
+        background: rgba(255,255,255,0.88);
+        border: 1px solid rgba(74,159,212,0.30);
       }
       .pw-feat-title {
         font-size: 0.68rem; letter-spacing: 0.06em; margin-bottom: 7px;
         text-align: center; font-family: 'Noto Sans SC', sans-serif;
       }
-      .pw-feat-col.free .pw-feat-title { color: #7a9ab8; }
+      .pw-feat-col.free .pw-feat-title { color: #5a7aa0; }
       .pw-feat-col.paid .pw-feat-title { color: #2a7abf; }
       .pw-feat-item {
         font-size: 0.67rem; font-family: 'Noto Sans SC', sans-serif;
-        line-height: 1.95; padding-left: 2px; color: #7a9ab8;
+        line-height: 1.95; padding-left: 2px; color: #3a6080;
         white-space: nowrap;
       }
 
-      /* 会员功能分组 — 两列 */
-      .pw-paid-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+      /* 会员功能两列 */
+      .pw-paid-groups { display: flex; gap: 8px; }
+      .pw-paid-col { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+      .pw-paid-group { display: flex; flex-direction: column; }
       .pw-paid-group-label {
         font-size: 0.63rem; color: #2a7abf; font-family: 'Noto Sans SC', sans-serif;
-        letter-spacing: 0.05em; margin-bottom: 3px; white-space: nowrap;
+        letter-spacing: 0.05em; margin-bottom: 2px; white-space: nowrap;
       }
       .pw-paid-group-item {
         font-size: 0.66rem; color: #1a4070; font-family: 'Noto Sans SC', sans-serif;
@@ -165,21 +169,24 @@
       .pw-plans { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
       .pw-plan {
         border-radius: 12px; padding: 10px 14px;
-        border: 1px solid rgba(150,200,255,0.18);
-        background: rgba(220,235,252,0.90);
+        border: 1px solid rgba(160,200,235,0.50);
+        background: rgba(255,255,255,0.92);
         cursor: pointer; transition: all 0.18s;
         display: flex; align-items: center; justify-content: space-between;
         position: relative;
       }
-      .pw-plan:hover { background: rgba(200,225,250,0.95); border-color: rgba(74,159,212,0.4); }
-      .pw-plan.selected { border-color: #4a9fd4; background: rgba(200,225,252,0.98); box-shadow: 0 2px 12px rgba(74,159,212,0.22); }
-      .pw-plan.highlight { background: rgba(210,230,252,0.92); }
-      .pw-plan.highlight.selected { border-color: #4a9fd4; background: rgba(200,225,252,0.98); }
+      .pw-plan:hover { background: #fff; border-color: rgba(74,159,212,0.5); }
+      .pw-plan.selected { border-color: #4a9fd4; background: #fff; box-shadow: 0 2px 12px rgba(74,159,212,0.22); }
+      .pw-plan.highlight { background: rgba(255,255,255,0.92); }
+      .pw-plan.highlight.selected { border-color: #4a9fd4; background: #fff; }
+
+
       .pw-plan-badge {
         position: absolute; top: -8px; right: 10px;
-        background: linear-gradient(135deg, #4a9fd4, #2a7abf);
+        background: linear-gradient(135deg, #4a9fd4, #3ab8a0);
         color: #fff; font-size: 0.60rem; padding: 2px 9px;
         border-radius: 99px; letter-spacing: 0.06em; font-family: 'Noto Sans SC', sans-serif;
+        box-shadow: 0 2px 8px rgba(58,184,160,0.40);
       }
       .pw-plan-left { display: flex; flex-direction: column; gap: 2px; }
       .pw-plan-name { font-size: 0.86rem; color: #1a3a5c; letter-spacing: 0.06em; }
@@ -191,13 +198,20 @@
       /* ── 按钮 ── */
       .pw-btn {
         width: 100%; padding: 13px; border: none; border-radius: 14px;
-        background: linear-gradient(135deg, #4a9fd4 0%, #2a7abf 100%);
+        background: linear-gradient(135deg, #4a9fd4 0%, #3ab8a0 100%);
         color: #fff; font-family: 'Noto Serif SC', serif;
         font-size: 0.95rem; letter-spacing: 0.1em; cursor: pointer;
         transition: opacity 0.2s, transform 0.15s; margin-bottom: 10px;
-        box-shadow: 0 4px 18px rgba(42,122,191,0.38);
+        box-shadow: 0 6px 20px rgba(42,160,140,0.40), 0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.25);
+        position: relative; overflow: hidden;
       }
-      .pw-btn:hover { opacity: 0.88; transform: scale(1.02); }
+      .pw-btn::after {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+        background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+        border-radius: 14px 14px 0 0; pointer-events: none;
+      }
+      .pw-btn:hover { opacity: 0.90; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(42,160,140,0.48), 0 3px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.25); }
+      .pw-btn:active { transform: translateY(1px); box-shadow: 0 3px 10px rgba(42,160,140,0.35); }
       .pw-btn:disabled { opacity: 0.40; cursor: not-allowed; transform: none; }
       .pw-restore {
         text-align: center; font-size: 0.70rem; color: rgba(160,200,240,0.50);
@@ -234,11 +248,20 @@
           <div class="pw-feat-col paid">
             <div class="pw-feat-title">✦ 会员功能</div>
             <div class="pw-paid-groups">
-              ${FEATURES_PAID_GROUPS.map(g => `
-                <div class="pw-paid-group">
-                  <div class="pw-paid-group-label">${g.label}</div>
-                  ${g.items.map(i => `<div class="pw-paid-group-item">· ${i}</div>`).join('')}
-                </div>`).join('')}
+              <div class="pw-paid-col">
+                ${FEATURES_PAID_LEFT.map(g => `
+                  <div class="pw-paid-group">
+                    <div class="pw-paid-group-label">${g.label}</div>
+                    ${g.items.map(i => `<div class="pw-paid-group-item">· ${i}</div>`).join('')}
+                  </div>`).join('')}
+              </div>
+              <div class="pw-paid-col">
+                ${FEATURES_PAID_RIGHT.map(g => `
+                  <div class="pw-paid-group">
+                    <div class="pw-paid-group-label">${g.label}</div>
+                    ${g.items.map(i => `<div class="pw-paid-group-item">· ${i}</div>`).join('')}
+                  </div>`).join('')}
+              </div>
             </div>
           </div>
         </div>
