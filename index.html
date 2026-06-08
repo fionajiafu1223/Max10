@@ -787,8 +787,16 @@ function returnToHero() {
 }
 
 // hero bubble click
-document.getElementById('hero-bubble').addEventListener('click', function() {
+document.getElementById('hero-bubble').addEventListener('click', async function() {
   if (navState !== 'hero') return;
+  try {
+    const { data: { session } } = await window.freedSupa.auth.getSession();
+    if (!session) {
+      switchAuthTab('login');
+      openAuth();
+      return;
+    }
+  } catch(_) {}
   showNavMain();
 });
 
@@ -798,11 +806,34 @@ document.getElementById('nb-tools').addEventListener('click', showNavTools);
 // placeholder pages
 document.getElementById('nb-ai').addEventListener('click', () => window.location.href='assistant.html');
 document.getElementById('nb-goals').addEventListener('click', () => window.location.href='goals.html');
-document.getElementById('nb-gains').addEventListener('click', () => window.location.href='gains.html');
+document.getElementById('nb-gains').addEventListener('click', async function() {
+  if (typeof FreedPaywall !== 'undefined') {
+    const isPremium = await FreedPaywall.checkPremium();
+    if (!isPremium) {
+      FreedPaywall.showPaywall(null);
+      return;
+    }
+  }
+  window.location.href = 'gains.html';
+});
+
+// 付费工具 ID
+const PAID_TOOL_IDS = ['tool-whole','tool-sedona','tool-doublesides','tool-financial','tool-relationship','tool-body'];
 
 // tool links
 document.querySelectorAll('#nav-tools .nav-bubble[data-href]').forEach(b => {
-  b.addEventListener('click', () => { window.location.href = b.dataset.href; });
+  b.addEventListener('click', async function() {
+    if (PAID_TOOL_IDS.includes(b.id) && typeof FreedPaywall !== 'undefined') {
+      const isPremium = await FreedPaywall.checkPremium();
+      if (!isPremium) {
+        FreedPaywall.showPaywall(function() {
+          window.location.href = b.dataset.href;
+        });
+        return;
+      }
+    }
+    window.location.href = b.dataset.href;
+  });
 });
 
 // click backdrop to return
@@ -1096,49 +1127,11 @@ const _origDraw = draw;
   // —— 监听登录态变化（其他 tab 登录/登出时自动同步） ——
   supa.auth.onAuthStateChange((event, session) => {
     refreshAuthUI();
-    // 登录成功后，如果有 redirect 参数就跳回去
-    if ((event === 'SIGNED_IN') && session) {
-      const params = new URLSearchParams(window.location.search);
-      const redirect = params.get('redirect');
-      if (redirect) {
-        window.location.href = decodeURIComponent(redirect);
-      }
-    }
   });
 
   // —— 页面加载时初始化 UI ——
   refreshAuthUI();
-
-  // —— 检测 ?login=1 参数，自动弹登录框 ——
-  (function() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('login') === '1') {
-      switchAuthTab('login');
-      openAuth();
-    }
-  })();
-
 })();
-</script>
-
-<script>
-// —— 全局登录检查函数（供其他页面调用）——
-window.requireLogin = async function() {
-  // 读取 Supabase session
-  const key = 'sb-ryoaxziysgdkjcjiuqti-auth-token';
-  try {
-    const raw = localStorage.getItem(key);
-    if (raw) {
-      const val = JSON.parse(raw);
-      const token = val?.access_token || val?.session?.access_token;
-      if (token) return true; // 已登录
-    }
-  } catch(_) {}
-  // 未登录 → 跳回主页弹登录框，带上当前页面地址
-  const redirect = encodeURIComponent(window.location.href);
-  window.location.href = 'index.html?login=1&redirect=' + redirect;
-  return false;
-};
 </script>
 
 <!-- ════════════════════════════════════════
@@ -1345,5 +1338,6 @@ window.requireLogin = async function() {
 })();
 </script>
 
+<script src="paywall.js"></script>
 </body>
 </html>

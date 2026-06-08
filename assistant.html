@@ -365,7 +365,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // ── 功能入口 ──
 function openBlockPoint() {
-  requireLoginAndPremium(function() {
+  requirePremium(function() {
     document.getElementById('asst-layer').style.display = 'none';
     document.getElementById('panel-blockpoint').classList.add('open');
   });
@@ -377,12 +377,12 @@ function closeBlockPoint() {
   document.getElementById('asstInput').value = '';
 }
 function openBeliefs() {
-  requireLoginAndPremium(function() {
+  requirePremium(function() {
     showToast('🚧 即将上线，敬请期待');
   });
 }
 function openAllowance() {
-  requireLoginAndPremium(function() {
+  requirePremium(function() {
     showToast('🚧 即将上线，敬请期待');
   });
 }
