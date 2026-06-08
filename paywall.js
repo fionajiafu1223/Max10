@@ -17,11 +17,11 @@
   ];
 
   const FEATURES_FREE = ['情绪释放', '欲望释放', '目标表（最多3个）'];
-  const FEATURES_PAID = [
-    '识别即释放', '情绪欲望释放', '好处坏处释放',
-    '财富释放', '人际关系释放', '身体健康释放',
-    '释放助手（卡点释放 / 限制性信念释放 / 自我允许释放）',
-    '目标表（无限）', '收获本',
+  const FEATURES_PAID_GROUPS = [
+    { label: '释放工具', items: ['识别即释放', '情绪欲望释放', '好处坏处释放', '财富释放', '人际关系释放', '身体健康释放'] },
+    { label: '释放助手', items: ['卡点释放', '限制性信念释放', '自我允许释放'] },
+    { label: '目标表', items: ['无限目标'] },
+    { label: '收获本', items: ['收获记录'] },
   ];
 
   let _premiumCache = null;
@@ -90,17 +90,15 @@
         animation: pwFadeIn 0.22s ease;
         pointer-events: none;
       }
-      #pw-sheet {
-        pointer-events: auto;
-      }
+      #pw-sheet { pointer-events: auto; }
       @keyframes pwFadeIn { from{opacity:0} to{opacity:1} }
       #pw-sheet {
         width: 100%; max-width: 420px;
-        background: rgba(8,28,70,0.82);
+        background: rgba(8,28,70,0.88);
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
         border-radius: 24px;
-        padding: 24px 18px 28px;
+        padding: 22px 16px 26px;
         max-height: 88vh; overflow-y: auto;
         animation: pwPopIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
         font-family: 'Noto Serif SC', serif;
@@ -110,83 +108,105 @@
       }
       @keyframes pwPopIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
       #pw-close {
-        position: absolute; top: 14px; right: 16px;
-        width: 28px; height: 28px; border-radius: 50%;
+        position: absolute; top: 14px; right: 14px;
+        width: 26px; height: 26px; border-radius: 50%;
         background: rgba(255,255,255,0.10); border: none;
-        color: rgba(255,255,255,0.55); font-size: 0.9rem;
+        color: rgba(255,255,255,0.55); font-size: 0.85rem;
         cursor: pointer; display: flex; align-items: center; justify-content: center;
         transition: background 0.15s;
       }
       #pw-close:hover { background: rgba(255,255,255,0.18); }
       #pw-sheet h2 {
-        text-align: center; font-size: 1.08rem; letter-spacing: 0.14em;
-        color: rgba(220,240,255,0.95); margin-bottom: 4px;
+        text-align: center; font-size: 1.05rem; letter-spacing: 0.14em;
+        color: rgba(220,240,255,0.95); margin-bottom: 3px;
       }
       #pw-sheet .pw-sub {
-        text-align: center; font-size: 0.76rem; color: rgba(160,200,240,0.65);
-        font-family: 'Noto Sans SC', sans-serif; margin-bottom: 16px; letter-spacing: 0.04em;
+        text-align: center; font-size: 0.74rem; color: rgba(160,200,240,0.60);
+        font-family: 'Noto Sans SC', sans-serif; margin-bottom: 14px; letter-spacing: 0.04em;
       }
-      .pw-features { display: flex; gap: 8px; margin-bottom: 16px; }
+
+      /* ── 功能对比 ── */
+      .pw-features { display: flex; gap: 8px; margin-bottom: 14px; }
       .pw-feat-col {
-        flex: 1; border-radius: 14px; padding: 11px 9px;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(150,200,255,0.14);
-        backdrop-filter: blur(8px);
+        flex: 1; border-radius: 14px; padding: 11px 10px;
+      }
+      .pw-feat-col.free {
+        background: rgba(220,235,250,0.92);
+        border: 1px solid rgba(160,200,235,0.5);
       }
       .pw-feat-col.paid {
-        background: rgba(74,159,212,0.12);
-        border: 1px solid rgba(74,159,212,0.28);
+        background: rgba(230,242,255,0.95);
+        border: 1px solid rgba(74,159,212,0.35);
       }
-      .pw-feat-title { font-size: 0.70rem; letter-spacing: 0.08em; margin-bottom: 7px; text-align: center; font-family: 'Noto Sans SC', sans-serif; }
-      .pw-feat-col.free .pw-feat-title { color: rgba(160,200,240,0.55); }
-      .pw-feat-col.paid .pw-feat-title { color: rgba(120,200,255,0.90); }
-      .pw-feat-item { font-size: 0.70rem; font-family: 'Noto Sans SC', sans-serif; line-height: 1.95; padding-left: 2px; }
-      .pw-feat-col.free .pw-feat-item { color: rgba(160,200,240,0.55); }
-      .pw-feat-col.paid .pw-feat-item { color: rgba(200,230,255,0.85); }
-      .pw-plans { display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; }
+      .pw-feat-title {
+        font-size: 0.70rem; letter-spacing: 0.08em; margin-bottom: 8px;
+        text-align: center; font-family: 'Noto Sans SC', sans-serif;
+      }
+      .pw-feat-col.free .pw-feat-title { color: #7a9ab8; }
+      .pw-feat-col.paid .pw-feat-title { color: #2a7abf; }
+      .pw-feat-item {
+        font-size: 0.68rem; font-family: 'Noto Sans SC', sans-serif;
+        line-height: 1.9; padding-left: 2px;
+      }
+      .pw-feat-col.free .pw-feat-item { color: #7a9ab8; }
+
+      /* 会员功能分组 */
+      .pw-paid-groups { display: flex; flex-wrap: wrap; gap: 6px; }
+      .pw-paid-group { width: calc(50% - 3px); }
+      .pw-paid-group-label {
+        font-size: 0.66rem; color: #2a7abf; font-family: 'Noto Sans SC', sans-serif;
+        letter-spacing: 0.06em; margin-bottom: 3px; padding-left: 2px;
+      }
+      .pw-paid-group-item {
+        font-size: 0.68rem; color: #1a4070; font-family: 'Noto Sans SC', sans-serif;
+        line-height: 1.85; padding-left: 2px;
+      }
+
+      /* ── 套餐 ── */
+      .pw-plans { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
       .pw-plan {
-        border-radius: 14px; padding: 13px 15px;
+        border-radius: 12px; padding: 10px 14px;
         border: 1px solid rgba(150,200,255,0.18);
-        background: rgba(255,255,255,0.06);
-        backdrop-filter: blur(8px);
+        background: rgba(220,235,252,0.90);
         cursor: pointer; transition: all 0.18s;
         display: flex; align-items: center; justify-content: space-between;
         position: relative;
       }
-      .pw-plan:hover { background: rgba(74,159,212,0.14); border-color: rgba(74,159,212,0.35); }
-      .pw-plan.selected { border-color: rgba(74,159,212,0.70); background: rgba(74,159,212,0.18); box-shadow: 0 0 16px rgba(74,159,212,0.20); }
-      .pw-plan.highlight { border-color: rgba(74,159,212,0.28); background: rgba(74,159,212,0.09); }
-      .pw-plan.highlight.selected { border-color: rgba(74,159,212,0.72); background: rgba(74,159,212,0.20); }
+      .pw-plan:hover { background: rgba(200,225,250,0.95); border-color: rgba(74,159,212,0.4); }
+      .pw-plan.selected { border-color: #4a9fd4; background: rgba(200,225,252,0.98); box-shadow: 0 2px 12px rgba(74,159,212,0.22); }
+      .pw-plan.highlight { background: rgba(210,230,252,0.92); }
+      .pw-plan.highlight.selected { border-color: #4a9fd4; background: rgba(200,225,252,0.98); }
       .pw-plan-badge {
-        position: absolute; top: -9px; right: 12px;
+        position: absolute; top: -8px; right: 10px;
         background: linear-gradient(135deg, #4a9fd4, #2a7abf);
-        color: #fff; font-size: 0.63rem; padding: 2px 10px;
+        color: #fff; font-size: 0.60rem; padding: 2px 9px;
         border-radius: 99px; letter-spacing: 0.06em; font-family: 'Noto Sans SC', sans-serif;
       }
-      .pw-plan-left { display: flex; flex-direction: column; gap: 3px; }
-      .pw-plan-name { font-size: 0.90rem; color: rgba(220,240,255,0.92); letter-spacing: 0.06em; }
-      .pw-plan-sub { font-size: 0.68rem; color: rgba(140,190,240,0.55); font-family:'Noto Sans SC',sans-serif; }
-      .pw-plan-right { display: flex; align-items: baseline; gap: 3px; }
-      .pw-plan-price { font-size: 1.32rem; color: rgba(160,220,255,0.95); }
-      .pw-plan-period { font-size: 0.70rem; color: rgba(140,190,240,0.60); font-family:'Noto Sans SC',sans-serif; }
+      .pw-plan-left { display: flex; flex-direction: column; gap: 2px; }
+      .pw-plan-name { font-size: 0.86rem; color: #1a3a5c; letter-spacing: 0.06em; }
+      .pw-plan-sub { font-size: 0.65rem; color: #7a9ab8; font-family:'Noto Sans SC',sans-serif; }
+      .pw-plan-right { display: flex; align-items: baseline; gap: 2px; }
+      .pw-plan-price { font-size: 1.22rem; color: #2a7abf; }
+      .pw-plan-period { font-size: 0.65rem; color: #7a9ab8; font-family:'Noto Sans SC',sans-serif; }
+
+      /* ── 按钮 ── */
       .pw-btn {
-        width: 100%; padding: 14px; border: none; border-radius: 14px;
-        background: linear-gradient(135deg, rgba(74,159,212,0.90) 0%, rgba(42,122,191,0.90) 100%);
+        width: 100%; padding: 13px; border: none; border-radius: 14px;
+        background: linear-gradient(135deg, #4a9fd4 0%, #2a7abf 100%);
         color: #fff; font-family: 'Noto Serif SC', serif;
-        font-size: 0.98rem; letter-spacing: 0.1em; cursor: pointer;
-        transition: opacity 0.2s, transform 0.15s; margin-bottom: 12px;
-        box-shadow: 0 4px 20px rgba(42,122,191,0.40);
-        border: 1px solid rgba(120,180,255,0.25);
+        font-size: 0.95rem; letter-spacing: 0.1em; cursor: pointer;
+        transition: opacity 0.2s, transform 0.15s; margin-bottom: 10px;
+        box-shadow: 0 4px 18px rgba(42,122,191,0.38);
       }
       .pw-btn:hover { opacity: 0.88; transform: scale(1.02); }
       .pw-btn:disabled { opacity: 0.40; cursor: not-allowed; transform: none; }
       .pw-restore {
-        text-align: center; font-size: 0.73rem; color: rgba(140,190,240,0.50);
+        text-align: center; font-size: 0.70rem; color: rgba(160,200,240,0.50);
         cursor: pointer; font-family: 'Noto Sans SC', sans-serif;
         letter-spacing: 0.04em; background: none; border: none; width: 100%;
       }
-      .pw-restore:hover { color: rgba(140,190,240,0.85); }
-      .pw-msg { text-align: center; font-size: 0.76rem; margin-top: 10px; font-family: 'Noto Sans SC', sans-serif; min-height: 20px; color: rgba(140,190,240,0.60); }
+      .pw-restore:hover { color: rgba(160,200,240,0.85); }
+      .pw-msg { text-align: center; font-size: 0.74rem; margin-top: 8px; font-family: 'Noto Sans SC', sans-serif; min-height: 18px; color: rgba(140,190,240,0.60); }
       .pw-msg.error { color: rgba(255,120,120,0.85); }
       .pw-msg.success { color: rgba(100,220,180,0.90); }
     `;
@@ -214,7 +234,13 @@
           </div>
           <div class="pw-feat-col paid">
             <div class="pw-feat-title">✦ 会员功能</div>
-            ${FEATURES_PAID.map(f => `<div class="pw-feat-item">· ${f}</div>`).join('')}
+            <div class="pw-paid-groups">
+              ${FEATURES_PAID_GROUPS.map(g => `
+                <div class="pw-paid-group">
+                  <div class="pw-paid-group-label">${g.label}</div>
+                  ${g.items.map(i => `<div class="pw-paid-group-item">· ${i}</div>`).join('')}
+                </div>`).join('')}
+            </div>
           </div>
         </div>
         <div class="pw-plans" id="pw-plans">
