@@ -84,11 +84,14 @@
     style.textContent = `
       #pw-overlay {
         position: fixed; inset: 0; z-index: 9999;
-        background: rgba(4,18,45,0.55);
-        backdrop-filter: blur(2px);
+        background: transparent;
         display: flex; align-items: center; justify-content: center;
         padding: 20px;
         animation: pwFadeIn 0.22s ease;
+        pointer-events: none;
+      }
+      #pw-sheet {
+        pointer-events: auto;
       }
       @keyframes pwFadeIn { from{opacity:0} to{opacity:1} }
       #pw-sheet {
