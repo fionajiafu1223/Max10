@@ -84,98 +84,108 @@
     style.textContent = `
       #pw-overlay {
         position: fixed; inset: 0; z-index: 9999;
-        background: linear-gradient(180deg, rgba(8,28,60,0.88) 0%, rgba(10,40,80,0.92) 100%);
-        backdrop-filter: blur(14px);
-        display: flex; align-items: flex-end; justify-content: center;
-        animation: pwFadeIn 0.25s ease;
+        background: rgba(4,18,45,0.55);
+        backdrop-filter: blur(2px);
+        display: flex; align-items: center; justify-content: center;
+        padding: 20px;
+        animation: pwFadeIn 0.22s ease;
       }
       @keyframes pwFadeIn { from{opacity:0} to{opacity:1} }
       #pw-sheet {
-        width: 100%; max-width: 480px;
-        background: rgba(255,255,255,0.97);
-        border-radius: 28px 28px 0 0;
-        padding: 24px 20px 44px;
+        width: 100%; max-width: 420px;
+        background: rgba(8,28,70,0.82);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-radius: 24px;
+        padding: 24px 18px 28px;
         max-height: 88vh; overflow-y: auto;
-        animation: pwSlideUp 0.32s cubic-bezier(0.22,1,0.36,1);
+        animation: pwPopIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
         font-family: 'Noto Serif SC', serif;
-        box-shadow: 0 -4px 40px rgba(0,40,100,0.25);
+        border: 1px solid rgba(120,180,255,0.18);
+        box-shadow: 0 8px 48px rgba(0,20,60,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+        position: relative;
       }
-      @keyframes pwSlideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+      @keyframes pwPopIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
       #pw-close {
-        position: absolute; top: 16px; right: 18px;
+        position: absolute; top: 14px; right: 16px;
         width: 28px; height: 28px; border-radius: 50%;
-        background: rgba(180,210,240,0.45); border: none;
-        color: #5a7aa0; font-size: 0.9rem;
+        background: rgba(255,255,255,0.10); border: none;
+        color: rgba(255,255,255,0.55); font-size: 0.9rem;
         cursor: pointer; display: flex; align-items: center; justify-content: center;
+        transition: background 0.15s;
       }
+      #pw-close:hover { background: rgba(255,255,255,0.18); }
       #pw-sheet h2 {
-        text-align: center; font-size: 1.1rem; letter-spacing: 0.14em;
-        color: #1a3a5c; margin-bottom: 4px;
+        text-align: center; font-size: 1.08rem; letter-spacing: 0.14em;
+        color: rgba(220,240,255,0.95); margin-bottom: 4px;
       }
       #pw-sheet .pw-sub {
-        text-align: center; font-size: 0.78rem; color: #6a8aaa;
-        font-family: 'Noto Sans SC', sans-serif; margin-bottom: 18px; letter-spacing: 0.04em;
+        text-align: center; font-size: 0.76rem; color: rgba(160,200,240,0.65);
+        font-family: 'Noto Sans SC', sans-serif; margin-bottom: 16px; letter-spacing: 0.04em;
       }
-      .pw-features { display: flex; gap: 10px; margin-bottom: 18px; }
-      .pw-feat-col { flex: 1; border-radius: 16px; padding: 12px 10px; }
-      .pw-feat-col.free {
-        background: #f4f8fc;
-        border: 1px solid rgba(160,200,235,0.5);
+      .pw-features { display: flex; gap: 8px; margin-bottom: 16px; }
+      .pw-feat-col {
+        flex: 1; border-radius: 14px; padding: 11px 9px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(150,200,255,0.14);
+        backdrop-filter: blur(8px);
       }
       .pw-feat-col.paid {
-        background: linear-gradient(160deg, #e8f4ff 0%, #ddeeff 100%);
-        border: 1.5px solid rgba(74,159,212,0.45);
+        background: rgba(74,159,212,0.12);
+        border: 1px solid rgba(74,159,212,0.28);
       }
-      .pw-feat-title { font-size: 0.72rem; letter-spacing: 0.08em; margin-bottom: 8px; text-align: center; font-family: 'Noto Sans SC', sans-serif; }
-      .pw-feat-col.free .pw-feat-title { color: #8aaac0; }
-      .pw-feat-col.paid .pw-feat-title { color: #2a7abf; }
-      .pw-feat-item { font-size: 0.72rem; font-family: 'Noto Sans SC', sans-serif; line-height: 2.0; padding-left: 2px; }
-      .pw-feat-col.free .pw-feat-item { color: #8aaac0; }
-      .pw-feat-col.paid .pw-feat-item { color: #2a5080; }
-      .pw-plans { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+      .pw-feat-title { font-size: 0.70rem; letter-spacing: 0.08em; margin-bottom: 7px; text-align: center; font-family: 'Noto Sans SC', sans-serif; }
+      .pw-feat-col.free .pw-feat-title { color: rgba(160,200,240,0.55); }
+      .pw-feat-col.paid .pw-feat-title { color: rgba(120,200,255,0.90); }
+      .pw-feat-item { font-size: 0.70rem; font-family: 'Noto Sans SC', sans-serif; line-height: 1.95; padding-left: 2px; }
+      .pw-feat-col.free .pw-feat-item { color: rgba(160,200,240,0.55); }
+      .pw-feat-col.paid .pw-feat-item { color: rgba(200,230,255,0.85); }
+      .pw-plans { display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; }
       .pw-plan {
-        border-radius: 16px; padding: 14px 16px;
-        border: 1.5px solid rgba(160,200,235,0.6);
-        background: #f8fbff;
+        border-radius: 14px; padding: 13px 15px;
+        border: 1px solid rgba(150,200,255,0.18);
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(8px);
         cursor: pointer; transition: all 0.18s;
         display: flex; align-items: center; justify-content: space-between;
         position: relative;
       }
-      .pw-plan:hover { background: #eaf4ff; border-color: rgba(74,159,212,0.5); }
-      .pw-plan.selected { border-color: #4a9fd4; background: #e4f2ff; box-shadow: 0 2px 12px rgba(74,159,212,0.18); }
-      .pw-plan.highlight { border-color: rgba(74,159,212,0.45); background: #eef7ff; }
-      .pw-plan.highlight.selected { border-color: #4a9fd4; background: #e4f2ff; box-shadow: 0 2px 12px rgba(74,159,212,0.20); }
+      .pw-plan:hover { background: rgba(74,159,212,0.14); border-color: rgba(74,159,212,0.35); }
+      .pw-plan.selected { border-color: rgba(74,159,212,0.70); background: rgba(74,159,212,0.18); box-shadow: 0 0 16px rgba(74,159,212,0.20); }
+      .pw-plan.highlight { border-color: rgba(74,159,212,0.28); background: rgba(74,159,212,0.09); }
+      .pw-plan.highlight.selected { border-color: rgba(74,159,212,0.72); background: rgba(74,159,212,0.20); }
       .pw-plan-badge {
         position: absolute; top: -9px; right: 12px;
         background: linear-gradient(135deg, #4a9fd4, #2a7abf);
-        color: #fff; font-size: 0.65rem; padding: 3px 10px;
+        color: #fff; font-size: 0.63rem; padding: 2px 10px;
         border-radius: 99px; letter-spacing: 0.06em; font-family: 'Noto Sans SC', sans-serif;
       }
       .pw-plan-left { display: flex; flex-direction: column; gap: 3px; }
-      .pw-plan-name { font-size: 0.92rem; color: #1a3a5c; letter-spacing: 0.06em; }
-      .pw-plan-sub { font-size: 0.7rem; color: #8aaac0; font-family:'Noto Sans SC',sans-serif; }
+      .pw-plan-name { font-size: 0.90rem; color: rgba(220,240,255,0.92); letter-spacing: 0.06em; }
+      .pw-plan-sub { font-size: 0.68rem; color: rgba(140,190,240,0.55); font-family:'Noto Sans SC',sans-serif; }
       .pw-plan-right { display: flex; align-items: baseline; gap: 3px; }
-      .pw-plan-price { font-size: 1.35rem; color: #2a7abf; }
-      .pw-plan-period { font-size: 0.72rem; color: #8aaac0; font-family:'Noto Sans SC',sans-serif; }
+      .pw-plan-price { font-size: 1.32rem; color: rgba(160,220,255,0.95); }
+      .pw-plan-period { font-size: 0.70rem; color: rgba(140,190,240,0.60); font-family:'Noto Sans SC',sans-serif; }
       .pw-btn {
-        width: 100%; padding: 15px; border: none; border-radius: 16px;
-        background: linear-gradient(135deg, #4a9fd4 0%, #2a7abf 100%);
+        width: 100%; padding: 14px; border: none; border-radius: 14px;
+        background: linear-gradient(135deg, rgba(74,159,212,0.90) 0%, rgba(42,122,191,0.90) 100%);
         color: #fff; font-family: 'Noto Serif SC', serif;
-        font-size: 1rem; letter-spacing: 0.1em; cursor: pointer;
-        transition: opacity 0.2s, transform 0.15s; margin-bottom: 14px;
-        box-shadow: 0 4px 18px rgba(42,122,191,0.32);
+        font-size: 0.98rem; letter-spacing: 0.1em; cursor: pointer;
+        transition: opacity 0.2s, transform 0.15s; margin-bottom: 12px;
+        box-shadow: 0 4px 20px rgba(42,122,191,0.40);
+        border: 1px solid rgba(120,180,255,0.25);
       }
       .pw-btn:hover { opacity: 0.88; transform: scale(1.02); }
-      .pw-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+      .pw-btn:disabled { opacity: 0.40; cursor: not-allowed; transform: none; }
       .pw-restore {
-        text-align: center; font-size: 0.75rem; color: #8aaac0;
+        text-align: center; font-size: 0.73rem; color: rgba(140,190,240,0.50);
         cursor: pointer; font-family: 'Noto Sans SC', sans-serif;
         letter-spacing: 0.04em; background: none; border: none; width: 100%;
       }
-      .pw-restore:hover { color: #4a9fd4; }
-      .pw-msg { text-align: center; font-size: 0.78rem; margin-top: 10px; font-family: 'Noto Sans SC', sans-serif; min-height: 20px; color: #8aaac0; }
-      .pw-msg.error { color: #d05050; }
-      .pw-msg.success { color: #4a9fd4; }
+      .pw-restore:hover { color: rgba(140,190,240,0.85); }
+      .pw-msg { text-align: center; font-size: 0.76rem; margin-top: 10px; font-family: 'Noto Sans SC', sans-serif; min-height: 20px; color: rgba(140,190,240,0.60); }
+      .pw-msg.error { color: rgba(255,120,120,0.85); }
+      .pw-msg.success { color: rgba(100,220,180,0.90); }
     `;
     document.head.appendChild(style);
   }
