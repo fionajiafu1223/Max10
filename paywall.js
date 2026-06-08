@@ -56,17 +56,23 @@
     const now = Date.now();
     if (!forceRefresh && _premiumCache !== null && (now - _cacheTime) < CACHE_TTL) return _premiumCache;
     const token = await getToken();
+    console.log('[Paywall] token:', token ? '✓ found' : '✗ not found');
     if (!token) { _premiumCache = false; _cacheTime = now; return false; }
     try {
       const res = await fetch(`${WORKER_URL}/subscription/status`, {
         method: 'GET', headers: { 'Authorization': `Bearer ${token}` },
       });
+      console.log('[Paywall] status response:', res.status);
       if (!res.ok) { _premiumCache = false; _cacheTime = now; return false; }
       const data = await res.json();
+      console.log('[Paywall] is_premium:', data.is_premium);
       _premiumCache = data.is_premium === true;
       _cacheTime = now;
       return _premiumCache;
-    } catch(_) { _premiumCache = false; _cacheTime = now; return false; }
+    } catch(e) { 
+      console.log('[Paywall] error:', e.message);
+      _premiumCache = false; _cacheTime = now; return false; 
+    }
   }
 
   // ─── 需要付费权限的入口 ───────────────────────────────
