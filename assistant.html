@@ -345,13 +345,11 @@ draw();
 
 <!-- 限制性信念释放面板 -->
 <div id="panel-beliefs">
-  <div class="iframe-back" onclick="closeBeliefs()">‹ 返回</div>
   <iframe class="panel-iframe" id="iframe-beliefs" src="" allowfullscreen></iframe>
 </div>
 
 <!-- 自我允许释放面板 -->
 <div id="panel-allowance">
-  <div class="iframe-back" onclick="closeAllowance()">‹ 返回</div>
   <iframe class="panel-iframe" id="iframe-allowance" src="" allowfullscreen></iframe>
 </div>
 
@@ -545,5 +543,11 @@ async function runAssistant() {
 }
 </script>
 <script src="nav-orb.js"></script>
+<script>
+window.addEventListener('message', function(e) {
+  if (e.data === 'closeBeliefs') closeBeliefs();
+  if (e.data === 'closeAllowance') closeAllowance();
+});
+</script>
 </body>
 </html>
