@@ -328,9 +328,11 @@ draw();
 <!-- 卡点释放展开面板 -->
 <div id="panel-blockpoint">
   <div class="panel-back" onclick="closeBlockPoint()">‹ 返回</div>
+  <div style="max-width:480px;margin:0 auto 10px;width:100%;text-align:center;">
+    <span style="font-size:1.05rem;letter-spacing:0.18em;color:rgba(3,80,140,0.85);font-family:'Noto Serif SC',serif;">🔍 卡点释放助手</span>
+  </div>
   <div class="panel-inner">
-    <div class="panel-title">🔍 卡点释放</div>
-    <p class="asst-subtitle">写下你的感受，Freed 帮你看见背后的欲望模式。</p>
+    <p class="asst-subtitle">写下你对一件事的感受、担忧或执着，释放助手会帮你看见背后的欲望模式。</p>
     <textarea class="asst-textarea" id="asstInput" placeholder="例：我每天都在想她什么时候才能回我消息，吃不下饭睡不着觉……"></textarea>
     <button class="asst-submit" id="asstSubmit" onclick="runAssistant()">✨ 分析</button>
     <div class="asst-loading" id="asstLoading">
