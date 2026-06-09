@@ -79,6 +79,28 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
   overflow-y: auto;
 }
 #panel-blockpoint.open { display: flex; }
+
+/* iframe 面板 — 限制性信念 & 自我允许 */
+#panel-beliefs, #panel-allowance {
+  position: fixed; inset: 0; z-index: 30;
+  display: none; flex-direction: column;
+}
+#panel-beliefs.open, #panel-allowance.open { display: flex; }
+.iframe-back {
+  position: absolute;
+  top: max(18px, calc(env(safe-area-inset-top,0px) + 10px));
+  left: 16px; z-index: 40;
+  color: rgba(3,80,140,0.85); font-size: 0.88rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer; letter-spacing: 0.04em;
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(8px);
+  padding: 6px 14px; border-radius: 99px;
+  box-shadow: 0 2px 10px rgba(0,60,120,0.12);
+  user-select: none;
+}
+.iframe-back:hover { color: rgba(3,80,140,1); background: rgba(255,255,255,0.9); }
+.panel-iframe { width: 100%; height: 100%; border: none; flex: 1; }
 .panel-back {
   max-width: 480px; margin: 0 auto 12px; width: 100%;
   display: flex; align-items: center; gap: 6px;
@@ -319,7 +341,18 @@ draw();
   </div>
 </div>
 
-<script src="paywall.js"></script>
+<!-- 限制性信念释放面板 -->
+<div id="panel-beliefs">
+  <div class="iframe-back" onclick="closeBeliefs()">‹ 返回</div>
+  <iframe class="panel-iframe" id="iframe-beliefs" src="" allowfullscreen></iframe>
+</div>
+
+<!-- 自我允许释放面板 -->
+<div id="panel-allowance">
+  <div class="iframe-back" onclick="closeAllowance()">‹ 返回</div>
+  <iframe class="panel-iframe" id="iframe-allowance" src="" allowfullscreen></iframe>
+</div>
+
 <script>
 const DESIRE_INFO = {
   control:{label:'想要控制',cls:'bc'},
@@ -365,10 +398,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // ── 功能入口 ──
 function openBlockPoint() {
-  requireLoginAndPremium(function() {
-    document.getElementById('asst-layer').style.display = 'none';
-    document.getElementById('panel-blockpoint').classList.add('open');
-  });
+  document.getElementById('asst-layer').style.display = 'none';
+  document.getElementById('panel-blockpoint').classList.add('open');
 }
 function closeBlockPoint() {
   document.getElementById('panel-blockpoint').classList.remove('open');
@@ -377,14 +408,24 @@ function closeBlockPoint() {
   document.getElementById('asstInput').value = '';
 }
 function openBeliefs() {
-  requireLoginAndPremium(function() {
-    showToast('🚧 即将上线，敬请期待');
-  });
+  document.getElementById('asst-layer').style.display = 'none';
+  var iframe = document.getElementById('iframe-beliefs');
+  if (!iframe.src || iframe.src === window.location.href) iframe.src = 'beliefs.html';
+  document.getElementById('panel-beliefs').classList.add('open');
+}
+function closeBeliefs() {
+  document.getElementById('panel-beliefs').classList.remove('open');
+  document.getElementById('asst-layer').style.display = 'block';
 }
 function openAllowance() {
-  requireLoginAndPremium(function() {
-    showToast('🚧 即将上线，敬请期待');
-  });
+  document.getElementById('asst-layer').style.display = 'none';
+  var iframe = document.getElementById('iframe-allowance');
+  if (!iframe.src || iframe.src === window.location.href) iframe.src = 'allowance.html';
+  document.getElementById('panel-allowance').classList.add('open');
+}
+function closeAllowance() {
+  document.getElementById('panel-allowance').classList.remove('open');
+  document.getElementById('asst-layer').style.display = 'block';
 }
 
 // ── Toast ──
