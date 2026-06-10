@@ -90,14 +90,15 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
 
 .panel-back {
   position: fixed;
-  top: max(14px, calc(env(safe-area-inset-top, 0px) + 8px));
+  top: max(22px, calc(env(safe-area-inset-top, 0px) + 8px));
   left: 16px; z-index: 40;
-  width: 44px; height: 44px;
-  border-radius: 50%;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 99px;
   background: rgba(255,255,255,0.45);
   backdrop-filter: blur(12px);
   display: flex; align-items: center; justify-content: center;
-  color: rgba(3,80,140,0.85); font-size: 0.72rem;
+  color: rgba(3,80,140,0.85); font-size: 0.82rem;
   font-family: 'Noto Sans SC', sans-serif;
   cursor: pointer; letter-spacing: 0.04em;
   box-shadow: 0 2px 12px rgba(0,60,120,0.12);
@@ -324,7 +325,7 @@ draw();
 <div id="panel-blockpoint">
   <div class="panel-back" onclick="closeBlockPoint()">返回</div>
   <div style="max-width:480px;margin:0 auto 10px;width:100%;text-align:center;">
-    <span style="font-size:1.05rem;letter-spacing:0.18em;color:rgba(3,80,140,0.85);font-family:'Noto Serif SC',serif;">🔍 卡点释放助手</span>
+    <span style="font-size:1.05rem;letter-spacing:0.18em;color:rgba(3,80,140,0.85);font-family:'Noto Serif SC',serif;">🫧 卡点释放助手</span>
   </div>
   <div class="panel-inner">
     <p class="asst-subtitle">写下你对一件事的感受、担忧或执着，释放助手会帮你看见背后的欲望模式。</p>
