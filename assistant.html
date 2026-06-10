@@ -340,13 +340,11 @@ draw();
 
 <!-- 限制性信念释放面板 -->
 <div id="panel-beliefs">
-  <div class="panel-back" onclick="closeBeliefs()" style="z-index:50;">返回</div>
   <iframe class="panel-iframe" id="iframe-beliefs" src="" allowfullscreen></iframe>
 </div>
 
 <!-- 自我允许释放面板 -->
 <div id="panel-allowance">
-  <div class="panel-back" onclick="closeAllowance()" style="z-index:50;">返回</div>
   <iframe class="panel-iframe" id="iframe-allowance" src="" allowfullscreen></iframe>
 </div>
 
@@ -397,10 +395,14 @@ window.addEventListener('DOMContentLoaded', function() {
 function openBlockPoint() {
   document.getElementById('asst-layer').style.display = 'none';
   document.getElementById('panel-blockpoint').classList.add('open');
+  var orb = document.getElementById('nav-orb-btn');
+  if (orb) orb.style.display = 'none';
 }
 function closeBlockPoint() {
   document.getElementById('panel-blockpoint').classList.remove('open');
   document.getElementById('asst-layer').style.display = 'block';
+  var orb = document.getElementById('nav-orb-btn');
+  if (orb) orb.style.display = '';
   document.getElementById('asstResult').classList.remove('show');
   document.getElementById('asstInput').value = '';
 }
