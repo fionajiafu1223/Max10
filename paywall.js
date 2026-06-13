@@ -11,19 +11,19 @@
   const WORKER_URL = 'https://api.freedreleasing.com';
 
   const PLANS = [
-    { id:'monthly',   rcPackage:'$rc_monthly',     label:'月度会员', sublabel:'Monthly',   price:'¥8',  period:'/ 月', badge:null,        highlight:false },
-    { id:'yearly',    rcPackage:'$rc_annual',       label:'年度会员', sublabel:'Annual',    price:'¥68', period:'/ 年', badge:'最划算 省29%', highlight:true  },
-    { id:'quarterly', rcPackage:'$rc_three_month',  label:'季度会员', sublabel:'Quarterly', price:'¥18', period:'/ 季', badge:'省25%',      highlight:false },
+    { id:'monthly',   rcPackage:'$rc_monthly',     label:'月度会员', sublabel:'Monthly',   price:'…',  period:'/ 月', badge:null,        highlight:false },
+    { id:'yearly',    rcPackage:'$rc_annual',       label:'年度会员', sublabel:'Annual',    price:'…', period:'/ 年', badge:'最划算 省29%', highlight:true  },
+    { id:'quarterly', rcPackage:'$rc_three_month',  label:'季度会员', sublabel:'Quarterly', price:'…', period:'/ 季', badge:'省25%',      highlight:false },
   ];
 
-  const FEATURES_FREE = ['情绪释放', '欲望释放', '目标表（最多3个）'];
-  const FEATURES_PAID_LEFT = [
-    { label: '释放工具', items: ['识别即释放', '情绪欲望释放', '好处坏处释放', '财富释放', '人际关系释放', '身体健康释放'] },
-  ];
-  const FEATURES_PAID_RIGHT = [
-    { label: '释放助手', items: ['卡点释放', '限制性信念释放', '自我允许释放'] },
-    { label: '目标表', items: ['无限目标'] },
-    { label: '收获本', items: ['收获记录'] },
+  const FEATURES_TABLE = [
+    { label: '情绪释放',     free: true,  paid: true  },
+    { label: '欲望释放',     free: true,  paid: true  },
+    { label: '专题释放工具', free: false, paid: true  },
+    { label: '释放助手',     free: false, paid: true  },
+    { label: '无限目标',     free: false, paid: true  },
+    { label: '收获记录',     free: false, paid: true  },
+    { label: '目标表（最多3个）', free: true, paid: true },
   ];
 
   let _premiumCache = null;
@@ -96,7 +96,7 @@
       @keyframes pwFadeIn { from{opacity:0} to{opacity:1} }
       #pw-sheet {
         width: 100%; max-width: 420px;
-        background: rgba(8,28,70,0.88);
+        background: rgba(30,90,160,0.92);
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
         border-radius: 24px;
@@ -104,8 +104,8 @@
         max-height: 88vh; overflow-y: auto;
         animation: pwPopIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
         font-family: 'Noto Serif SC', serif;
-        border: 1px solid rgba(120,180,255,0.18);
-        box-shadow: 0 8px 48px rgba(0,20,60,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+        border: 1px solid rgba(120,180,255,0.25);
+        box-shadow: 0 8px 48px rgba(0,20,60,0.45), inset 0 1px 0 rgba(255,255,255,0.12);
         position: relative;
       }
       @keyframes pwPopIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
@@ -128,29 +128,17 @@
       }
 
       /* ── 功能对比 ── */
-      .pw-features { display: flex; gap: 8px; margin-bottom: 14px; align-items: stretch; }
-      .pw-feat-col { border-radius: 14px; padding: 11px 10px; }
-      .pw-feat-col.free {
-        flex: 0 0 32%;
-        background: rgba(255,255,255,0.88);
-        border: 1px solid rgba(160,200,235,0.45);
-      }
-      .pw-feat-col.paid {
-        flex: 1;
-        background: rgba(255,255,255,0.88);
-        border: 1px solid rgba(74,159,212,0.30);
-      }
-      .pw-feat-title {
-        font-size: 0.68rem; letter-spacing: 0.06em; margin-bottom: 7px;
-        text-align: center; font-family: 'Noto Sans SC', sans-serif;
-      }
-      .pw-feat-col.free .pw-feat-title { color: #5a7aa0; }
-      .pw-feat-col.paid .pw-feat-title { color: #5a7aa0; }
-      .pw-feat-item {
-        font-size: 0.67rem; font-family: 'Noto Sans SC', sans-serif;
-        line-height: 1.95; padding-left: 2px; color: #2a4a6a;
-        white-space: nowrap;
-      }
+      /* ── 功能对比表格 ── */
+      .pw-features { margin-bottom: 14px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(160,200,235,0.35); background: #ffffff; }
+      .pw-feat-header { display: grid; grid-template-columns: 1fr 72px 72px; background: rgba(74,159,212,0.08); border-bottom: 1px solid rgba(160,200,235,0.35); }
+      .pw-feat-header-cell { padding: 7px 6px; font-size: 0.65rem; font-family: 'Noto Sans SC', sans-serif; color: #4a9fd4; text-align: center; letter-spacing: 0.05em; }
+      .pw-feat-header-cell:first-child { text-align: left; padding-left: 12px; color: #5a7aa0; }
+      .pw-feat-row { display: grid; grid-template-columns: 1fr 72px 72px; border-bottom: 1px solid rgba(160,200,235,0.18); }
+      .pw-feat-row:last-child { border-bottom: none; }
+      .pw-feat-name { padding: 7px 6px 7px 12px; font-size: 0.68rem; font-family: 'Noto Sans SC', sans-serif; color: #2a4a6a; display: flex; align-items: center; }
+      .pw-feat-check { display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+      .pw-feat-check.yes { color: #4a9fd4; }
+      .pw-feat-check.no { color: rgba(160,180,200,0.6); }
 
       /* 会员功能两列 */
       .pw-paid-groups { display: flex; gap: 8px; }
@@ -167,17 +155,23 @@
 
       /* ── 套餐 ── */
       .pw-plans { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+      .pw-plans { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
       .pw-plan {
         border-radius: 12px; padding: 10px 14px;
-        border: 1px solid rgba(160,200,235,0.50);
-        background: rgba(255,255,255,0.92);
+        border: 2px solid rgba(160,200,235,0.40);
+        background: #ffffff;
         cursor: pointer; transition: all 0.18s;
         display: flex; align-items: center; justify-content: space-between;
         position: relative;
       }
-      .pw-plan:hover { background: #fff; border-color: rgba(74,159,212,0.5); }
-      .pw-plan.selected { border-color: #4a9fd4; background: #fff; box-shadow: 0 2px 12px rgba(74,159,212,0.22); }
-      .pw-plan.highlight { background: rgba(255,255,255,0.92); }
+      .pw-plan:hover { border-color: rgba(74,159,212,0.6); }
+      .pw-plan.selected { border-color: #4a9fd4; background: #fff; box-shadow: 0 2px 16px rgba(74,159,212,0.35); }
+      .pw-plan.selected::after {
+        content: '✓';
+        position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+        color: #4a9fd4; font-size: 1rem; font-weight: 700;
+      }
+      .pw-plan.highlight { background: #ffffff; }
       .pw-plan.highlight.selected { border-color: #4a9fd4; background: #fff; }
 
 
@@ -241,29 +235,17 @@
         <h2>🫧 解锁完整释放体验</h2>
         <p class="pw-sub">升级会员，体验全部功能</p>
         <div class="pw-features">
-          <div class="pw-feat-col free">
-            <div class="pw-feat-title">免费功能</div>
-            ${FEATURES_FREE.map(f => `<div class="pw-feat-item">· ${f}</div>`).join('')}
+          <div class="pw-feat-header">
+            <div class="pw-feat-header-cell">功能</div>
+            <div class="pw-feat-header-cell">免费</div>
+            <div class="pw-feat-header-cell">✦ 会员</div>
           </div>
-          <div class="pw-feat-col paid">
-            <div class="pw-feat-title">✦ 会员功能</div>
-            <div class="pw-paid-groups">
-              <div class="pw-paid-col">
-                ${FEATURES_PAID_LEFT.map(g => `
-                  <div class="pw-paid-group">
-                    <div class="pw-paid-group-label">${g.label}</div>
-                    ${g.items.map(i => `<div class="pw-paid-group-item">· ${i}</div>`).join('')}
-                  </div>`).join('')}
-              </div>
-              <div class="pw-paid-col">
-                ${FEATURES_PAID_RIGHT.map(g => `
-                  <div class="pw-paid-group">
-                    <div class="pw-paid-group-label">${g.label}</div>
-                    ${g.items.map(i => `<div class="pw-paid-group-item">· ${i}</div>`).join('')}
-                  </div>`).join('')}
-              </div>
-            </div>
-          </div>
+          ${FEATURES_TABLE.map(f => `
+            <div class="pw-feat-row">
+              <div class="pw-feat-name">${f.label}</div>
+              <div class="pw-feat-check ${f.free ? 'yes' : 'no'}">${f.free ? '✓' : '✗'}</div>
+              <div class="pw-feat-check ${f.paid ? 'yes' : 'no'}">${f.paid ? '✓' : '✗'}</div>
+            </div>`).join('')}
         </div>
         <div class="pw-plans" id="pw-plans">
           ${PLANS.map(p => `
@@ -296,6 +278,8 @@
     });
     document.getElementById('pw-buy-btn').addEventListener('click', handlePurchase);
     document.getElementById('pw-restore-btn').addEventListener('click', handleRestore);
+    // 动态从 RevenueCat 获取真实价格
+    loadDynamicPrices();
   }
 
   function closePaywall() {
@@ -317,22 +301,51 @@
     btn.textContent = loading ? '处理中...' : '立即订阅';
   }
 
+  async function loadDynamicPrices() {
+    try {
+      await loadRCSDK();
+      const Purchases = getRC();
+      if (!Purchases) return;
+      try { await Purchases.configure({ apiKey: 'appl_tPsHsCYxJnoCwiZTTVaexMsaHHoO' }); } catch(e) {}
+      await new Promise(r => setTimeout(r, 300));
+      const offeringsResult = await Purchases.getOfferings();
+      const current = offeringsResult.offerings ? offeringsResult.offerings.current : offeringsResult.current;
+      if (!current) return;
+      current.availablePackages.forEach(pkg => {
+        const plan = PLANS.find(p => p.rcPackage === pkg.identifier);
+        if (!plan) return;
+        const priceStr = pkg.product.priceString || pkg.product.price;
+        if (!priceStr) return;
+        // 更新价格显示
+        const planEl = document.querySelector(`.pw-plan[data-plan="${plan.id}"]`);
+        if (planEl) {
+          const priceEl = planEl.querySelector('.pw-plan-price');
+          if (priceEl) priceEl.textContent = priceStr;
+        }
+      });
+    } catch(e) {
+      // 静默失败，保留硬编码价格作为备用
+    }
+  }
+
   async function handlePurchase() {
     setBtnLoading(true); setMsg('');
     try {
       await loadRCSDK();
-      const Purchases = window.Purchases;
+      const Purchases = getRC();
       if (!Purchases) throw new Error('RevenueCat SDK 未加载');
-      Purchases.configure({ apiKey: RC_API_KEY });
-      const userId = getUserId();
-      if (userId) { try { await Purchases.logIn(userId); } catch(_) {} }
-      const offerings = await Purchases.getOfferings();
-      const current = offerings.current;
+      // 从 JS 层再 configure 一次，确保初始化完成
+      try { await Purchases.configure({ apiKey: 'appl_tPsHsCYxJnoCwiZTTVaexMsaHHoO' }); } catch(e) {}
+      await new Promise(r => setTimeout(r, 300));
+      const offeringsResult = await Purchases.getOfferings();
+      const current = offeringsResult.offerings ? offeringsResult.offerings.current : offeringsResult.current;
       if (!current) throw new Error('无法获取订阅套餐');
       const pkg = current.availablePackages.find(p => p.identifier === _selectedPlan.rcPackage);
-      if (!pkg) throw new Error('找不到对应套餐，请稍后再试');
-      const result = await Purchases.purchasePackage(pkg);
-      if (result.customerInfo) {
+      if (!pkg) throw new Error('找不到套餐: ' + _selectedPlan.rcPackage);
+      const rawPkg = JSON.parse(JSON.stringify(pkg));
+      const purchaseResult = await Purchases.purchasePackage({ aPackage: rawPkg });
+      const customerInfo = purchaseResult.customerInfo || purchaseResult;
+      if (customerInfo) {
         _premiumCache = null;
         await checkPremium(true);
         setMsg('✓ 订阅成功，感谢支持！', 'success');
@@ -343,7 +356,7 @@
       }
     } catch(err) {
       if (err && err.userCancelled) { setMsg('已取消', ''); }
-      else { setMsg('❌ ' + (err && err.message ? err.message : String(err)).slice(0, 60), 'error'); }
+      else { setMsg('❌ ' + (err && err.message ? err.message : JSON.stringify(err)).slice(0, 80), 'error'); }
     } finally { setBtnLoading(false); }
   }
 
@@ -353,11 +366,9 @@
     setMsg('');
     try {
       await loadRCSDK();
-      const Purchases = window.Purchases;
-      Purchases.configure({ apiKey: RC_API_KEY });
-      const userId = getUserId();
-      if (userId) { try { await Purchases.logIn(userId); } catch(_) {} }
-      const customerInfo = await Purchases.restorePurchases();
+      const Purchases = getRC();
+      if (!Purchases) throw new Error('RevenueCat SDK 未加载');
+      const { customerInfo } = await Purchases.restorePurchases();
       const entitlement = customerInfo.entitlements?.active?.['premium'];
       if (entitlement) {
         _premiumCache = null;
@@ -372,15 +383,34 @@
 
   let _rcLoaded = false;
   function loadRCSDK() {
-    if (_rcLoaded && window.Purchases) return Promise.resolve();
+    if (_rcLoaded) return Promise.resolve();
     return new Promise((resolve, reject) => {
-      if (window.Purchases) { _rcLoaded = true; resolve(); return; }
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/@revenuecat/purchases-js@latest/dist/index.js';
-      script.onload = () => { _rcLoaded = true; resolve(); };
-      script.onerror = () => reject(new Error('RevenueCat SDK 加载失败'));
-      document.head.appendChild(script);
+      let attempts = 0;
+      const check = setInterval(async () => {
+        attempts++;
+        const P = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases;
+        if (P) {
+          try {
+            // 用 isConfigured 确认 SDK 已初始化完成
+            const result = await P.isConfigured();
+            if (result && result.isConfigured) {
+              clearInterval(check);
+              _rcLoaded = true;
+              resolve();
+              return;
+            }
+          } catch(e) {}
+        }
+        if (attempts > 50) {
+          clearInterval(check);
+          reject(new Error('RevenueCat SDK 未能初始化'));
+        }
+      }, 100);
     });
+  }
+
+  function getRC() {
+    return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases;
   }
 
   function getUserId() {
