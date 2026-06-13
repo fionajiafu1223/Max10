@@ -16,14 +16,14 @@
     { id:'quarterly', rcPackage:'$rc_three_month',  label:'季度会员', sublabel:'Quarterly', price:'…', period:'/ 季', badge:'省25%',      highlight:false },
   ];
 
-  const FEATURES_TABLE = [
-    { label: '情绪释放',     free: true,  paid: true  },
-    { label: '欲望释放',     free: true,  paid: true  },
-    { label: '专题释放工具', free: false, paid: true  },
-    { label: '释放助手',     free: false, paid: true  },
-    { label: '无限目标',     free: false, paid: true  },
-    { label: '收获记录',     free: false, paid: true  },
-    { label: '目标表（最多3个）', free: true, paid: true },
+  const FEATURES_FREE = ['情绪释放', '欲望释放', '目标表（最多3个）'];
+  const FEATURES_PAID_LEFT = [
+    { label: '释放工具', items: ['识别即释放', '情绪欲望释放', '好处坏处释放', '财富释放', '人际关系释放', '身体健康释放'] },
+  ];
+  const FEATURES_PAID_RIGHT = [
+    { label: '释放助手', items: ['卡点释放', '限制性信念释放', '自我允许释放'] },
+    { label: '目标表', items: ['无限目标'] },
+    { label: '收获本', items: ['收获记录'] },
   ];
 
   let _premiumCache = null;
@@ -128,17 +128,29 @@
       }
 
       /* ── 功能对比 ── */
-      /* ── 功能对比表格 ── */
-      .pw-features { margin-bottom: 14px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(160,200,235,0.35); background: #ffffff; }
-      .pw-feat-header { display: grid; grid-template-columns: 1fr 72px 72px; background: rgba(74,159,212,0.08); border-bottom: 1px solid rgba(160,200,235,0.35); }
-      .pw-feat-header-cell { padding: 7px 6px; font-size: 0.65rem; font-family: 'Noto Sans SC', sans-serif; color: #4a9fd4; text-align: center; letter-spacing: 0.05em; }
-      .pw-feat-header-cell:first-child { text-align: left; padding-left: 12px; color: #5a7aa0; }
-      .pw-feat-row { display: grid; grid-template-columns: 1fr 72px 72px; border-bottom: 1px solid rgba(160,200,235,0.18); }
-      .pw-feat-row:last-child { border-bottom: none; }
-      .pw-feat-name { padding: 7px 6px 7px 12px; font-size: 0.68rem; font-family: 'Noto Sans SC', sans-serif; color: #2a4a6a; display: flex; align-items: center; }
-      .pw-feat-check { display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
-      .pw-feat-check.yes { color: #4a9fd4; }
-      .pw-feat-check.no { color: rgba(160,180,200,0.6); }
+      .pw-features { display: flex; gap: 8px; margin-bottom: 14px; align-items: stretch; }
+      .pw-feat-col { border-radius: 14px; padding: 11px 10px; }
+      .pw-feat-col.free {
+        flex: 0 0 32%;
+        background: #ffffff;
+        border: 1px solid rgba(160,200,235,0.45);
+      }
+      .pw-feat-col.paid {
+        flex: 1;
+        background: #ffffff;
+        border: 1px solid rgba(74,159,212,0.30);
+      }
+      .pw-feat-title {
+        font-size: 0.68rem; letter-spacing: 0.06em; margin-bottom: 7px;
+        text-align: center; font-family: 'Noto Sans SC', sans-serif;
+      }
+      .pw-feat-col.free .pw-feat-title { color: #5a7aa0; }
+      .pw-feat-col.paid .pw-feat-title { color: #5a7aa0; }
+      .pw-feat-item {
+        font-size: 0.67rem; font-family: 'Noto Sans SC', sans-serif;
+        line-height: 1.95; padding-left: 2px; color: #2a4a6a;
+        white-space: nowrap;
+      }
 
       /* 会员功能两列 */
       .pw-paid-groups { display: flex; gap: 8px; }
@@ -235,17 +247,29 @@
         <h2>🫧 解锁完整释放体验</h2>
         <p class="pw-sub">升级会员，体验全部功能</p>
         <div class="pw-features">
-          <div class="pw-feat-header">
-            <div class="pw-feat-header-cell">功能</div>
-            <div class="pw-feat-header-cell">免费</div>
-            <div class="pw-feat-header-cell">✦ 会员</div>
+          <div class="pw-feat-col free">
+            <div class="pw-feat-title">免费功能</div>
+            ${FEATURES_FREE.map(f => `<div class="pw-feat-item">· ${f}</div>`).join('')}
           </div>
-          ${FEATURES_TABLE.map(f => `
-            <div class="pw-feat-row">
-              <div class="pw-feat-name">${f.label}</div>
-              <div class="pw-feat-check ${f.free ? 'yes' : 'no'}">${f.free ? '✓' : '✗'}</div>
-              <div class="pw-feat-check ${f.paid ? 'yes' : 'no'}">${f.paid ? '✓' : '✗'}</div>
-            </div>`).join('')}
+          <div class="pw-feat-col paid">
+            <div class="pw-feat-title">✦ 会员功能</div>
+            <div class="pw-paid-groups">
+              <div class="pw-paid-col">
+                ${FEATURES_PAID_LEFT.map(g => `
+                  <div class="pw-paid-group">
+                    <div class="pw-paid-group-label">${g.label}</div>
+                    ${g.items.map(i => `<div class="pw-paid-group-item">· ${i}</div>`).join('')}
+                  </div>`).join('')}
+              </div>
+              <div class="pw-paid-col">
+                ${FEATURES_PAID_RIGHT.map(g => `
+                  <div class="pw-paid-group">
+                    <div class="pw-paid-group-label">${g.label}</div>
+                    ${g.items.map(i => `<div class="pw-paid-group-item">· ${i}</div>`).join('')}
+                  </div>`).join('')}
+              </div>
+            </div>
+          </div>
         </div>
         <div class="pw-plans" id="pw-plans">
           ${PLANS.map(p => `
