@@ -199,7 +199,7 @@
       /* ── 按钮 ── */
       .pw-btn {
         width: 100%; padding: 13px; border: none; border-radius: 14px;
-        background: linear-gradient(135deg, rgba(74,159,212,0.75) 0%, rgba(58,184,160,0.75) 100%);
+        background: linear-gradient(135deg, rgba(74,159,212,0.25) 0%, rgba(58,184,160,0.25) 100%);
         color: #fff; font-family: 'Noto Serif SC', serif;
         font-size: 0.95rem; letter-spacing: 0.1em; cursor: pointer;
         transition: opacity 0.2s, transform 0.15s; margin-bottom: 10px;
