@@ -177,9 +177,9 @@
         position: relative;
       }
       .pw-plan:hover { border-color: rgba(74,159,212,0.6); }
-      .pw-plan.selected { border-color: #4a9fd4; background: rgba(74,159,212,0.10); box-shadow: 0 2px 16px rgba(74,159,212,0.25); }
+      .pw-plan.selected { border-color: #4a9fd4; background: rgba(74,159,212,0.05); box-shadow: 0 2px 16px rgba(74,159,212,0.25); }
       .pw-plan.highlight { background: #ffffff; }
-      .pw-plan.highlight.selected { border-color: #4a9fd4; background: rgba(74,159,212,0.10); box-shadow: 0 2px 16px rgba(74,159,212,0.25); }
+      .pw-plan.highlight.selected { border-color: #4a9fd4; background: rgba(74,159,212,0.05); box-shadow: 0 2px 16px rgba(74,159,212,0.25); }
 
 
       .pw-plan-badge {
@@ -199,7 +199,7 @@
       /* ── 按钮 ── */
       .pw-btn {
         width: 100%; padding: 13px; border: none; border-radius: 14px;
-        background: linear-gradient(135deg, rgba(74,159,212,0.25) 0%, rgba(58,184,160,0.25) 100%);
+        background: linear-gradient(135deg, #4a9fd4 0%, #3ab8a0 100%);
         color: #fff; font-family: 'Noto Serif SC', serif;
         font-size: 0.95rem; letter-spacing: 0.1em; cursor: pointer;
         transition: opacity 0.2s, transform 0.15s; margin-bottom: 10px;
