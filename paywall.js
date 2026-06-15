@@ -177,9 +177,9 @@
         position: relative;
       }
       .pw-plan:hover { border-color: rgba(74,159,212,0.6); }
-      .pw-plan.selected { border-color: #4a9fd4; background: rgba(74,159,212,0.05); box-shadow: 0 2px 16px rgba(74,159,212,0.25); }
+      .pw-plan.selected { border-color: #4a9fd4 !important; background: #ffffff !important; box-shadow: 0 2px 16px rgba(74,159,212,0.25) !important; }
       .pw-plan.highlight { background: #ffffff; }
-      .pw-plan.highlight.selected { border-color: #4a9fd4; background: rgba(74,159,212,0.05); box-shadow: 0 2px 16px rgba(74,159,212,0.25); }
+      .pw-plan.highlight.selected { border-color: #4a9fd4 !important; background: #ffffff !important; box-shadow: 0 2px 16px rgba(74,159,212,0.25) !important; }
 
 
       .pw-plan-badge {
