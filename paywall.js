@@ -177,12 +177,13 @@
         position: relative;
       }
       .pw-plan:hover { border-color: rgba(74,159,212,0.6); }
-      .pw-plan.selected { border-color: #4a9fd4; background: #fff; box-shadow: 0 2px 16px rgba(74,159,212,0.35); }
+      .pw-plan.selected { border-color: #4a9fd4; background: rgba(74,159,212,0.12); box-shadow: 0 2px 16px rgba(74,159,212,0.35); }
       .pw-plan.selected::after {
         content: '✓';
         position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
         color: #4a9fd4; font-size: 1rem; font-weight: 700;
       }
+      .pw-plan.highlight.selected { border-color: #4a9fd4; background: rgba(74,159,212,0.12); }
       .pw-plan.highlight { background: #ffffff; }
       .pw-plan.highlight.selected { border-color: #4a9fd4; background: #fff; }
 
