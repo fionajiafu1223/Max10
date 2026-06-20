@@ -532,6 +532,11 @@
     if (!frImportAudioEl) { frImportAudioEl = new Audio(); frImportAudioEl.loop = true; }
     return frImportAudioEl;
   }
+  function frEscapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function(c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
   function frRenderImportedList() {
     var list = document.getElementById('frImportedList');
     if (!frImportedTracks.length) { list.innerHTML = '<div class="fr-music-import-empty">还没有导入的音乐</div>'; return; }
@@ -542,9 +547,6 @@
         + '<button class="fr-music-imported-del" onclick="frDeleteImportTrack(event,\'' + track.id + '\')">✕</button>'
         + '</div>';
     }).join('');
-    setTimeout(function(){
-      alert('DEBUG 1秒后检查: list.innerHTML长度=' + list.innerHTML.length + ', 内容前50字=' + list.innerHTML.slice(0,50));
-    }, 1000);
   }
   window.frSelectImportTrack = function(id) {
     frEnsureImportAudio();
