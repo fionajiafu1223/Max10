@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>欲望释放 · Freed Releasing</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Noto+Sans+SC:wght@300;400&display=swap');
@@ -18,6 +18,7 @@
   /* ── SKY CLOUDS ── */
   .sky-clouds {
     position: fixed; top: 0; left: 0;
+    padding-top: max(22px, calc(env(safe-area-inset-top, 0px) + 8px));
     width: 100%; height: 100%;
     pointer-events: none; z-index: 1;
     overflow: hidden;
@@ -363,7 +364,7 @@
 
   /* ── MUSIC BUTTON & PANEL ── */
   .music-btn {
-    position: fixed; top: 16px; right: 16px; z-index: 600;
+    position: fixed; top: max(22px, calc(env(safe-area-inset-top, 0px) + 8px)); right: calc(env(safe-area-inset-right, 0px) + 12px); z-index: 600;
     width: 36px; height: 36px; border-radius: 50%;
     background: rgba(255,255,255,0.2); backdrop-filter: blur(12px);
     border: 1.5px solid rgba(255,255,255,0.35);
@@ -386,7 +387,7 @@
     to   { transform: rotate(360deg); }
   }
   .music-panel {
-    position: fixed; top: 64px; right: 12px; z-index: 590;
+    position: fixed; top: max(72px, calc(env(safe-area-inset-top, 0px) + 58px)); right: 12px; z-index: 590;
     width: min(390px, 90vw);
     background: rgba(22,48,100,0.93); backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
@@ -716,7 +717,7 @@
   /* ── MENU BUTTON ── */
   .menu-btn {
     display: none !important;
-    position: fixed; top: 16px; left: 16px; z-index: 600;
+    position: fixed; top: max(22px, calc(env(safe-area-inset-top, 0px) + 8px)); left: calc(env(safe-area-inset-left, 0px) + 12px); z-index: 600;
     width: 42px; height: 42px; border-radius: 50%;
     background: rgba(255,255,255,0.2); backdrop-filter: blur(12px);
     border: 1.5px solid rgba(255,255,255,0.35);
@@ -1667,15 +1668,21 @@ function vh()     { return window.innerHeight; }
 // All physics constants are defined per 60fps frame.
 // Delta-time scaling normalises them to actual elapsed time,
 // so behaviour is identical on 60 / 90 / 120 / 144 Hz screens.
-const BUOYANCY    = 0.006;   // per 60fps frame
+const isAndroid   = /Android/i.test(navigator.userAgent);
+// 以 iPad Pro 13" (1376pt 宽) 为基准，按屏幕宽度缩放运动速度，
+// 让小屏设备上的视觉速度感与基准设备一致
+const REFERENCE_WIDTH = 1376;
+const screenScale = Math.min(1, vw() / REFERENCE_WIDTH);
+const BUOYANCY    = (isAndroid ? 0.003 : 0.006) * screenScale;
+const MAX_SPD     = (isAndroid ? 0.35  : 0.8) * screenScale;
 const DAMPING     = 0.92;    // per 60fps frame (converted to per-dt below)
-const REPULSION   = 120;     // per 60fps frame
-const WALL_REP    = 80;      // per 60fps frame
+const REPULSION   = 120 * screenScale;
+const WALL_REP    = 80 * screenScale;
 const WALL_MARGIN = 6;
 const TARGET_FPS  = 60;
 const TARGET_DT   = 1000 / TARGET_FPS;  // 16.667 ms
 // Max speed in px per 60fps-equivalent frame
-const MAX_SPD     = 0.8;
+
 
 let   frameCount  = 0;
 let   lastPhysicsTime = null;
@@ -3162,9 +3169,17 @@ function toggleMusicPanel() {
 }
 
 document.addEventListener('click', e => {
-  if (musicPanelOpen && !e.target.closest('#musicPanel') && !e.target.closest('#musicBtn')) {
+  if (!musicPanelOpen) return;
+  const panel = document.getElementById('musicPanel');
+  const btn = document.getElementById('musicBtn');
+  const panelRect = panel.getBoundingClientRect();
+  const btnRect = btn.getBoundingClientRect();
+  const x = e.clientX, y = e.clientY;
+  const insidePanel = x >= panelRect.left && x <= panelRect.right && y >= panelRect.top && y <= panelRect.bottom;
+  const insideBtn = x >= btnRect.left && x <= btnRect.right && y >= btnRect.top && y <= btnRect.bottom;
+  if (!insidePanel && !insideBtn) {
     musicPanelOpen = false;
-    document.getElementById('musicPanel').classList.remove('open');
+    panel.classList.remove('open');
   }
 });
 
@@ -3187,6 +3202,7 @@ function switchMusicSource(src) {
   });
   // Init waveform bars on first visit
   if (src === 'record') initRecordWaveform();
+  if (src === 'import') renderImportedList();
 }
 
 // ═══════════════════════════════════════════════════
@@ -3195,6 +3211,32 @@ function switchMusicSource(src) {
 // importedTracks: [{id, name, src, objectUrl?}]
 const importedTracks = [];
 let importAudioEl    = null; // single <audio> element for imported/recorded playback
+
+// ── 持久化：localStorage ──
+function saveTracksToStorage() {
+  try {
+    const toSave = importedTracks.filter(t => t.base64)
+      .map(t => ({ id: t.id, name: t.name, base64: t.base64, mime: t.mime }));
+    localStorage.setItem('freed_desire_recorded_tracks', JSON.stringify(toSave));
+  } catch(e) {}
+}
+function loadTracksFromStorage() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('freed_desire_recorded_tracks') || '[]');
+    saved.forEach(t => {
+      try {
+        const byteString = atob(t.base64.split(',')[1]);
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+        const blob = new Blob([ab], { type: t.mime || 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+        importedTracks.push({ id: t.id, name: t.name, src: url, base64: t.base64, mime: t.mime });
+      } catch(e) {}
+    });
+  } catch(e) {}
+}
+loadTracksFromStorage();
 let currentImportId  = null;
 
 function ensureImportAudio() {
@@ -3251,15 +3293,20 @@ function renderImportedList() {
   }
   list.innerHTML = importedTracks.map(track => `
     <div class="music-imported-item ${currentImportId===track.id?'active':''}"
-         id="itrack-${track.id}" onclick="selectImportTrack('${track.id}')">
-      <span style="font-size:1.1rem;flex-shrink:0;">${currentImportId===track.id ? '▶' : '🎵'}</span>
+         id="itrack-${track.id}" onclick="selectImportTrack('${track.id}', event)">
+      <button class="music-play-btn ${currentImportId===track.id && musicPlaying ? 'playing' : ''}" 
+              style="flex-shrink:0;width:28px;height:28px;font-size:0.75rem;" 
+              onclick="selectImportTrack('${track.id}', event)">
+        ${currentImportId===track.id && musicPlaying ? '⏹' : '▶'}
+      </button>
       <span class="music-imported-name" title="${escapeHtml(track.name)}">${escapeHtml(track.name)}</span>
       <button class="music-imported-del" onclick="deleteImportTrack(event,'${track.id}')">✕</button>
     </div>
   `).join('');
 }
 
-function selectImportTrack(id) {
+function selectImportTrack(id, event) {
+  if (event) event.stopPropagation();
   ensureImportAudio();
   if (currentImportId === id && musicPlaying && currentTrack === '__import__') {
     // toggle off
@@ -3299,6 +3346,7 @@ function deleteImportTrack(e, id) {
   const track = importedTracks[idx];
   if (track.objectUrl) URL.revokeObjectURL(track.objectUrl);
   importedTracks.splice(idx, 1);
+  saveTracksToStorage();
   renderImportedList();
 }
 
@@ -3524,30 +3572,56 @@ let recordPreviewEl = null;
 
 function playRecording() {
   if (!recordObjectUrl) return;
+  const btn = document.querySelector('.record-play-btn');
   if (!recordPreviewEl) recordPreviewEl = new Audio();
   if (!recordPreviewEl.paused) {
     recordPreviewEl.pause();
     recordPreviewEl.currentTime = 0;
+    if (btn) btn.textContent = '▶ 试听';
     return;
   }
   recordPreviewEl.src = recordObjectUrl;
+  recordPreviewEl.onended = function() { if (btn) btn.textContent = '▶ 试听'; };
   recordPreviewEl.play().catch(() => {});
+  if (btn) btn.textContent = '⏹ 停止';
 }
 
 function saveRecording() {
   if (!recordObjectUrl) return;
+  // 停止试听
+  if (recordPreviewEl) {
+    try { recordPreviewEl.pause(); recordPreviewEl.src = ''; } catch(_) {}
+    recordPreviewEl = null;
+  }
+  const btn = document.querySelector('.record-play-btn');
+  if (btn) btn.textContent = '▶ 试听';
   const id  = 'rec-' + Date.now();
   const dur = String(Math.floor(recordTimerSec/60)).padStart(2,'0') + ':' + String(recordTimerSec%60).padStart(2,'0');
   const bgName = recordBgTrack
     ? document.querySelector(`.record-bg-item[data-track="${recordBgTrack}"] .record-bg-name`)?.textContent
     : '';
   const name = bgName ? `🎙️ 录音+${bgName} ${dur}` : `🎙️ 我的录音 ${dur}`;
-  importedTracks.push({ id, name, src: recordObjectUrl });
-  switchMusicSource('import');
-  renderImportedList();
-  selectImportTrack(id);
-
-  // Reset record UI
+  // 保存 URL 到 track，转 base64 持久化
+  const mime = recordBlob ? recordBlob.type : 'audio/webm';
+  const srcUrl = recordObjectUrl;
+  recordObjectUrl = null;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result;
+    importedTracks.push({ id, name, src: srcUrl, base64, mime });
+    saveTracksToStorage();
+    switchMusicSource('import');
+    renderImportedList();
+    selectImportTrack(id);
+  };
+  if (recordBlob) {
+    reader.readAsDataURL(recordBlob);
+  } else {
+    importedTracks.push({ id, name, src: srcUrl });
+    switchMusicSource('import');
+    renderImportedList();
+    selectImportTrack(id);
+  }
   document.getElementById('recordBtn').classList.remove('has-recording');
   document.getElementById('recordActions').style.display = 'none';
   document.getElementById('recordStatus').textContent = '已保存，正在播放混音';
@@ -3557,6 +3631,13 @@ function saveRecording() {
 }
 
 function discardRecording() {
+  // 停止试听
+  if (recordPreviewEl) {
+    try { recordPreviewEl.pause(); recordPreviewEl.src = ''; } catch(_) {}
+    recordPreviewEl = null;
+  }
+  const btn = document.querySelector('.record-play-btn');
+  if (btn) btn.textContent = '▶ 试听';
   if (recordObjectUrl) { URL.revokeObjectURL(recordObjectUrl); recordObjectUrl = null; }
   recordBlob = null; recordChunks = [];
   document.getElementById('recordBtn').classList.remove('has-recording');
