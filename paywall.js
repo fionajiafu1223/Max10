@@ -96,7 +96,7 @@
       @keyframes pwFadeIn { from{opacity:0} to{opacity:1} }
       #pw-sheet {
         width: 100%; max-width: 420px;
-        background: rgba(30,90,160,0.92);
+        background: rgba(8,28,70,0.92);
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
         border-radius: 24px;
@@ -112,18 +112,18 @@
       #pw-close {
         position: absolute; top: 14px; right: 14px;
         width: 26px; height: 26px; border-radius: 50%;
-        background: rgba(255,255,255,0.10); border: none;
-        color: rgba(255,255,255,0.55); font-size: 0.85rem;
+        background: rgba(255,255,255,0.30); border: none;
+        color: rgba(10,50,90,0.75); font-size: 0.85rem;
         cursor: pointer; display: flex; align-items: center; justify-content: center;
         transition: background 0.15s;
       }
-      #pw-close:hover { background: rgba(255,255,255,0.18); }
+      #pw-close:hover { background: rgba(255,255,255,0.50); }
       #pw-sheet h2 {
         text-align: center; font-size: 1.05rem; letter-spacing: 0.14em;
-        color: rgba(220,240,255,0.95); margin-bottom: 3px;
+        color: rgba(235,245,255,0.97); margin-bottom: 3px;
       }
       #pw-sheet .pw-sub {
-        text-align: center; font-size: 0.74rem; color: rgba(160,200,240,0.60);
+        text-align: center; font-size: 0.74rem; color: rgba(220,235,250,0.75);
         font-family: 'Noto Sans SC', sans-serif; margin-bottom: 14px; letter-spacing: 0.04em;
       }
 
@@ -214,13 +214,18 @@
       .pw-btn:hover { opacity: 0.90; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(42,160,140,0.48), 0 3px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.25); }
       .pw-btn:active { transform: translateY(1px); box-shadow: 0 3px 10px rgba(42,160,140,0.35); }
       .pw-btn:disabled { opacity: 0.40; cursor: not-allowed; transform: none; }
+      .pw-trial-note {
+        text-align: center; font-size: 0.66rem; color: rgba(220,235,250,0.65);
+        font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.02em;
+        margin-bottom: 8px; line-height: 1.5;
+      }
       .pw-restore {
-        text-align: center; font-size: 0.70rem; color: rgba(160,200,240,0.50);
+        text-align: center; font-size: 0.70rem; color: rgba(220,235,250,0.70);
         cursor: pointer; font-family: 'Noto Sans SC', sans-serif;
         letter-spacing: 0.04em; background: none; border: none; width: 100%;
       }
-      .pw-restore:hover { color: rgba(160,200,240,0.85); }
-      .pw-msg { text-align: center; font-size: 0.74rem; margin-top: 8px; font-family: 'Noto Sans SC', sans-serif; min-height: 18px; color: rgba(140,190,240,0.60); }
+      .pw-restore:hover { color: rgba(235,245,255,0.95); }
+      .pw-msg { text-align: center; font-size: 0.74rem; margin-top: 8px; font-family: 'Noto Sans SC', sans-serif; min-height: 18px; color: rgba(220,235,250,0.70); }
       .pw-msg.error { color: rgba(255,120,120,0.85); }
       .pw-msg.success { color: rgba(100,220,180,0.90); }
     `;
@@ -280,6 +285,7 @@
               </div>
             </div>`).join('')}
         </div>
+        <div class="pw-trial-note">7天免费试用，到期后自动续费，可随时取消</div>
         <button class="pw-btn" id="pw-buy-btn">立即订阅</button>
         <button class="pw-restore" id="pw-restore-btn">恢复购买记录</button>
         <div class="pw-msg" id="pw-msg"></div>
@@ -325,7 +331,7 @@
       await loadRCSDK();
       const Purchases = getRC();
       if (!Purchases) return;
-      try { await Purchases.configure({ apiKey: 'appl_tPsHsCYxJnoCwiZTTVaexMsaHHoO' }); } catch(e) {}
+      try { const uid1 = getUserId(); await Purchases.configure({ apiKey: 'appl_jDKwBqbSvxESQNnUMHUmaykjCNr', appUserID: uid1 || undefined }); } catch(e) {}
       await new Promise(r => setTimeout(r, 300));
       const offeringsResult = await Purchases.getOfferings();
       const current = offeringsResult.offerings ? offeringsResult.offerings.current : offeringsResult.current;
@@ -343,7 +349,7 @@
         }
       });
     } catch(e) {
-      // 静默失败，保留硬编码价格作为备用
+      setMsg('❌ 价格加载失败: ' + (e && e.message ? e.message : JSON.stringify(e)), 'error');
     }
   }
 
@@ -353,9 +359,6 @@
       await loadRCSDK();
       const Purchases = getRC();
       if (!Purchases) throw new Error('RevenueCat SDK 未加载');
-      // 从 JS 层再 configure 一次，确保初始化完成
-      try { await Purchases.configure({ apiKey: 'appl_tPsHsCYxJnoCwiZTTVaexMsaHHoO' }); } catch(e) {}
-      await new Promise(r => setTimeout(r, 300));
       const offeringsResult = await Purchases.getOfferings();
       const current = offeringsResult.offerings ? offeringsResult.offerings.current : offeringsResult.current;
       if (!current) throw new Error('无法获取订阅套餐');
@@ -375,7 +378,7 @@
       }
     } catch(err) {
       if (err && err.userCancelled) { setMsg('已取消', ''); }
-      else { setMsg('❌ ' + (err && err.message ? err.message : JSON.stringify(err)).slice(0, 80), 'error'); }
+      else { setMsg('❌ ' + (err && err.message ? err.message : JSON.stringify(err)), 'error'); }
     } finally { setBtnLoading(false); }
   }
 
@@ -401,31 +404,26 @@
   }
 
   let _rcLoaded = false;
-  function loadRCSDK() {
-    if (_rcLoaded) return Promise.resolve();
-    return new Promise((resolve, reject) => {
-      let attempts = 0;
-      const check = setInterval(async () => {
-        attempts++;
-        const P = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases;
-        if (P) {
-          try {
-            // 用 isConfigured 确认 SDK 已初始化完成
-            const result = await P.isConfigured();
-            if (result && result.isConfigured) {
-              clearInterval(check);
-              _rcLoaded = true;
-              resolve();
-              return;
-            }
-          } catch(e) {}
-        }
-        if (attempts > 50) {
-          clearInterval(check);
-          reject(new Error('RevenueCat SDK 未能初始化'));
-        }
-      }, 100);
-    });
+  async function loadRCSDK() {
+    if (_rcLoaded) return;
+    // 等待 Capacitor.Plugins.Purchases 出现
+    let attempts = 0;
+    while (attempts < 50) {
+      const P = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases;
+      if (P) break;
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
+    const P = getRC();
+    if (!P) throw new Error('RevenueCat 插件未找到');
+    // 直接从 JS 层 configure，确保初始化完成
+    try {
+      const uid2 = getUserId(); await P.configure({ apiKey: 'appl_jDKwBqbSvxESQNnUMHUmaykjCNr', appUserID: uid2 || undefined });
+    } catch(e) {
+      // 已经 configured 会报错，忽略
+    }
+    await new Promise(r => setTimeout(r, 200));
+    _rcLoaded = true;
   }
 
   function getRC() {
