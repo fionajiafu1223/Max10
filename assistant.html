@@ -1,3 +1,6 @@
+<!-- ⚠️⚠️⚠️ 测试专用版本 — 已移除付费校验，三个释放助手直接打开，不查 is_premium ⚠️⚠️⚠️
+     仅用于本地/浏览器调试，绝对不可以部署上线或替换正式的 assistant.html
+     正式版请使用原本带 requirePremium() 校验的 assistant.html -->
 <!-- assistant v6 — 垂直三球 + 柔和治愈色 -->
 <!DOCTYPE html>
 <html lang="zh">
@@ -404,13 +407,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // ── 功能入口 ──
 function openBlockPoint() {
-  requirePremium(function() {
-    document.getElementById('asst-layer').style.display = 'none';
-    document.getElementById('panel-blockpoint').classList.add('open');
-    var orb = document.getElementById('nav-orb-btn');
-    if (orb) orb.style.display = 'none';
-    if (canvas) canvas.style.display = 'none';
-  });
+  // ⚠️ 测试版：已跳过 requirePremium() 校验
+  document.getElementById('asst-layer').style.display = 'none';
+  document.getElementById('panel-blockpoint').classList.add('open');
+  var orb = document.getElementById('nav-orb-btn');
+  if (orb) orb.style.display = 'none';
+  if (canvas) canvas.style.display = 'none';
 }
 function closeBlockPoint() {
   document.getElementById('panel-blockpoint').classList.remove('open');
@@ -422,14 +424,13 @@ function closeBlockPoint() {
   document.getElementById('asstInput').value = '';
 }
 function openBeliefs() {
-  requirePremium(function() {
-    document.getElementById('asst-layer').style.display = 'none';
-    var iframe = document.getElementById('iframe-beliefs');
-    if (!iframe.src || iframe.src === window.location.href) iframe.src = 'beliefs.html';
-    document.getElementById('panel-beliefs').classList.add('open');
-    var orb = document.getElementById('nav-orb-btn');
-    if (orb) orb.style.display = 'none';
-  });
+  // ⚠️ 测试版：已跳过 requirePremium() 校验
+  document.getElementById('asst-layer').style.display = 'none';
+  var iframe = document.getElementById('iframe-beliefs');
+  if (!iframe.src || iframe.src === window.location.href) iframe.src = 'beliefs.html';
+  document.getElementById('panel-beliefs').classList.add('open');
+  var orb = document.getElementById('nav-orb-btn');
+  if (orb) orb.style.display = 'none';
 }
 function closeBeliefs() {
   document.getElementById('panel-beliefs').classList.remove('open');
@@ -438,14 +439,13 @@ function closeBeliefs() {
   if (orb) orb.style.display = '';
 }
 function openAllowance() {
-  requirePremium(function() {
-    document.getElementById('asst-layer').style.display = 'none';
-    var iframe = document.getElementById('iframe-allowance');
-    if (!iframe.src || iframe.src === window.location.href) iframe.src = 'allowance.html';
-    document.getElementById('panel-allowance').classList.add('open');
-    var orb = document.getElementById('nav-orb-btn');
-    if (orb) orb.style.display = 'none';
-  });
+  // ⚠️ 测试版：已跳过 requirePremium() 校验
+  document.getElementById('asst-layer').style.display = 'none';
+  var iframe = document.getElementById('iframe-allowance');
+  if (!iframe.src || iframe.src === window.location.href) iframe.src = 'allowance.html';
+  document.getElementById('panel-allowance').classList.add('open');
+  var orb = document.getElementById('nav-orb-btn');
+  if (orb) orb.style.display = 'none';
 }
 function closeAllowance() {
   document.getElementById('panel-allowance').classList.remove('open');
