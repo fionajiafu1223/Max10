@@ -1085,15 +1085,18 @@
     text-shadow: 0 1px 8px rgba(0,30,100,0.5);
   }
   .queue-return-btn {
-    margin-top: 10px; padding: 9px 24px; border-radius: 50px; border: none;
-    background: linear-gradient(135deg, #7dc4f4, #3a92dd);
+    margin-top: 10px; padding: 9px 24px; border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     color: #fff; font-family: 'Noto Serif SC', serif; font-size: 0.82rem;
     letter-spacing: 0.08em; cursor: pointer; pointer-events: auto;
-    box-shadow: 0 4px 16px rgba(40,110,190,0.40), inset 0 1px 0 rgba(255,255,255,0.3);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 16px rgba(0,20,60,0.25), inset 0 1px 0 rgba(255,255,255,0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
   }
-  .queue-return-btn:hover  { transform: scale(1.05); }
-  .queue-return-btn:active { transform: scale(0.95); }
+  .queue-return-btn:hover  { background: rgba(255,255,255,0.28); transform: scale(1.05); }
+  .queue-return-btn:active { background: rgba(255,255,255,0.14); transform: scale(0.95); }
 </style>
 </head>
 <body>
@@ -1478,7 +1481,7 @@ const STRINGS = {
     asst_submit:'✨ 分析', asst_loading:'正在感受你的文字…',
     asst_go:'🫧 去释放这些想要',
     queue_done:'✨ 所有想要已释放完毕',
-    queue_done_return_text:'还有感受要继续释放吗？',
+    queue_done_return_text:'还有信念或想法卡住你吗？',
     queue_done_return_btn:'🫧 返回卡点释放',
     toast_goal_set:'🌊 目标已设定，开始释放吧',
     toast_dropped:'✨ 目标已掉落并记录到收获本',
@@ -1516,7 +1519,7 @@ const STRINGS = {
     asst_submit:'✨ Analyse', asst_loading:'Reading your words…',
     asst_go:'🫧 Release these desires',
     queue_done:'✨ All desires released',
-    queue_done_return_text:'Anything else you\'d like to release?',
+    queue_done_return_text:'Any beliefs or thoughts still holding you back?',
     queue_done_return_btn:'🫧 Back to Blocking Point Release',
     toast_goal_set:'🌊 Goal set — start releasing',
     toast_dropped:'✨ Goal dropped and saved to Insights',
