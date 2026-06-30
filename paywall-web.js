@@ -28,6 +28,7 @@
   ];
 
   let _premiumCache = null;
+  let _paymentIssueCache = false;
   let _cacheTime = 0;
   const CACHE_TTL = 5 * 60 * 1000;
   let _selectedPlan = PLANS[0];
@@ -59,17 +60,47 @@
     const now = Date.now();
     if (!forceRefresh && _premiumCache !== null && (now - _cacheTime) < CACHE_TTL) return _premiumCache;
     const token = getToken();
-    if (!token) { _premiumCache = false; _cacheTime = now; return false; }
+    if (!token) { _premiumCache = false; _paymentIssueCache = false; _cacheTime = now; return false; }
     try {
       const res = await fetch(`${WORKER_URL}/subscription/status`, {
         method: 'GET', headers: { 'Authorization': `Bearer ${token}` },
       });
-      if (!res.ok) { _premiumCache = false; _cacheTime = now; return false; }
+      if (!res.ok) { _premiumCache = false; _paymentIssueCache = false; _cacheTime = now; return false; }
       const data = await res.json();
       _premiumCache = data.is_premium === true;
+      _paymentIssueCache = data.payment_issue === true;
       _cacheTime = now;
       return _premiumCache;
-    } catch(_) { _premiumCache = false; _cacheTime = now; return false; }
+    } catch(_) { _premiumCache = false; _paymentIssueCache = false; _cacheTime = now; return false; }
+  }
+
+  // 是否存在扣款问题（需先调用过 checkPremium，缓存共享）
+  function hasPaymentIssue() {
+    return _paymentIssueCache;
+  }
+
+  // ─── 跳转到 Stripe Customer Portal，管理/取消订阅 ───────
+  async function openManageSubscription() {
+    const token = getToken();
+    if (!token) {
+      const redirect = encodeURIComponent(window.location.href);
+      window.location.href = 'index.html?login=1&redirect=' + redirect;
+      return;
+    }
+    try {
+      const res = await fetch(`${WORKER_URL}/stripe/create-portal-session`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || '无法打开订阅管理页面');
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      alert('打开订阅管理失败：' + (err && err.message ? err.message : '请稍后再试'));
+    }
   }
 
   // ─── 需要付费权限的入口 ───────────────────────────────
@@ -268,7 +299,7 @@
               </div>
             </div>`).join('')}
         </div>
-        <div class="pw-trial-note">7天免费试用，到期后自动续费，可随时取消</div>
+        <div class="pw-trial-note">7天免费试用，到期后自动续费，<span id="pw-manage-link" style="text-decoration:underline;cursor:pointer;">可随时取消</span></div>
         <button class="pw-btn" id="pw-buy-btn">立即订阅</button>
         <div class="pw-msg" id="pw-msg"></div>
       </div>
@@ -284,6 +315,8 @@
       card.classList.add('selected');
     });
     document.getElementById('pw-buy-btn').addEventListener('click', handlePurchase);
+    const manageLink = document.getElementById('pw-manage-link');
+    if (manageLink) manageLink.addEventListener('click', openManageSubscription);
 
     // 处理 Stripe 跳转回来后的 URL 参数（支付成功/取消提示）
     handleStripeReturnParams();
@@ -390,11 +423,50 @@
     await requirePremium(onGranted);
   }
 
-  window.FreedPaywall = { checkPremium, requirePremium, showPaywall, closePaywall, requireLogin, requireLoginAndPremium };
+  // ─── 扣款失败提示横幅 ───────────────────────────────
+  // 在需要的页面调用 showPaymentIssueBannerIfNeeded()，会自动查一次状态，
+  // 如果存在扣款问题就在页面顶部插入一条可点击的提示条
+  function injectBannerStyles() {
+    if (document.getElementById('pw-banner-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'pw-banner-styles';
+    style.textContent = `
+      #pw-payment-banner {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
+        background: linear-gradient(90deg, #e0654a, #d4493a);
+        color: #fff; text-align: center;
+        padding: 10px 16px;
+        font-family: 'Noto Sans SC', sans-serif; font-size: 0.78rem;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+      }
+      #pw-payment-banner span { text-decoration: underline; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  async function showPaymentIssueBannerIfNeeded() {
+    await checkPremium();
+    if (!hasPaymentIssue()) return;
+    if (document.getElementById('pw-payment-banner')) return;
+    injectBannerStyles();
+    const banner = document.createElement('div');
+    banner.id = 'pw-payment-banner';
+    banner.innerHTML = '⚠️ 您的扣款遇到问题，订阅可能即将失效 — <span>点击更新支付方式</span>';
+    banner.addEventListener('click', openManageSubscription);
+    document.body.prepend(banner);
+  }
+
+  window.FreedPaywall = {
+    checkPremium, requirePremium, showPaywall, closePaywall,
+    requireLogin, requireLoginAndPremium,
+    hasPaymentIssue, openManageSubscription, showPaymentIssueBannerIfNeeded,
+  };
   window.checkPremium = checkPremium;
   window.requirePremium = requirePremium;
   window.requireLogin = requireLogin;
   window.requireLoginAndPremium = requireLoginAndPremium;
+  window.openManageSubscription = openManageSubscription;
 
   // 页面加载时，如果 URL 带 Stripe 回跳参数，自动弹出付费墙显示结果
   document.addEventListener('DOMContentLoaded', function() {
