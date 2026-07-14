@@ -1,4 +1,4 @@
-<!-- goals v17 - no migration, cloud only -->
+<!-- goals v18 - 新卡片设计 + 弹窗 + 目标广场入口 -->
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -12,170 +12,199 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',serif; padding:80px 16px 32px; }
 .page-title { text-align:center; font-size:1.1rem; letter-spacing:0.2em; color:rgba(3,80,140,0.7); margin-bottom:24px; }
-.page-wrap { max-width:480px; margin:0 auto; background:rgba(255,255,255,0.75); border-radius:20px; padding:20px 16px; box-shadow:0 8px 32px rgba(0,60,120,0.10); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.85); }
-.gain-input-row { display: flex; gap: 8px; margin-bottom: 16px; }
-  .gain-input-row input {
-    flex: 1; padding: 9px 14px;
-    border: 1.5px solid rgba(100,160,220,0.4); border-radius: 12px;
-    background: rgba(255,255,255,0.7);
-    font-family: 'Noto Sans SC', sans-serif; font-size: 0.88rem; color: #0e2840;
-    outline: none; transition: border-color 0.2s;
-  }
-  .gain-input-row input:focus { border-color: rgba(80,140,220,0.8); }
-  .gain-input-row button {
-    padding: 9px 16px; border-radius: 12px; border: none;
-    background: linear-gradient(135deg, #4a9fd4, #2a7abf); color: #fff;
-    font-family: 'Noto Serif SC', serif; font-size: 0.84rem;
-    cursor: pointer; white-space: nowrap;
-    transition: opacity 0.2s, transform 0.15s;
-  }
-  .gain-input-row button:hover { opacity: 0.88; transform: scale(1.04); }
-  .gain-cats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-  .gain-cat {
-    padding: 4px 10px; border-radius: 20px;
-    border: 1.5px solid rgba(100,160,220,0.4);
-    background: rgba(255,255,255,0.55);
-    font-family: 'Noto Sans SC', sans-serif; font-size: 0.72rem;
-    color: #2a5080; cursor: pointer;
-    transition: all 0.18s ease;
-  }
-  .gain-cat:hover { background: rgba(200,230,255,0.7); }
-  .gain-cat.active {
-    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
-    border-color: rgba(74,159,212,0.6); color: #fff;
-  }
-  .gain-filter-row {
-    display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
-    margin-bottom: 14px;
-  }
-  .gain-filter-label { font-size: 0.72rem; color: #5a7aa0; font-family: 'Noto Sans SC', sans-serif; }
-  .gain-filter {
-    width: 32px; height: 32px; border-radius: 50%;
-    border: 1.5px solid rgba(100,160,220,0.4);
-    background: rgba(255,255,255,0.55);
-    font-size: 0.9rem; cursor: pointer; display: flex;
-    align-items: center; justify-content: center;
-    transition: all 0.18s ease;
-  }
-  .gain-filter[data-filter="all"] { width: auto; padding: 0 10px; font-size: 0.72rem; font-family: 'Noto Sans SC', sans-serif; color: #5a7aa0; }
-  .gain-filter:hover { background: rgba(200,230,255,0.7); }
-  .gain-filter.active {
-    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
-    border-color: rgba(74,159,212,0.6); color: #fff;
-  }
-  .gain-section-title {
-    font-size: 0.78rem; color: #2a5080; letter-spacing: 0.08em;
-    margin: 14px 0 8px; font-weight: 600;
-  }
-  .gain-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-  .gain-item {
-    background: rgba(255,255,255,0.62); border-radius: 12px;
-    padding: 10px 14px; border: 1px solid rgba(100,160,220,0.2);
-    display: flex; flex-direction: column; gap: 5px;
-  }
-  .gain-item.shared { background: rgba(230,245,255,0.62); }
-  .gain-text { font-size: 0.84rem; color: #0e2840; line-height: 1.5; }
-  .gain-badge {
-    display: inline-flex; align-items: center; gap: 3px;
-    background: rgba(74,159,212,0.15); border-radius: 10px;
-    padding: 2px 8px; font-size: 0.68rem; color: #2a6090;
-    font-family: 'Noto Sans SC', sans-serif; align-self: flex-start;
-  }
-  .gain-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 2px;
-  }
-  .gain-meta { font-size: 0.64rem; color: #7a9ab0; font-family: 'Noto Sans SC', sans-serif; }
-  .gain-like-btn {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: none; border: 1px solid rgba(100,160,220,0.25);
-    border-radius: 20px; padding: 3px 10px;
-    font-size: 0.7rem; color: #7a9ab0;
-    font-family: 'Noto Sans SC', sans-serif;
-    cursor: pointer; transition: all 0.18s ease;
-    line-height: 1;
-  }
-  .gain-like-btn:hover { background: rgba(255,100,130,0.08); border-color: rgba(255,100,130,0.4); color: #e05080; }
-  .gain-like-btn.liked { background: rgba(255,100,130,0.12); border-color: rgba(255,100,130,0.5); color: #e05080; }
-  .gain-like-count { font-weight: 600; }
-  .gain-sort-btn {
-    padding: 4px 10px; border-radius: 14px;
-    border: 1.5px solid rgba(100,160,220,0.35);
-    background: rgba(255,255,255,0.5);
-    font-size: 0.68rem; color: #5a7aa0;
-    font-family: 'Noto Sans SC', sans-serif;
-    cursor: pointer; transition: all 0.18s ease;
-  }
-  .gain-sort-btn:hover { background: rgba(200,230,255,0.7); }
-  .gain-sort-btn.active {
-    background: linear-gradient(135deg, rgba(74,159,212,0.85), rgba(42,122,191,0.85));
-    border-color: rgba(74,159,212,0.6); color: #fff;
-  }
-  .gain-loading { font-size: 0.78rem; color: #8aaac0; text-align: center; padding: 10px 0; }
-  .gain-close-btn {
-    position: absolute; top: 14px; right: 16px;
-    background: none; border: none; font-size: 1.1rem;
-    color: #5a7aa0; cursor: pointer; line-height: 1;
-    transition: color 0.15s, transform 0.15s;
-  }
-  .gain-close-btn:hover { color: #0e2840; transform: scale(1.2); }
+.page-wrap { max-width:480px; margin:0 auto; background:rgba(255,255,255,0.75); border-radius:20px; padding:20px 16px; box-shadow:0 8px 32px rgba(0,60,120,0.10); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.85); overflow:visible; }
 
+/* 分类标签 */
+.gain-cats { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+.gain-cat {
+  padding:4px 10px; border-radius:20px;
+  border:1.5px solid rgba(100,160,220,0.4);
+  background:rgba(255,255,255,0.55);
+  font-family:'Noto Sans SC',sans-serif; font-size:0.72rem;
+  color:#2a5080; cursor:pointer; transition:all 0.18s ease;
+}
+.gain-cat:hover { background:rgba(200,230,255,0.7); }
+.gain-cat.active {
+  background:linear-gradient(135deg,rgba(74,159,212,0.85),rgba(42,122,191,0.85));
+  border-color:rgba(74,159,212,0.6); color:#fff;
+}
 
-  
+/* 输入行 */
+.goal-input-row { display:flex; gap:8px; margin-bottom:14px; }
+.goal-input-row input {
+  flex:1; padding:12px 16px;
+  border:1.5px solid rgba(100,160,220,0.4); border-radius:14px;
+  background:rgba(255,255,255,0.8); font-size:0.95rem; color:#0e2840; outline:none;
+}
+.goal-input-row button {
+  padding:12px 20px; border:none; border-radius:14px;
+  background:rgba(60,130,220,0.85); color:#fff; font-size:0.9rem;
+  cursor:pointer; white-space:nowrap;
+}
+
+/* 目标广场入口 */
+.plaza-row {
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:16px; padding:10px 12px;
+  background:rgba(255,255,255,0.5); border-radius:14px;
+  border:1px solid rgba(100,160,220,0.2);
+  overflow-x:auto; scrollbar-width:none;
+}
+.plaza-row::-webkit-scrollbar { display:none; }
+.plaza-label {
+  font-size:0.68rem; color:#5a7aa0;
+  font-family:'Noto Sans SC',sans-serif;
+  white-space:nowrap; flex-shrink:0;
+}
+.plaza-balls { display:flex; gap:8px; align-items:center; flex-shrink:0; }
+.plaza-ball {
+  width:70px; height:70px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:2px;
+  cursor:pointer; flex-shrink:0;
+  transition:transform 0.18s;
+  font-size:0.52rem; font-family:'Noto Sans SC',sans-serif;
+  color:rgba(255,255,255,0.92);
+  outline:3px solid rgba(255,255,255,0.95);
+  outline-offset:2px;
+  box-shadow:0 0 0 5px rgba(138,170,192,0.35), 0 0 0 9px rgba(138,170,192,0.15);
+}
+.plaza-ball:hover { transform:scale(1.08); }
+.plaza-ball .ball-icon { font-size:1.6rem; line-height:1; }
+.plaza-more {
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(100,160,220,0.15);
+  border:1px solid rgba(100,160,220,0.3);
+  font-size:0.62rem; color:#5a7aa0;
+  font-family:'Noto Sans SC',sans-serif;
+  cursor:pointer; flex-shrink:0;
+  transition:background 0.18s;
+}
+.plaza-more:hover { background:rgba(100,160,220,0.25); }
+
+/* 目标卡片 */
 .goal-item {
-  background: rgba(255,255,255,0.85);
-  border: 1px solid rgba(180,210,240,0.4);
-  border-radius: 16px;
-  padding: 14px 16px;
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  background:rgba(255,255,255,0.85);
+  border:1px solid rgba(180,210,240,0.4);
+  border-radius:16px; padding:14px 16px;
+  margin-bottom:10px; cursor:pointer;
+  transition:box-shadow 0.2s;
+}
+.goal-item:hover { box-shadow:0 4px 16px rgba(0,80,160,0.12); }
+.goal-badge {
+  display:inline-flex; align-items:center; gap:3px;
+  background:rgba(74,159,212,0.15); border-radius:10px;
+  padding:2px 8px; font-size:0.68rem; color:#2a6090;
+  font-family:'Noto Sans SC',sans-serif; margin-bottom:6px;
 }
 .goal-item-text {
-  font-size: 0.92rem;
-  color: #0e2840;
-  line-height: 1.6;
-  margin: 0;
+  font-size:0.92rem; color:#0e2840; line-height:1.6;
+  margin-bottom:10px;
 }
-.goal-item-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+.goal-item-actions { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
 .goal-btn-release {
-  flex: 1;
-  padding: 9px;
-  border: none;
-  border-radius: 12px;
-  background: rgba(80,140,220,0.75);
-  color: #fff;
-  font-size: 0.82rem;
-  cursor: pointer;
-  font-family: 'Noto Serif SC', serif;
+  flex:1; padding:9px; border:none; border-radius:12px;
+  background:rgba(80,140,220,0.75); color:#fff;
+  font-size:0.82rem; cursor:pointer; font-family:'Noto Serif SC',serif;
 }
 .goal-btn-drop {
-  flex: 1;
-  padding: 9px;
-  border: none;
-  border-radius: 12px;
-  background: rgba(210,160,20,0.85);
-  color: #fff;
-  font-size: 0.82rem;
-  cursor: pointer;
-  font-family: 'Noto Serif SC', serif;
+  flex:1; padding:9px; border:none; border-radius:12px;
+  background:rgba(210,160,20,0.85); color:#fff;
+  font-size:0.82rem; cursor:pointer; font-family:'Noto Serif SC',serif;
 }
 .goal-btn-del {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(220,80,80,0.12);
-  color: rgba(200,60,60,0.7);
-  font-size: 0.9rem;
-  cursor: pointer;
+  width:36px; height:36px; border:none; border-radius:50%;
+  background:rgba(220,80,80,0.12); color:rgba(200,60,60,0.7);
+  font-size:0.9rem; cursor:pointer;
 }
 
+/* 头像行 */
+.avatar-row { display:flex; align-items:flex-end; padding-top:8px; }
+.avatar-bubble {
+  width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  margin-right:-3px; display:flex; align-items:center; justify-content:center;
+  font-size:0.62rem; font-weight:400; font-family:'Noto Serif SC',serif;
+  color:#8aaac0; overflow:hidden;
+  border:0.5px solid rgba(255,255,255,0.5); position:relative;
+}
+.avatar-joined {
+  font-size:0.7rem; color:#8aaac0; margin-left:8px;
+  font-family:'Noto Serif SC',serif; letter-spacing:0.05em;
+}
+
+/* ══ 弹窗 ══ */
+.overlay {
+  position:fixed; inset:0;
+  background:rgba(10,30,60,0.35); backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center;
+  z-index:100; padding:24px 16px;
+}
+.modal {
+  background:rgba(240,248,255,0.95); border-radius:24px;
+  width:100%; max-width:400px; aspect-ratio:1/1;
+  overflow-y:auto; padding:44px 22px 28px;
+  box-shadow:0 12px 48px rgba(0,60,120,0.18);
+  position:relative; border:1px solid rgba(255,255,255,0.9);
+  animation:popIn 0.25s ease;
+}
+@keyframes popIn {
+  from { transform:scale(0.92); opacity:0; }
+  to   { transform:scale(1);    opacity:1; }
+}
+.modal-close {
+  position:absolute; top:14px; right:16px;
+  background:rgba(100,160,220,0.1); border:none;
+  width:30px; height:30px; border-radius:50%;
+  font-size:0.9rem; color:#5a7aa0; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.modal-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  background:rgba(74,159,212,0.12); border-radius:10px;
+  padding:3px 10px; font-size:0.68rem; color:#2a6090;
+  font-family:'Noto Sans SC',sans-serif; margin-bottom:8px;
+}
+.modal-goal-text {
+  font-size:0.98rem; color:#0e2840; line-height:1.7;
+  margin-bottom:18px;
+  display:-webkit-box; -webkit-line-clamp:2;
+  -webkit-box-orient:vertical; overflow:hidden;
+}
+.glass-btn {
+  width:77px; height:77px; border:none; border-radius:14px;
+  background:linear-gradient(145deg,rgba(255,255,255,0.45),rgba(255,255,255,0.15));
+  backdrop-filter:blur(24px) saturate(200%);
+  border:1px solid rgba(255,255,255,0.7);
+  box-shadow:0 2px 10px rgba(0,60,120,0.08);
+  color:#2a6090; font-size:0.62rem; font-family:'Noto Sans SC',sans-serif;
+  cursor:pointer; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:4px;
+  justify-self:center;
+}
+.glass-btn .btn-icon { font-size:1rem; }
+.action-btn {
+  padding:10px; border:none; border-radius:12px;
+  color:#fff; font-size:0.82rem;
+  cursor:pointer; font-family:'Noto Serif SC',serif;
+}
+.btn-release-modal { background:rgba(80,140,220,0.75); }
+.btn-drop-modal    { background:rgba(210,160,20,0.85); }
+.checkin-scroll-wrap { overflow:hidden; height:66px; position:relative; }
+.checkin-scroll {
+  display:flex; flex-direction:column;
+  animation:scrollUp 7s linear infinite;
+}
+.checkin-scroll:hover { animation-play-state:paused; }
+@keyframes scrollUp {
+  0%   { transform:translateY(0); }
+  100% { transform:translateY(-50%); }
+}
+.participant-checkin {
+  font-size:0.8rem; color:#2a6090;
+  font-family:'Noto Sans SC',sans-serif;
+  padding:5px 0; line-height:1.4;
+}
 </style>
 </head>
 <body>
@@ -187,170 +216,171 @@ canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-ind
 document.body.insertBefore(canvas, document.body.firstChild);
 var ctx = canvas.getContext('2d');
 var W, H, t = 0;
-
 const EMOTION_COLORS = [
-  {r:144, g:96,  b:208}, // 恐惧 紫
-  {r:48,  g:80,  b:176}, // 悲苦 深蓝
-  {r:80,  g:110, b:160}, // 万念俱灰 蓝灰
-  {r:192, g:96,  b:16 }, // 贪求 橙
-  {r:192, g:32,  b:32 }, // 愤怒 红
-  {r:176, g:128, b:0  }, // 自尊自傲 金
-  {r:16,  g:160, b:144}, // 无畏 青绿
-  {r:16,  g:160, b:80 }, // 接纳 绿
-  {r:74,  g:176, b:224}, // 平和 天蓝
+  {r:144,g:96,b:208},{r:48,g:80,b:176},{r:80,g:110,b:160},
+  {r:192,g:96,b:16},{r:192,g:32,b:32},{r:176,g:128,b:0},
+  {r:16,g:160,b:144},{r:16,g:160,b:80},{r:74,g:176,b:224},
 ];
-
-
 class Bubble {
-  constructor(fromBottom) {
-    this.reset(fromBottom);
-  }
-
+  constructor(fromBottom) { this.reset(fromBottom); }
   reset(startAtBottom) {
-    this.x    = Math.random() * W;
-    this.y    = startAtBottom ? H + 20 + Math.random()*100 : Math.random() * H;
-    this.r    = 2 + Math.random() * 22;
-    this.vy   = -(0.4 + Math.random() * 1.2);
-    this.vx   = 0;
-    this.wobbleAmp   = 0.4 + Math.random() * 1.2;
-    this.wobbleFreq  = 0.8 + Math.random() * 1.5;
-    this.wobblePhase = Math.random() * Math.PI * 2;
-    this.opacity = 0.20 + Math.random() * 0.20;
-    this.life    = 0;
-    this.maxLife = (H + 200) / Math.abs(this.vy) * (0.7 + Math.random()*0.5);
-    this.vy *= (0.8 + this.r / 30);
-    this.color = EMOTION_COLORS[Math.floor(Math.random() * EMOTION_COLORS.length)];
+    this.x=Math.random()*W; this.y=startAtBottom?H+20+Math.random()*100:Math.random()*H;
+    this.r=2+Math.random()*22; this.vy=-(0.4+Math.random()*1.2);
+    this.wobbleAmp=0.4+Math.random()*1.2; this.wobbleFreq=0.8+Math.random()*1.5;
+    this.wobblePhase=Math.random()*Math.PI*2; this.opacity=0.20+Math.random()*0.20;
+    this.life=0; this.maxLife=(H+200)/Math.abs(this.vy)*(0.7+Math.random()*0.5);
+    this.vy*=(0.8+this.r/30); this.color=EMOTION_COLORS[Math.floor(Math.random()*EMOTION_COLORS.length)];
   }
-
   update(t) {
-    this.life++;
-    // wobbly horizontal drift — classic bubble sway
-    this.x += Math.sin(t * this.wobbleFreq + this.wobblePhase) * this.wobbleAmp;
-    this.y += this.vy;
-
-    // fade in at bottom, fade out at top
-    const progress = this.life / this.maxLife;
-    if (progress < 0.08) {
-      this.opacity = (progress / 0.08) * (0.25 + Math.random()*0.01);
-    } else if (progress > 0.85) {
-      this.opacity *= 0.97;
-    }
-
-    if (this.y < -this.r * 3 || this.life > this.maxLife) {
-      this.reset(true);
-    }
+    this.life++; this.x+=Math.sin(t*this.wobbleFreq+this.wobblePhase)*this.wobbleAmp; this.y+=this.vy;
+    const p=this.life/this.maxLife;
+    if(p<0.08) this.opacity=(p/0.08)*(0.25+Math.random()*0.01);
+    else if(p>0.85) this.opacity*=0.97;
+    if(this.y<-this.r*3||this.life>this.maxLife) this.reset(true);
   }
-
   draw() {
-    const x = this.x, y = this.y, r = this.r;
-    const a = this.opacity;
-
-    const {r:cr, g:cg, b:cb} = this.color;
-
-    // outer soft glow — emotion color
-    const glow = ctx.createRadialGradient(x,y,r*0.4,x,y,r*2.2);
-    glow.addColorStop(0, `rgba(${cr},${cg},${cb},${a*0.65})`);
-    glow.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
-    ctx.beginPath(); ctx.arc(x,y,r*2.2,0,Math.PI*2);
-    ctx.fillStyle=glow; ctx.fill();
-
-    // glass shell — tinted with emotion color
-    const shell = ctx.createRadialGradient(x-r*0.32,y-r*0.32,r*0.01, x,y,r);
-    shell.addColorStop(0.00, `rgba(255,255,255,${a*0.70})`);
-    shell.addColorStop(0.12, `rgba(255,255,255,${a*0.15})`);
-    shell.addColorStop(0.55, `rgba(${cr},${cg},${cb},${a*0.48})`);
-    shell.addColorStop(0.82, `rgba(${cr},${cg},${cb},${a*0.62})`);
-    shell.addColorStop(1.00, `rgba(${cr},${cg},${cb},${a*0.75})`);
-    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
-    ctx.fillStyle=shell; ctx.fill();
-
-    // rim ring — emotion color tint
-    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
-    ctx.strokeStyle = `rgba(${cr},${cg},${cb},${a*0.90})`;
-    ctx.lineWidth = Math.max(0.5, r*0.06);
-    ctx.stroke();
-
-    // primary specular — brighter for dark areas
-    const sp = ctx.createRadialGradient(x-r*0.35,y-r*0.35,0,x-r*0.30,y-r*0.30,r*0.32);
-    sp.addColorStop(0, `rgba(255,255,255,${Math.min(1, a*1.6)})`);
-    sp.addColorStop(1, `rgba(255,255,255,0)`);
-    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
-    ctx.fillStyle=sp; ctx.fill();
-
-    // tiny secondary shimmer
-    const sp2 = ctx.createRadialGradient(x+r*0.38,y+r*0.30,0,x+r*0.38,y+r*0.30,r*0.14);
-    sp2.addColorStop(0, `rgba(255,255,255,${a*0.38})`);
-    sp2.addColorStop(1, `rgba(255,255,255,0)`);
-    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
-    ctx.fillStyle=sp2; ctx.fill();
+    const x=this.x,y=this.y,r=this.r,a=this.opacity,{r:cr,g:cg,b:cb}=this.color;
+    const glow=ctx.createRadialGradient(x,y,r*0.4,x,y,r*2.2);
+    glow.addColorStop(0,`rgba(${cr},${cg},${cb},${a*0.65})`);
+    glow.addColorStop(1,`rgba(${cr},${cg},${cb},0)`);
+    ctx.beginPath();ctx.arc(x,y,r*2.2,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
+    const shell=ctx.createRadialGradient(x-r*0.32,y-r*0.32,r*0.01,x,y,r);
+    shell.addColorStop(0.00,`rgba(255,255,255,${a*0.70})`);
+    shell.addColorStop(0.12,`rgba(255,255,255,${a*0.15})`);
+    shell.addColorStop(0.55,`rgba(${cr},${cg},${cb},${a*0.48})`);
+    shell.addColorStop(0.82,`rgba(${cr},${cg},${cb},${a*0.62})`);
+    shell.addColorStop(1.00,`rgba(${cr},${cg},${cb},${a*0.75})`);
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=shell;ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(${cr},${cg},${cb},${a*0.90})`;ctx.lineWidth=Math.max(0.5,r*0.06);ctx.stroke();
+    const sp=ctx.createRadialGradient(x-r*0.35,y-r*0.35,0,x-r*0.30,y-r*0.30,r*0.32);
+    sp.addColorStop(0,`rgba(255,255,255,${Math.min(1,a*1.6)})`);sp.addColorStop(1,`rgba(255,255,255,0)`);
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=sp;ctx.fill();
+    const sp2=ctx.createRadialGradient(x+r*0.38,y+r*0.30,0,x+r*0.38,y+r*0.30,r*0.14);
+    sp2.addColorStop(0,`rgba(255,255,255,${a*0.38})`);sp2.addColorStop(1,`rgba(255,255,255,0)`);
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=sp2;ctx.fill();
   }
 }
-
-const BUBBLES = Array.from({length: 55}, (_, i) => new Bubble(i > 20));
-
-// hero bubble — large, center, also rising slowly
-
-function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
+const BUBBLES=Array.from({length:55},(_,i)=>new Bubble(i>20));
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+function draw(){
+  requestAnimationFrame(draw);t+=0.01;ctx.clearRect(0,0,W,H);
+  var bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#cdeeff');bg.addColorStop(0.4,'#a8d8f0');
+  bg.addColorStop(0.7,'#7abde0');bg.addColorStop(1,'#4a8fbf');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  BUBBLES.forEach(function(b){b.update(t);b.draw();});
 }
-
-function draw() {
-  requestAnimationFrame(draw);
-  t += 0.01;
-  ctx.clearRect(0, 0, W, H);
-  
-  var bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#cdeeff');
-  bg.addColorStop(0.4, '#a8d8f0');
-  bg.addColorStop(0.7, '#7abde0');
-  bg.addColorStop(1, '#4a8fbf');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-  
-  BUBBLES.forEach(function(b) { b.update(t); b.draw(); });
-}
-
-window.addEventListener('resize', resize);
-resize();
-draw();
+window.addEventListener('resize',resize);resize();draw();
 })();
 </script>
 
-
-
-
-
 <div class="page-title">🎯 目 标 表</div>
 <div class="page-wrap">
+
+  <!-- 分类标签 -->
   <div class="gain-cats" id="goalCats" style="margin-bottom:10px;">
     <button class="gain-cat active" data-cat="健康" onclick="selectGoalCat(this)">🌿 健康</button>
     <button class="gain-cat" data-cat="财富" onclick="selectGoalCat(this)">💰 财富</button>
     <button class="gain-cat" data-cat="SP" onclick="selectGoalCat(this)">💞 SP</button>
     <button class="gain-cat" data-cat="人际关系" onclick="selectGoalCat(this)">🤝 人际</button>
     <button class="gain-cat" data-cat="学业" onclick="selectGoalCat(this)">📚 学业</button>
-    <button class="gain-cat" data-cat="工作" onclick="selectGoalCat(this)">💼 工作</button>
-    <button class="gain-cat" data-cat="其他" onclick="selectGoalCat(this)">✨ 其他</button>
+    <button class="gain-cat" data-cat="事业" onclick="selectGoalCat(this)">💼 事业</button>
+    <button class="gain-cat" data-cat="原生家庭" onclick="selectGoalCat(this)">🏠 原生家庭</button>
+    <button class="gain-cat" data-cat="个人价值" onclick="selectGoalCat(this)">✨ 个人价值</button>
+    <button class="gain-cat" data-cat="其他" onclick="selectGoalCat(this)">🧩 其他</button>
   </div>
-  <div style="display:flex;gap:8px;margin-bottom:16px;">
+
+  <!-- 输入框 -->
+  <div class="goal-input-row">
     <input type="text" id="goalInput" placeholder="写下你想要释放的目标…"
-           onkeydown="if(event.key==='Enter')addGoal()"
-           style="flex:1;padding:12px 16px;border:1.5px solid rgba(100,160,220,0.4);border-radius:14px;background:rgba(255,255,255,0.8);font-size:0.95rem;color:#0e2840;outline:none;" />
-    <button onclick="addGoal()"
-            style="padding:12px 20px;border:none;border-radius:14px;background:rgba(60,130,220,0.85);color:#fff;font-size:0.9rem;cursor:pointer;white-space:nowrap;">添加</button>
+           onkeydown="if(event.key==='Enter')addGoal()" />
+    <button onclick="addGoal()">添加</button>
   </div>
+
+  <!-- 目标广场入口 -->
+  <div style="margin-bottom:16px;padding:4px 0;">
+    <div style="font-size:0.95rem;color:#1a4a7a;font-family:'Noto Serif SC',serif;letter-spacing:0.12em;margin-bottom:10px;font-weight:400;">🏛 目标广场</div>
+    <div style="display:flex;align-items:center;gap:24px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:12px 10px 12px 10px;margin-left:4px;margin-top:4px;">
+      <div class="plaza-ball" style="background:none;padding:0;overflow:hidden;position:relative;" onclick="openPlaza('健康')">
+        <img src="health.jpeg" style="width:70px;height:70px;object-fit:cover;border-radius:50%;display:block;">
+        <div style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:0.52rem;color:rgba(255,255,255,0.95);text-shadow:0 1px 3px rgba(0,0,0,0.5);">健康</div>
+      </div>
+      <div class="plaza-ball" style="background:none;padding:0;overflow:hidden;position:relative;" onclick="openPlaza('财富')">
+        <img src="wealth.jpeg" style="width:70px;height:70px;object-fit:cover;border-radius:50%;display:block;">
+        <div style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:0.52rem;color:rgba(255,255,255,0.95);text-shadow:0 1px 3px rgba(0,0,0,0.5);">财富</div>
+      </div>
+      <div class="plaza-ball" style="background:none;padding:0;overflow:hidden;position:relative;" onclick="openPlaza('SP')">
+        <img src="sp.jpeg" style="width:70px;height:70px;object-fit:cover;border-radius:50%;display:block;">
+        <div style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:0.52rem;color:rgba(255,255,255,0.95);text-shadow:0 1px 3px rgba(0,0,0,0.5);">SP</div>
+      </div>
+      <div class="plaza-ball" style="background:none;padding:0;overflow:hidden;position:relative;" onclick="openPlaza('人际')">
+        <img src="social.jpeg" style="width:70px;height:70px;object-fit:cover;border-radius:50%;display:block;">
+        <div style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:0.52rem;color:rgba(255,255,255,0.95);text-shadow:0 1px 3px rgba(0,0,0,0.5);">人际</div>
+      </div>
+      <span style="font-size:0.75rem;color:#5a7aa0;font-family:'Noto Sans SC',sans-serif;cursor:pointer;white-space:nowrap;padding:4px 0;" onclick="openPlaza('')">更多 ›</span>
+    </div>
+  </div>
+
+  <!-- 目标列表 -->
   <ul class="goals-list" id="goalsList" style="list-style:none;padding:0;"></ul>
 </div>
 
-<script>
-const CAT_ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际关系':'🤝','学业':'📚','工作':'💼','其他':'✨'};
-const SUPA_URL  = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
-const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
-let goalSelectedCat = '健康';
+<!-- 目标详情弹窗 -->
+<div class="overlay" id="modalOverlay" style="display:none;" onclick="closeOnOverlay(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-badge" id="modalBadge">🌿 健康</div>
+    <p class="modal-goal-text" id="modalText"></p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <button class="glass-btn" onclick="openReminder()">
+          <span class="btn-icon">⏰</span><span id="reminderBtnText">设置提醒</span>
+        </button>
+        <button class="action-btn btn-release-modal" style="width:100%;" onclick="closeModal()">🫧 释放</button>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <button class="glass-btn">
+          <span class="btn-icon">🔗</span>邀请好友
+        </button>
+        <button class="action-btn btn-drop-modal" style="width:100%;" onclick="closeModal()">✨ 掉落</button>
+      </div>
+    </div>
+    <div class="checkin-scroll-wrap">
+      <div class="checkin-scroll">
+        <div class="participant-checkin">林小鱼 已完成今日释放打卡......</div>
+        <div class="participant-checkin">我 已完成今日释放打卡......</div>
+        <div class="participant-checkin">王大明 已完成今日释放打卡......</div>
+        <div class="participant-checkin">张晴晴 已完成今日释放打卡......</div>
+        <div class="participant-checkin">林小鱼 已完成今日释放打卡......</div>
+        <div class="participant-checkin">我 已完成今日释放打卡......</div>
+        <div class="participant-checkin">王大明 已完成今日释放打卡......</div>
+        <div class="participant-checkin">张晴晴 已完成今日释放打卡......</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-// ════════════════════════════════════════
-// 登录态读取（同步、立即可用）
-// ════════════════════════════════════════
+<!-- 提醒时间弹窗 -->
+<div class="overlay" id="reminderOverlay" style="display:none;" onclick="closeReminderOnOverlay(event)">
+  <div class="modal" style="aspect-ratio:unset;max-height:200px;">
+    <button class="modal-close" onclick="closeReminder()">✕</button>
+    <div style="font-size:0.8rem;color:#5a7aa0;font-family:'Noto Sans SC',sans-serif;margin-bottom:14px;">每日提醒时间</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input id="reminderTimeInput" type="time" value="21:00" style="flex:1;padding:10px 14px;border:1.5px solid rgba(100,160,220,0.35);border-radius:12px;background:rgba(240,248,255,0.8);font-size:1rem;color:#0e2840;outline:none;">
+      <button style="padding:10px 16px;border:none;border-radius:12px;background:rgba(80,140,220,0.8);color:#fff;font-size:0.82rem;cursor:pointer;" onclick="saveReminder()">保存</button>
+    </div>
+    <div style="font-size:0.68rem;color:#8aaac0;margin-top:10px;">所有参与者将在同一时间收到提醒</div>
+  </div>
+</div>
+
+<script>
+const CAT_ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际关系':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'✨','其他':'🧩'};
+const SUPA_URL = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
+let goalSelectedCat = '健康';
+let currentGoalIndex = -1;
+
 function readGoalsUserFromStorage() {
   try {
     var raw = localStorage.getItem('sb-ryoaxziysgdkjcjiuqti-auth-token');
@@ -360,26 +390,18 @@ function readGoalsUserFromStorage() {
     if (!token) return null;
     var parts = token.split('.');
     if (parts.length !== 3) return null;
-    var payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
     if (!payload || !payload.sub) return null;
     if (payload.exp && payload.exp * 1000 < Date.now()) return null;
     return { id: payload.sub, email: payload.email || '', token: token };
   } catch(_) { return null; }
 }
-
-// ════════════════════════════════════════
-// 本地存储（缓存 + 未登录兜底）
-// ════════════════════════════════════════
 function getGoals() {
   try { return JSON.parse(localStorage.getItem('freed-goals') || '[]'); } catch(e) { return []; }
 }
 function saveGoals(g) {
   try { localStorage.setItem('freed-goals', JSON.stringify(g)); } catch(e) {}
 }
-
-// ════════════════════════════════════════
-// 通用工具
-// ════════════════════════════════════════
 function escapeHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -402,11 +424,6 @@ function selectGoalCat(btn) {
   btn.classList.add('active');
 }
 
-// ════════════════════════════════════════
-// Supabase 请求
-// path 例如 '/rest/v1/user_goals'
-// useAuth=true 用 user token（写带 user_id 的数据时必须）
-// ════════════════════════════════════════
 async function supaFetch(path, opts) {
   opts = opts || {};
   var token = SUPA_KEY;
@@ -416,69 +433,34 @@ async function supaFetch(path, opts) {
     delete opts.useAuth;
   }
   var res = await fetch(SUPA_URL + path, Object.assign({}, opts, {
-    headers: Object.assign({
-      'apikey': SUPA_KEY,
-      'Authorization': 'Bearer ' + token,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
-    }, opts.headers || {})
+    headers: Object.assign({'apikey':SUPA_KEY,'Authorization':'Bearer '+token,'Content-Type':'application/json','Prefer':'return=representation'}, opts.headers || {})
   }));
   if (!res.ok) return null;
   var ct = res.headers.get('content-type') || '';
   return ct.includes('json') ? res.json() : res.text();
 }
-
-// ════════════════════════════════════════
-// 云端：拉取登录用户的所有目标
-// ════════════════════════════════════════
 async function loadGoalsFromCloud() {
   var u = readGoalsUserFromStorage();
   if (!u) return null;
-  // 读取也必须用 user token，因为 RLS 策略只允许读自己的（auth.uid() = user_id）
-  var rows = await supaFetch('/rest/v1/user_goals?user_id=eq.' + u.id + '&select=*&order=ts.desc', {
-    useAuth: true
-  });
+  var rows = await supaFetch('/rest/v1/user_goals?user_id=eq.'+u.id+'&select=*&order=ts.desc', {useAuth:true});
   if (!rows) return null;
-  // 转成本地格式
-  return rows.map(function(r) {
-    return { id: r.id, text: r.text, cat: r.cat || '其他', ts: r.ts };
-  });
+  return rows.map(function(r) { return {id:r.id,text:r.text,cat:r.cat||'其他',ts:r.ts}; });
 }
-
-// ════════════════════════════════════════
-// 云端：添加目标
-// ════════════════════════════════════════
 async function addGoalToCloud(text, cat) {
   var u = readGoalsUserFromStorage();
   if (!u) return null;
   var ts = Date.now();
-  var rows = await supaFetch('/rest/v1/user_goals', {
-    method: 'POST',
-    body: JSON.stringify({ user_id: u.id, text: text, cat: cat, ts: ts }),
-    useAuth: true
-  });
-  if (rows && rows.length > 0) {
-    var r = rows[0];
-    return { id: r.id, text: r.text, cat: r.cat || '其他', ts: r.ts };
-  }
-  return { text: text, cat: cat, ts: ts };  // 即使失败也返回数据，本地能显示
+  var rows = await supaFetch('/rest/v1/user_goals', {method:'POST',body:JSON.stringify({user_id:u.id,text:text,cat:cat,ts:ts}),useAuth:true});
+  if (rows && rows.length > 0) { var r=rows[0]; return {id:r.id,text:r.text,cat:r.cat||'其他',ts:r.ts}; }
+  return {text:text,cat:cat,ts:ts};
 }
-
-// ════════════════════════════════════════
-// 云端：删除目标（按云端 id）
-// ════════════════════════════════════════
 async function deleteGoalFromCloud(cloudId) {
   if (!cloudId) return false;
-  await supaFetch('/rest/v1/user_goals?id=eq.' + encodeURIComponent(cloudId), {
-    method: 'DELETE',
-    useAuth: true
-  });
+  await supaFetch('/rest/v1/user_goals?id=eq.'+encodeURIComponent(cloudId), {method:'DELETE',useAuth:true});
   return true;
 }
 
-// ════════════════════════════════════════
-// 渲染列表
-// ════════════════════════════════════════
+// 渲染：假设有参与者（演示用，实际从DB读）
 function renderGoals() {
   var goals = getGoals();
   var list = document.getElementById('goalsList');
@@ -488,206 +470,130 @@ function renderGoals() {
   }
   list.innerHTML = goals.map(function(g, i) {
     var icon = CAT_ICONS[g.cat] || '✨';
-    return '<li class="goal-item" id="goal-item-' + i + '">' +
-      '<span class="gain-badge">' + icon + ' ' + escapeHtml(g.cat || '') + '</span>' +
+    // 演示：前两个目标显示头像行
+    var avatarRow = '';
+    if (i === 0) {
+      avatarRow = `<div class="avatar-row">
+        <div class="avatar-bubble" style="background:linear-gradient(135deg,rgba(120,178,242,0.85),rgba(90,150,225,0.85));color:rgba(255,255,255,0.92);box-shadow:0 1px 4px rgba(80,140,220,0.20);">我</div>
+        <div class="avatar-bubble" style="background:linear-gradient(135deg,rgba(120,178,242,0.85),rgba(90,150,225,0.85));color:rgba(255,255,255,0.92);box-shadow:0 1px 4px rgba(80,140,220,0.20);">林</div>
+        <div class="avatar-bubble" style="background:linear-gradient(135deg,rgba(120,178,242,0.85),rgba(90,150,225,0.85));color:rgba(255,255,255,0.92);box-shadow:0 1px 4px rgba(80,140,220,0.20);">王</div>
+        <div class="avatar-bubble" style="background:linear-gradient(135deg,rgba(120,178,242,0.85),rgba(90,150,225,0.85));color:rgba(255,255,255,0.92);box-shadow:0 1px 4px rgba(80,140,220,0.20);">张</div>
+        <div class="avatar-bubble" style="background:linear-gradient(135deg,rgba(120,178,242,0.85),rgba(90,150,225,0.85));color:rgba(255,255,255,0.92);box-shadow:0 1px 4px rgba(80,140,220,0.20);">陈</div>
+        <div class="avatar-bubble" style="background:linear-gradient(135deg,rgba(120,178,242,0.85),rgba(90,150,225,0.85));color:rgba(255,255,255,0.92);box-shadow:0 1px 4px rgba(80,140,220,0.20);">刘</div>
+        <span class="avatar-joined">已加入释放......</span>
+      </div>`;
+    } else if (i === 1) {
+      avatarRow = `<div class="avatar-row">
+        <div class="avatar-bubble" style="background:linear-gradient(135deg,rgba(120,178,242,0.85),rgba(90,150,225,0.85));color:rgba(255,255,255,0.92);box-shadow:0 1px 4px rgba(80,140,220,0.20);">我</div>
+        <div class="avatar-bubble" style="background:linear-gradient(135deg,rgba(120,178,242,0.85),rgba(90,150,225,0.85));color:rgba(255,255,255,0.92);box-shadow:0 1px 4px rgba(80,140,220,0.20);">林</div>
+        <span class="avatar-joined">已加入释放......</span>
+      </div>`;
+    }
+    return '<li class="goal-item" onclick="openModal('+i+')">' +
+      '<span class="goal-badge">' + icon + ' ' + escapeHtml(g.cat || '') + '</span>' +
       '<p class="goal-item-text">' + escapeHtml(g.text) + '</p>' +
-      '<div class="goal-item-actions">' +
-      '<button class="goal-btn-release" onclick="releaseGoal(' + i + ')">🫧 释放</button>' +
-      '<button class="goal-btn-drop" onclick="dropGoal(' + i + ')">✨ 掉落</button>' +
-      '<button class="goal-btn-del" onclick="deleteGoal(' + i + ')">✕</button>' +
-      '</div></li>';
+      '<div class="goal-item-actions" onclick="event.stopPropagation()">' +
+      '<button class="goal-btn-release" onclick="releaseGoal('+i+')">🫧 释放</button>' +
+      '<button class="goal-btn-drop" onclick="dropGoal('+i+')">✨ 掉落</button>' +
+      '<button class="goal-btn-del" onclick="deleteGoal('+i+')">✕</button>' +
+      '</div>' + avatarRow + '</li>';
   }).join('');
 }
 
-// ════════════════════════════════════════
-// 添加目标
-// ════════════════════════════════════════
 async function addGoal() {
   var input = document.getElementById('goalInput');
   var text = input.value.trim();
   if (!text) return;
-
-  // 付费检查：超过3个目标需要会员
   var existingGoals = getGoals();
   if (existingGoals.length >= 3 && typeof FreedPaywall !== 'undefined') {
     var isPremium = await FreedPaywall.checkPremium();
-    if (!isPremium) {
-      input.value = text; // 保留用户输入
-      FreedPaywall.showPaywall(function() {
-        addGoal(); // 付费成功后自动提交
-      });
-      return;
-    }
+    if (!isPremium) { input.value = text; FreedPaywall.showPaywall(function() { addGoal(); }); return; }
   }
-
   input.value = '';
-
   var u = readGoalsUserFromStorage();
   if (u) {
-    // 登录：先写云端，再更新本地缓存
     var cloud = await addGoalToCloud(text, goalSelectedCat);
     var goals = getGoals();
-    goals.unshift({
-      id: cloud && cloud.id,
-      text: text,
-      cat: goalSelectedCat,
-      ts: cloud && cloud.ts ? cloud.ts : Date.now()
-    });
+    goals.unshift({id:cloud&&cloud.id,text:text,cat:goalSelectedCat,ts:cloud&&cloud.ts?cloud.ts:Date.now()});
     saveGoals(goals);
   } else {
-    // 未登录：本地存
     var goals2 = getGoals();
-    goals2.unshift({ text: text, cat: goalSelectedCat, ts: Date.now() });
+    goals2.unshift({text:text,cat:goalSelectedCat,ts:Date.now()});
     saveGoals(goals2);
   }
   renderGoals();
   showToast('🎯 目标已添加');
 }
-
-// ════════════════════════════════════════
-// 删除目标
-// ════════════════════════════════════════
 async function deleteGoal(i) {
-  var goals = getGoals();
-  var goal = goals[i];
-  if (!goal) return;
-
+  var goals = getGoals(); var goal = goals[i]; if (!goal) return;
   var u = readGoalsUserFromStorage();
-  if (u && goal.id) {
-    // 登录用户：删云端
-    await deleteGoalFromCloud(goal.id);
-  }
-  // 不论登录与否，本地都删
-  goals.splice(i, 1);
-  saveGoals(goals);
-  renderGoals();
+  if (u && goal.id) await deleteGoalFromCloud(goal.id);
+  goals.splice(i,1); saveGoals(goals); renderGoals();
 }
-
-// ════════════════════════════════════════
-// 释放目标（跳到 desire.html，不动数据库——目标在 desire 完成后会被清掉）
-// ════════════════════════════════════════
 function releaseGoal(i) {
-  var goals = getGoals();
-  var goal = goals[i];
-  if (!goal) return;
+  var goals = getGoals(); var goal = goals[i]; if (!goal) return;
   sessionStorage.setItem('releaseGoalText', goal.text);
-  // 把云端 id 也带过去，desire.html 完成释放后能删云端记录（未来 desire 改造时用）
   if (goal.id) sessionStorage.setItem('releaseGoalCloudId', goal.id);
   window.location.href = 'desire.html';
 }
-
-// ════════════════════════════════════════
-// 掉落目标 → 写入收获本（gain_entries）+ 删除目标
-// ════════════════════════════════════════
 async function dropGoal(i) {
-  var goals = getGoals();
-  var goal = goals[i];
-  if (!goal) return;
-
+  var goals = getGoals(); var goal = goals[i]; if (!goal) return;
   var u = readGoalsUserFromStorage();
-  var entry = { text: goal.text, cat: goal.cat || '其他', ts: Date.now(), likes: 0 };
+  var entry = {text:goal.text,cat:goal.cat||'其他',ts:Date.now(),likes:0};
   if (u) entry.user_id = u.id;
-
-  // 本地"我的收获"也加一条（兼容老逻辑）
   var myItems = [];
-  try { myItems = JSON.parse(localStorage.getItem('freed-my-gains') || '[]'); } catch(e) {}
-  myItems.unshift({ text: goal.text, cat: goal.cat || '其他', ts: entry.ts, likes: 0 });
-  try { localStorage.setItem('freed-my-gains', JSON.stringify(myItems)); } catch(e) {}
-
-  // 写云端收获本
-  try {
-    await supaFetch('/rest/v1/gain_entries', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=minimal' },
-      body: JSON.stringify(entry),
-      useAuth: !!u
-    });
-  } catch(_) {}
-
-  // 删除这个目标（登录则删云端，本地都删）
-  if (u && goal.id) {
-    try { await deleteGoalFromCloud(goal.id); } catch(_) {}
-  }
-  goals.splice(i, 1);
-  saveGoals(goals);
-  renderGoals();
+  try { myItems = JSON.parse(localStorage.getItem('freed-my-gains')||'[]'); } catch(e) {}
+  myItems.unshift({text:goal.text,cat:goal.cat||'其他',ts:entry.ts,likes:0});
+  try { localStorage.setItem('freed-my-gains',JSON.stringify(myItems)); } catch(e) {}
+  try { await supaFetch('/rest/v1/gain_entries',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(entry),useAuth:!!u}); } catch(_) {}
+  if (u && goal.id) { try { await deleteGoalFromCloud(goal.id); } catch(_) {} }
+  goals.splice(i,1); saveGoals(goals); renderGoals();
   showToast('✨ 目标已掉落并记录到收获本');
 }
 
-// ════════════════════════════════════════
-// 启动：登录用户拉云端覆盖本地，未登录用本地
-// ════════════════════════════════════════
+// 弹窗
+function openModal(i) {
+  var goals = getGoals(); var goal = goals[i]; if (!goal) return;
+  currentGoalIndex = i;
+  var icon = CAT_ICONS[goal.cat] || '✨';
+  document.getElementById('modalBadge').textContent = icon + ' ' + (goal.cat || '');
+  document.getElementById('modalText').textContent = goal.text;
+  document.getElementById('reminderBtnText').textContent = '设置提醒';
+  document.getElementById('modalOverlay').style.display = 'flex';
+}
+function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+function closeOnOverlay(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+function openReminder() { document.getElementById('reminderOverlay').style.display = 'flex'; }
+function closeReminder() { document.getElementById('reminderOverlay').style.display = 'none'; }
+function closeReminderOnOverlay(e) { if (e.target === document.getElementById('reminderOverlay')) closeReminder(); }
+function saveReminder() {
+  var val = document.getElementById('reminderTimeInput').value;
+  if (val) document.getElementById('reminderBtnText').textContent = '每天 ' + val;
+  closeReminder();
+}
+function openPlaza(cat) {
+  showToast('🏛 目标广场（即将上线）');
+}
+
 (async function initGoals() {
   var u = readGoalsUserFromStorage();
-  if (u) {
-    // 登录用户：直接拉云端，覆盖本地（登录前的本地目标会被丢弃）
-    var cloudGoals = await loadGoalsFromCloud();
-    saveGoals(cloudGoals || []);
-  }
-  // 渲染（登录用户用云端，未登录用本地）
+  if (u) { var cloudGoals = await loadGoalsFromCloud(); saveGoals(cloudGoals || []); }
   renderGoals();
 })();
 </script>
 
-<!-- ════════════════════════════════════════
-     登录引导弹窗（未登录时进入目标表会弹一次）
-     ════════════════════════════════════════ -->
-</div>
-
-<!-- 登录/注册弹窗 -->
-</div>
-
 <script>
 (function() {
-  // ===== Supabase 客户端 =====
   const SUPA_URL_AUTH = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
   const SUPA_KEY_AUTH = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
-
-  // 兼容老 storageKey
   const DEFAULT_STORAGE_KEY = 'sb-ryoaxziysgdkjcjiuqti-auth-token';
-  try {
-    const oldVal = localStorage.getItem('freed-auth');
-    const newVal = localStorage.getItem(DEFAULT_STORAGE_KEY);
-    if (oldVal && !newVal) {
-      localStorage.setItem(DEFAULT_STORAGE_KEY, oldVal);
-    }
-  } catch(_) {}
-
+  try { const oldVal=localStorage.getItem('freed-auth'); const newVal=localStorage.getItem(DEFAULT_STORAGE_KEY); if(oldVal&&!newVal) localStorage.setItem(DEFAULT_STORAGE_KEY,oldVal); } catch(_) {}
   if (!window.supabase) return;
-
-  const supa = window.supabase.createClient(SUPA_URL_AUTH, SUPA_KEY_AUTH, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      storageKey: 'sb-ryoaxziysgdkjcjiuqti-auth-token',
-    }
-  });
-
-  // 直接从 localStorage 读 token 解析（绕过 SDK 加载时序问题）
-  function readUserFromLocalStorage() {
-    try {
-      const raw = localStorage.getItem('sb-ryoaxziysgdkjcjiuqti-auth-token');
-      if (!raw) return null;
-      const obj = JSON.parse(raw);
-      const token = obj && obj.access_token;
-      if (!token) return null;
-      const parts = token.split('.');
-      if (parts.length !== 3) return null;
-      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-      if (!payload || !payload.sub) return null;
-      if (payload.exp && payload.exp * 1000 < Date.now()) return null;
-      return { id: payload.sub, email: payload.email || '' };
-    } catch(_) { return null; }
-  }
-
-  // 启动
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {});
-  }
+  window.supabase.createClient(SUPA_URL_AUTH, SUPA_KEY_AUTH, {auth:{persistSession:true,autoRefreshToken:true,storageKey:'sb-ryoaxziysgdkjcjiuqti-auth-token'}});
 })();
 </script>
 
-<script src="paywall-web.js"></script>
+<script src="paywall.js"></script>
 <script src="nav-orb.js"></script>
 </body>
 </html>
