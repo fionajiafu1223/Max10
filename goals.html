@@ -705,6 +705,12 @@ function openPlaza(cat) {
   var u = readGoalsUserFromStorage();
   if (u) { var cloudGoals = await loadGoalsFromCloud(); saveGoals(cloudGoals || []); }
   renderGoals();
+  // iPad判断：userAgent含iPad或屏幕宽度>=1024
+  var isIPad = /iPad/.test(navigator.userAgent) || 
+               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+               window.screen.width >= 1024;
+  var socialBall = document.querySelector('.plaza-ball-social');
+  if (socialBall) socialBall.style.display = isIPad ? 'flex' : 'none';
 })();
 </script>
 
