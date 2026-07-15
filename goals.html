@@ -285,7 +285,7 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
 
 /* 手机隐藏人际球，iPad显示 */
 .plaza-ball-social { display:none; }
-@media (min-width:1024px) {
+@media (min-width:768px) {
   .plaza-ball-social { display:flex; }
 }
 .avatar-row { display:flex; align-items:flex-end; }
@@ -398,7 +398,7 @@ window.addEventListener('resize',resize);resize();draw();
     <button class="gain-cat" data-cat="学业" onclick="selectGoalCat(this)">📚 学业</button>
     <button class="gain-cat" data-cat="事业" onclick="selectGoalCat(this)">💼 事业</button>
     <button class="gain-cat" data-cat="原生家庭" onclick="selectGoalCat(this)">🏠 原生家庭</button>
-    <button class="gain-cat" data-cat="个人价值" onclick="selectGoalCat(this)">✨ 个人价值</button>
+    <button class="gain-cat" data-cat="个人价值" onclick="selectGoalCat(this)">💎 个人价值</button>
     <button class="gain-cat" data-cat="其他" onclick="selectGoalCat(this)">🧩 其他</button>
   </div>
 
@@ -497,7 +497,7 @@ window.addEventListener('resize',resize);resize();draw();
 </div>
 
 <script>
-const CAT_ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际关系':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'✨','其他':'🧩'};
+const CAT_ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际关系':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'💎','其他':'🧩'};
 const SUPA_URL = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
 let goalSelectedCat = '健康';
@@ -705,12 +705,6 @@ function openPlaza(cat) {
   var u = readGoalsUserFromStorage();
   if (u) { var cloudGoals = await loadGoalsFromCloud(); saveGoals(cloudGoals || []); }
   renderGoals();
-  // iPad判断：userAgent含iPad或屏幕宽度>=1024
-  var isIPad = /iPad/.test(navigator.userAgent) || 
-               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
-               window.screen.width >= 1024;
-  var socialBall = document.querySelector('.plaza-ball-social');
-  if (socialBall) socialBall.style.display = isIPad ? 'flex' : 'none';
 })();
 </script>
 
@@ -805,7 +799,7 @@ window.addEventListener('resize',resize);resize();draw();
 </div>
 
 <script>
-const CAT_ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'✨'};
+const CAT_ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'💎'};
 
 // 示例数据（之后从Supabase读取）
 const GOALS = [
@@ -835,7 +829,7 @@ const BUBBLE_COLORS = [
 let joined = new Set();
 let currentCat = '全部';
 
-const ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'✨'};
+const ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'💎'};
 
 function setupCarousel() {
   const carousel = document.getElementById('plazaCarousel');
@@ -1006,7 +1000,7 @@ window.addEventListener('resize',resize);resize();draw();
 })();
 
 
-const CAT_ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'✨'};
+const CAT_ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'💎'};
 
 // 示例数据（之后从Supabase读取）
 const GOALS = [
@@ -1036,7 +1030,7 @@ const BUBBLE_COLORS = [
 let joined = new Set();
 let currentCat = '全部';
 
-const ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'✨'};
+const ICONS = {'健康':'🌿','财富':'💰','SP':'💞','人际':'🤝','学业':'📚','事业':'💼','原生家庭':'🏠','个人价值':'💎'};
 
 function setupCarousel() {
   const carousel = document.getElementById('plazaCarousel');
