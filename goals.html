@@ -582,7 +582,11 @@ function saveReminder() {
   closeReminder();
 }
 function openPlaza(cat) {
-  showToast('🏛 目标广场（即将上线）');
+  if (cat) {
+    window.location.href = 'plaza.html?cat=' + encodeURIComponent(cat);
+  } else {
+    window.location.href = 'plaza.html';
+  }
 }
 
 (async function initGoals() {
