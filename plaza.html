@@ -26,9 +26,9 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
 /* 轮播分类 */
 .carousel-wrap { position:relative; overflow:hidden; padding:0; margin-bottom:16px; }
 .carousel {
-  display:flex; gap:8px;
+  display:flex; gap:24px;
   overflow-x:auto; scroll-snap-type:x mandatory;
-  scrollbar-width:none; padding:20px calc(50% - 25px);
+  scrollbar-width:none; padding:24px calc(50% - 35px);
   scroll-behavior:smooth;
   align-items:flex-start;
 }
@@ -36,19 +36,19 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
 .ball-wrapper {
   flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:6px;
   scroll-snap-align:center; cursor:pointer;
-  transform:scale(0.72); opacity:0.45;
+  transform:scale(1); opacity:0.6;
   transition:transform 0.35s ease, opacity 0.35s ease;
 }
-.ball-wrapper.active { transform:scale(1.4); opacity:1; }
+.ball-wrapper.active { transform:scale(1.14); opacity:1; }
 .ball-item {
-  width:50px; height:50px; border-radius:50%;
+  width:70px; height:70px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   position:relative; overflow:hidden;
   outline:3px solid rgba(255,255,255,0.95);
   outline-offset:2px;
   box-shadow:0 0 0 5px rgba(138,170,192,0.35), 0 0 0 9px rgba(138,170,192,0.15);
 }
-.ball-item img { width:50px; height:50px; object-fit:cover; border-radius:50%; display:block; }
+.ball-item img { width:70px; height:70px; object-fit:cover; border-radius:50%; display:block; }
 .ball-label {
   font-size:0.68rem; color:#5a7aa0;
   font-family:'Noto Sans SC',sans-serif;
