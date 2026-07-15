@@ -12,11 +12,11 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
 
 .back-btn {
   position:fixed; top:20px; left:16px; z-index:999;
-  width:38px; height:38px; border-radius:50%; border:none;
+  padding:8px 18px; border-radius:99px; border:none;
   background:rgba(255,255,255,0.75); backdrop-filter:blur(8px);
   box-shadow:0 2px 8px rgba(0,60,120,0.15);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; font-size:1.1rem; color:#2a6090;
+  cursor:pointer; font-size:0.82rem; color:#2a6090;
+  font-family:'Noto Sans SC',sans-serif;
   transition:background 0.18s;
 }
 .back-btn:hover { background:rgba(255,255,255,0.95); }
@@ -164,7 +164,7 @@ function draw(){
 window.addEventListener('resize',resize);resize();draw();
 })();
 </script>
-<button class="back-btn" onclick="history.back()">‹</button>
+<button class="back-btn" onclick="history.back()">返回</button>
 <div class="page-title" style="text-align:center;font-size:1.1rem;letter-spacing:0.2em;color:rgba(3,80,140,0.7);margin-bottom:40px;">🏛 目 标 广 场</div>
 <div class="page-wrap">
 
@@ -208,12 +208,12 @@ const GOALS = [
 ];
 
 const BUBBLE_COLORS = [
-  'linear-gradient(135deg,rgba(120,178,242,0.85),rgba(90,150,225,0.85))',
-  'linear-gradient(135deg,rgba(224,122,95,0.85),rgba(180,80,60,0.85))',
-  'linear-gradient(135deg,rgba(106,180,90,0.85),rgba(60,130,50,0.85))',
-  'linear-gradient(135deg,rgba(155,106,191,0.85),rgba(110,60,150,0.85))',
-  'linear-gradient(135deg,rgba(212,160,74,0.85),rgba(160,110,30,0.85))',
-  'linear-gradient(135deg,rgba(74,191,180,0.85),rgba(30,140,130,0.85))',
+  'linear-gradient(135deg,rgba(60,130,220,0.85),rgba(40,110,200,0.85))',
+  'linear-gradient(135deg,rgba(60,130,220,0.85),rgba(40,110,200,0.85))',
+  'linear-gradient(135deg,rgba(60,130,220,0.85),rgba(40,110,200,0.85))',
+  'linear-gradient(135deg,rgba(60,130,220,0.85),rgba(40,110,200,0.85))',
+  'linear-gradient(135deg,rgba(60,130,220,0.85),rgba(40,110,200,0.85))',
+  'linear-gradient(135deg,rgba(60,130,220,0.85),rgba(40,110,200,0.85))',
 ];
 
 let joined = new Set();
