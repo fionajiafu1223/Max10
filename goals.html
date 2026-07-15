@@ -684,13 +684,10 @@ function saveReminder() {
   closeReminder();
 }
 function openPlaza(cat) {
-  document.getElementById('goalsPage').style.display = 'none';
-  document.getElementById('plazaPage').style.display = 'block';
   if (cat) {
-    setTimeout(() => {
-      const balls = document.querySelectorAll('#plazaCarousel .ball-wrapper');
-      balls.forEach(b => { if(b.dataset.cat === cat) b.click(); });
-    }, 100);
+    window.location.href = 'plaza.html?cat=' + encodeURIComponent(cat);
+  } else {
+    window.location.href = 'plaza.html';
   }
 }
 
