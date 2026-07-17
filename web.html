@@ -1347,5 +1347,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+  <script>
+(function() {
+  var navLayer = document.getElementById('nav-layer');
+  var authBtn  = document.getElementById('auth-btn');
+  var authMenu = document.getElementById('auth-menu');
+  if (!navLayer || !authBtn) return;
+  var observer = new MutationObserver(function() {
+    var isOpen = navLayer.style.display !== 'none' && navLayer.style.display !== '';
+    authBtn.style.display = isOpen ? 'none' : '';
+    if (isOpen && authMenu) authMenu.classList.remove('show');
+  });
+  observer.observe(navLayer, { attributes: true, attributeFilter: ['style'] });
+})();
+</script>
 </body>
 </html>
