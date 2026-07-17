@@ -176,9 +176,38 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
   cursor: pointer;
 }
 
+.back-btn {
+  position: fixed;
+  top: max(18px, calc(env(safe-area-inset-top, 0px) + 8px));
+  left: calc(env(safe-area-inset-left, 0px) + 12px);
+  z-index: 100;
+  width: 42px; height: 42px;
+  border-radius: 50%; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 32% 28%,
+    rgba(255,255,255,0.55) 0%, rgba(220,235,250,0.30) 25%,
+    rgba(120,180,230,0.20) 55%, rgba(80,140,200,0.18) 100%);
+  box-shadow:
+    inset 0 0 14px rgba(180,220,255,0.45),
+    inset 0 0 5px rgba(255,255,255,0.30),
+    0 3px 12px rgba(20,80,140,0.30);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: transform 0.2s;
+}
+.back-btn:active { transform: scale(0.92); }
+.back-btn svg {
+  width: 20px; height: 20px;
+  stroke: rgba(245,252,255,0.95); fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  filter: drop-shadow(0 1px 2px rgba(0,60,120,0.5));
+}
 </style>
 </head>
 <body>
+<button class="back-btn" onclick="window.location.href='web.html'" aria-label="返回">
+  <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+</button>
 <script>
 (function() {
 var canvas = document.createElement('canvas');
@@ -688,13 +717,5 @@ async function dropGoal(i) {
 </script>
 
 <script src="paywall-web.js"></script>
-<script src="nav-orb.js"></script>
-<script>
-document.addEventListener('click', function(e) {
-  if (e.target.closest('.page-wrap')) return;
-  if (e.target.closest('#nav-orb-btn') || e.target.closest('#nav-orb-layer')) return;
-  window.location.href = 'web.html';
-});
-</script>
 </body>
 </html>
