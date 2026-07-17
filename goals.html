@@ -689,5 +689,12 @@ async function dropGoal(i) {
 
 <script src="paywall-web.js"></script>
 <script src="nav-orb.js"></script>
+<script>
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.page-wrap')) return;
+  if (e.target.closest('#nav-orb-btn') || e.target.closest('#nav-orb-layer')) return;
+  window.location.href = 'web.html';
+});
+</script>
 </body>
 </html>

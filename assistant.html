@@ -621,5 +621,14 @@ if (asstInput) {
   });
 }
 </script>
+<script>
+document.addEventListener('click', function(e) {
+  var layer = document.getElementById('asst-layer');
+  if (!layer || layer.style.display === 'none') return;
+  if (e.target.closest('#asst-layer')) return;
+  if (e.target.closest('#nav-orb-btn') || e.target.closest('#nav-orb-layer')) return;
+  window.location.href = 'web.html';
+});
+</script>
 </body>
 </html>
