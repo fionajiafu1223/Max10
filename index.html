@@ -140,10 +140,10 @@
   .btn-group {
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 10px;
     justify-content: center;
-    margin: 0 auto 32px;
     flex-wrap: wrap;
+    margin: 0 auto 32px;
   }
 
   .btn {
@@ -156,9 +156,9 @@
     text-decoration: none;
     text-align: center;
     font-family: 'Noto Serif SC', serif;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 400;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.12em;
     color: rgba(240, 250, 255, 0.98);
     text-shadow: 0 1px 3px rgba(0, 60, 120, 0.4);
     background: radial-gradient(circle at 32% 28%,
@@ -195,9 +195,7 @@
     letter-spacing: 0.05em;
     margin-top: 3px;
     text-shadow: none;
-  }
-
-  /* 价格区块 */
+  }  /* 价格区块 */
   .pricing {
     width: 100%;
     max-width: 360px;
@@ -255,6 +253,14 @@
     font-weight: 400;
     color: rgba(200, 235, 255, 0.65);
     letter-spacing: 0.02em;
+  }
+  .price-trial {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 10px;
+    font-weight: 400;
+    color: rgba(160, 230, 200, 0.85);
+    letter-spacing: 0.04em;
+    margin-top: 6px;
   }
 
   /* 底部 */
@@ -402,6 +408,7 @@
       <div class="price-card">
         <div class="price-label">月付</div>
         <div class="price-amount">¥8<span class="price-unit">/月</span></div>
+        <div class="price-trial">7天免费试用</div>
       </div>
       <div class="price-card">
         <div class="price-label">季度</div>
@@ -410,6 +417,7 @@
       <div class="price-card">
         <div class="price-label">年度</div>
         <div class="price-amount">¥68<span class="price-unit">/年</span></div>
+        <div class="price-trial">14天免费试用</div>
       </div>
     </div>
   </div>
