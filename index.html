@@ -104,11 +104,16 @@
     padding-left: 0.35em;
   }
 
-  /* 介绍 — 无框纯文字 */
+  /* 介绍 — 玻璃框 */
   .intro-card {
     max-width: 360px;
     margin: 0 auto 36px;
-    padding: 0 8px;
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
   .intro-card h1 {
     font-family: 'Noto Serif SC', serif;
@@ -116,21 +121,19 @@
     font-size: 18px;
     line-height: 1.8;
     letter-spacing: 0.08em;
-    color: rgba(240, 250, 255, 0.95);
-    text-shadow: 0 1px 6px rgba(0, 60, 120, 0.5);
+    color: #0e2840;
     margin-bottom: 14px;
   }
   .intro-card p {
     font-family: 'Noto Sans SC', sans-serif;
     font-size: 14px;
     line-height: 2;
-    color: rgba(220, 240, 255, 0.80);
+    color: #0e2840;
     letter-spacing: 0.03em;
-    text-shadow: 0 1px 4px rgba(0, 60, 120, 0.4);
   }
   .intro-card p strong {
-    color: rgba(255, 255, 255, 0.98);
-    font-weight: 500;
+    color: #0e2840;
+    font-weight: 600;
   }
 
   /* 下载按钮组 */
@@ -194,7 +197,7 @@
   /* 底部 */
   .being {
     position: fixed;
-    bottom: max(34px, env(safe-area-inset-bottom, 34px));
+    bottom: max(48px, env(safe-area-inset-bottom, 48px));
     left: 0; right: 0;
     text-align: center;
     font-family: 'ITC Bauhaus', 'Josefin Sans', sans-serif;
@@ -207,7 +210,7 @@
   }
   .footer-links {
     position: fixed;
-    bottom: max(14px, env(safe-area-inset-bottom, 14px));
+    bottom: max(20px, env(safe-area-inset-bottom, 20px));
     left: 0; right: 0;
     text-align: center;
     font-family: 'Noto Sans SC', sans-serif;
@@ -307,9 +310,8 @@
 
   <!-- 介绍 -->
   <div class="intro-card">
-    <h1>一款帮你放下情绪的应用</h1>
     <p>
-      基于 <strong>圣多纳释放法</strong>——一套 1974 年由莱斯特·莱文森创立的自我提问方法。不是冥想，不是灵修，只是一组简单的问题，让你选择放下你正抓着的。
+      Freed 是基于<strong>圣多纳释放法</strong>原理设计的沉浸式情绪释放工具。我们用画面、音乐与互动小游戏，带你绕过头脑、直达感受，在放松中自然进入释放状态。
     </p>
   </div>
 
@@ -321,7 +323,7 @@
     </a>
     <a href="#" class="btn" id="android-btn">
       安卓下载
-      <span class="sub">直接安装 APK</span>
+      <span class="sub">点击下载安装包</span>
     </a>
     <a href="/web.html" class="btn">
       网页版
