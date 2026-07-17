@@ -194,6 +194,66 @@
     text-shadow: none;
   }
 
+  /* 价格区块 */
+  .pricing {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto 80px;
+    text-align: center;
+  }
+  .pricing-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(240, 250, 255, 0.85);
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+    text-shadow: 0 1px 4px rgba(0, 60, 120, 0.4);
+  }
+  .pricing-note {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 11px;
+    color: rgba(200, 235, 255, 0.55);
+    letter-spacing: 0.02em;
+    margin-bottom: 16px;
+  }
+  .pricing-cards {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  .price-card {
+    flex: 1;
+    padding: 16px 8px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .price-label {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 11px;
+    color: rgba(220, 240, 255, 0.70);
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .price-amount {
+    font-family: 'ITC Bauhaus', 'Josefin Sans', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: rgba(240, 250, 255, 0.98);
+    text-shadow: 0 1px 6px rgba(0, 60, 120, 0.4);
+    letter-spacing: 0.02em;
+  }
+  .price-unit {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(200, 235, 255, 0.65);
+    letter-spacing: 0.02em;
+  }
+
   /* 底部 */
   .being {
     position: fixed;
@@ -311,7 +371,7 @@
   <!-- 介绍 -->
   <div class="intro-card">
     <p>
-      Freed 是基于<strong>圣多纳释放法</strong>原理设计的沉浸式情绪释放工具。我们用画面、音乐与互动小游戏，带你绕过头脑、直达感受，在放松中自然进入释放状态。
+      Freed 释放是一款基于<strong>圣多纳释放法</strong>理念设计的情绪释放工具。通过视觉、声音与互动引导，帮助你减少思维干扰，觉察情绪与欲望，松动潜意识中的压力与生活阻力。无论是焦虑、关系压力、金钱困扰，还是反复出现的人生卡点，从一次释放开始，让改变慢慢发生。
     </p>
   </div>
 
@@ -329,6 +389,26 @@
       网页版
       <span class="sub">浏览器直接使用</span>
     </a>
+  </div>
+
+  <!-- 价格区块 -->
+  <div class="pricing">
+    <div class="pricing-title">订阅方案</div>
+    <div class="pricing-note">以下为中国大陆定价，不同国家及地区价格有所不同</div>
+    <div class="pricing-cards">
+      <div class="price-card">
+        <div class="price-label">月付</div>
+        <div class="price-amount">¥8<span class="price-unit">/月</span></div>
+      </div>
+      <div class="price-card">
+        <div class="price-label">季度</div>
+        <div class="price-amount">¥18<span class="price-unit">/季</span></div>
+      </div>
+      <div class="price-card">
+        <div class="price-label">年度</div>
+        <div class="price-amount">¥68<span class="price-unit">/年</span></div>
+      </div>
+    </div>
   </div>
 
   <div class="being">Be not the doer, get everything only by releasing.</div>
