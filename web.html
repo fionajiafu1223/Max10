@@ -379,6 +379,33 @@ canvas { position:fixed; inset:0; display:block; }
   color: #1a6f48;
   border: 1px solid rgba(80, 180, 130, 0.35);
 }
+
+/* ── 返回胶囊（回主页）── */
+#back-to-home {
+  position: fixed;
+  top: max(22px, calc(env(safe-area-inset-top, 0px) + 8px));
+  left: 16px;
+  z-index: 200;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 99px;
+  border: none;
+  cursor: pointer;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(3,80,140,0.85);
+  font-size: 0.82rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 12px rgba(0,60,120,0.12);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, transform 0.15s;
+}
+#back-to-home:hover { background: rgba(255,255,255,0.68); }
+#back-to-home:active { transform: scale(0.96); }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Josefin+Sans:ital,wght@0,700;0,900;1,700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
 <!-- Supabase JS SDK（用于登录/注册/会话管理） -->
@@ -850,6 +877,8 @@ const _origDraw = draw;
      登录系统 — HTML 元素
      ════════════════════════════════════════ -->
 
+<button id="back-to-home" onclick="window.location.href='index.html'">返回</button>
+
 <!-- 右上角登录气泡按钮 -->
 <button id="auth-btn" onclick="onAuthBtnClick()" aria-label="登录">
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1203,32 +1232,6 @@ const _origDraw = draw;
   display: block; background: rgba(80,180,130,0.15);
   color: #1a6f48; border: 1px solid rgba(80,180,130,0.30);
 }
-  #back-to-home {
-  position: fixed;
-  top: max(18px, calc(env(safe-area-inset-top, 0px) + 8px));
-  left: calc(env(safe-area-inset-left, 0px) + 12px);
-  z-index: 200;
-  width: 42px; height: 42px;
-  border-radius: 50%; border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(circle at 32% 28%,
-    rgba(255,255,255,0.55) 0%, rgba(220,235,250,0.30) 25%,
-    rgba(120,180,230,0.20) 55%, rgba(80,140,200,0.18) 100%);
-  box-shadow:
-    inset 0 0 14px rgba(180,220,255,0.45),
-    inset 0 0 5px rgba(255,255,255,0.30),
-    0 3px 12px rgba(20,80,140,0.30);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  transition: transform 0.2s;
-}
-#back-to-home:active { transform: scale(0.92); }
-#back-to-home svg {
-  width: 20px; height: 20px;
-  stroke: rgba(245,252,255,0.95); fill: none;
-  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-  filter: drop-shadow(0 1px 2px rgba(0,60,120,0.5));
-}
 </style>
 
 <div id="delete-overlay" onclick="if(event.target===this)closeDeleteModal()">
@@ -1364,8 +1367,7 @@ const _origDraw = draw;
 })();
 </script>
 
-<!-- <script src="paywall-web.js"></script> -->
-
+<script src="paywall-web.js"></script>
 <script>
 // 页面加载后检查是否有扣款问题，有则在顶部显示红色提示横幅
 document.addEventListener('DOMContentLoaded', function() {
@@ -1374,22 +1376,5 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-  <script>
-(function() {
-  var navLayer = document.getElementById('nav-layer');
-  var authBtn  = document.getElementById('auth-btn');
-  var authMenu = document.getElementById('auth-menu');
-  if (!navLayer || !authBtn) return;
-  var observer = new MutationObserver(function() {
-    var isOpen = navLayer.style.display !== 'none' && navLayer.style.display !== '';
-    authBtn.style.display = isOpen ? 'none' : '';
-    if (isOpen && authMenu) authMenu.classList.remove('show');
-  });
-  observer.observe(navLayer, { attributes: true, attributeFilter: ['style'] });
-})();
-</script>
-  <button id="back-to-home" onclick="window.location.href='index.html'" aria-label="返回主页">
-  <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-</button>
 </body>
 </html>
