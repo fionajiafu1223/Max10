@@ -454,7 +454,7 @@ window.addEventListener('resize',resize);resize();draw();
     <button class="modal-close" onclick="closeModal()">✕</button>
     <div class="modal-badge" id="modalBadge">🌿 健康</div>
     <p class="modal-goal-text" id="modalText"></p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px;">
       <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
         <button class="glass-btn" onclick="openReminder()">
           <span class="btn-icon">⏰</span><span id="reminderBtnText">设置提醒</span>
@@ -462,10 +462,16 @@ window.addEventListener('resize',resize);resize();draw();
         <button class="action-btn btn-release-modal" style="width:100%;" onclick="closeModal()">🫧 释放</button>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <button class="glass-btn" onclick="openDays()">
+          <span class="btn-icon">📅</span><span id="daysBtnText">打卡天数</span>
+        </button>
+        <button class="action-btn btn-drop-modal" style="width:100%;" onclick="closeModal()">✨ 掉落</button>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
         <button class="glass-btn">
           <span class="btn-icon">🔗</span>邀请好友
         </button>
-        <button class="action-btn btn-drop-modal" style="width:100%;" onclick="closeModal()">✨ 掉落</button>
+        <div id="progressDisplay" style="width:100%;padding:10px;border-radius:12px;background:rgba(60,130,220,0.12);color:#2a6090;font-size:0.75rem;text-align:center;font-family:'Noto Sans SC',sans-serif;">未设定天数</div>
       </div>
     </div>
     <div class="checkin-scroll-wrap">
@@ -483,7 +489,24 @@ window.addEventListener('resize',resize);resize();draw();
   </div>
 </div>
 
-<!-- 提醒时间弹窗 -->
+<!-- 打卡天数弹窗 -->
+<div class="overlay" id="daysOverlay" style="display:none;" onclick="closeDaysOnOverlay(event)">
+  <div class="modal" style="aspect-ratio:unset;max-height:280px;">
+    <button class="modal-close" onclick="closeDays()">✕</button>
+    <div style="font-size:0.8rem;color:#5a7aa0;font-family:'Noto Sans SC',sans-serif;margin-bottom:14px;">设定打卡天数</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+      <button onclick="selectDays(7,this)" style="padding:7px 14px;border:1.5px solid rgba(100,160,220,0.4);border-radius:99px;background:rgba(240,248,255,0.8);font-size:0.78rem;color:#2a6090;cursor:pointer;font-family:'Noto Sans SC',sans-serif;">7天</button>
+      <button onclick="selectDays(21,this)" style="padding:7px 14px;border:1.5px solid rgba(100,160,220,0.4);border-radius:99px;background:rgba(240,248,255,0.8);font-size:0.78rem;color:#2a6090;cursor:pointer;font-family:'Noto Sans SC',sans-serif;">21天</button>
+      <button onclick="selectDays(30,this)" style="padding:7px 14px;border:1.5px solid rgba(100,160,220,0.4);border-radius:99px;background:rgba(240,248,255,0.8);font-size:0.78rem;color:#2a6090;cursor:pointer;font-family:'Noto Sans SC',sans-serif;">30天</button>
+      <button onclick="selectDays(100,this)" style="padding:7px 14px;border:1.5px solid rgba(100,160,220,0.4);border-radius:99px;background:rgba(240,248,255,0.8);font-size:0.78rem;color:#2a6090;cursor:pointer;font-family:'Noto Sans SC',sans-serif;">100天</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+      <input id="customDaysInput" type="number" min="1" max="365" placeholder="自定义天数" style="flex:1;padding:10px 14px;border:1.5px solid rgba(100,160,220,0.35);border-radius:12px;background:rgba(240,248,255,0.8);font-size:0.9rem;color:#0e2840;outline:none;">
+      <button onclick="saveDays()" style="padding:10px 16px;border:none;border-radius:12px;background:rgba(60,130,220,0.85);color:#fff;font-size:0.82rem;cursor:pointer;font-family:'Noto Sans SC',sans-serif;">确定</button>
+    </div>
+    <div style="font-size:0.68rem;color:#8aaac0;font-family:'Noto Sans SC',sans-serif;">所有参与者将在每天收到提醒，直到打卡完成</div>
+  </div>
+</div>
 <div class="overlay" id="reminderOverlay" style="display:none;" onclick="closeReminderOnOverlay(event)">
   <div class="modal" style="aspect-ratio:unset;max-height:200px;">
     <button class="modal-close" onclick="closeReminder()">✕</button>
@@ -677,15 +700,72 @@ async function dropGoal(i) {
 function openModal(i) {
   var goals = getGoals(); var goal = goals[i]; if (!goal) return;
   currentGoalIndex = i;
+  window._currentGoalId = goal.id || ('local-' + i);
   var icon = CAT_ICONS[goal.cat] || '✨';
   document.getElementById('modalBadge').textContent = icon + ' ' + (goal.cat || '');
   document.getElementById('modalText').textContent = goal.text;
   document.getElementById('reminderBtnText').textContent = '设置提醒';
+  updateProgress(window._currentGoalId);
   document.getElementById('modalOverlay').style.display = 'flex';
 }
 function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 function closeOnOverlay(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
-function openReminder() { document.getElementById('reminderOverlay').style.display = 'flex'; }
+function openDays() { document.getElementById('daysOverlay').style.display = 'flex'; }
+function closeDays() { document.getElementById('daysOverlay').style.display = 'none'; }
+function closeDaysOnOverlay(e) { if (e.target === document.getElementById('daysOverlay')) closeDays(); }
+function selectDays(n, btn) {
+  document.getElementById('customDaysInput').value = n;
+  document.querySelectorAll('#daysOverlay button[onclick^="selectDays"]').forEach(b => {
+    b.style.background = 'rgba(240,248,255,0.8)';
+    b.style.color = '#2a6090';
+    b.style.borderColor = 'rgba(100,160,220,0.4)';
+  });
+  btn.style.background = 'rgba(60,130,220,0.85)';
+  btn.style.color = '#fff';
+  btn.style.borderColor = 'transparent';
+}
+function saveDays() {
+  var val = parseInt(document.getElementById('customDaysInput').value);
+  if (!val || val <= 0) return;
+  var goalId = window._currentGoalId;
+  if (!goalId) return;
+  var key = 'goal-days-' + goalId;
+  var existing = JSON.parse(localStorage.getItem(key) || '{}');
+  // 重新设定时重置开始日期
+  localStorage.setItem(key, JSON.stringify({
+    total: val,
+    startDate: existing.startDate && !existing.completed ? existing.startDate : new Date().toDateString()
+  }));
+  document.getElementById('daysBtnText').textContent = val + '天';
+  updateProgress(goalId);
+  closeDays();
+}
+function updateProgress(goalId) {
+  var key = 'goal-days-' + goalId;
+  var data = JSON.parse(localStorage.getItem(key) || 'null');
+  var el = document.getElementById('progressDisplay');
+  var daysBtn = document.getElementById('daysBtnText');
+  if (!data || !data.total) {
+    el.textContent = '未设定天数';
+    el.style.background = 'rgba(60,130,220,0.12)';
+    daysBtn.textContent = '打卡天数';
+    return;
+  }
+  var start = new Date(data.startDate);
+  var today = new Date();
+  var diff = Math.floor((today - start) / (1000*60*60*24)) + 1;
+  var current = Math.min(diff, data.total);
+  daysBtn.textContent = data.total + '天';
+  if (current >= data.total) {
+    el.textContent = '🎉 已完成 ' + data.total + ' 天！';
+    el.style.background = 'rgba(60,180,100,0.12)';
+    el.style.color = '#2a8050';
+  } else {
+    el.textContent = '第 ' + current + ' 天 / 共 ' + data.total + ' 天';
+    el.style.background = 'rgba(60,130,220,0.12)';
+    el.style.color = '#2a6090';
+  }
+}
 function closeReminder() { document.getElementById('reminderOverlay').style.display = 'none'; }
 function closeReminderOnOverlay(e) { if (e.target === document.getElementById('reminderOverlay')) closeReminder(); }
 function saveReminder() {
