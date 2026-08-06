@@ -710,6 +710,7 @@ function openModal(i) {
 }
 function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 function closeOnOverlay(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+function openReminder() { document.getElementById('reminderOverlay').style.display = 'flex'; }
 function openDays() { document.getElementById('daysOverlay').style.display = 'flex'; }
 function closeDays() { document.getElementById('daysOverlay').style.display = 'none'; }
 function closeDaysOnOverlay(e) { if (e.target === document.getElementById('daysOverlay')) closeDays(); }
