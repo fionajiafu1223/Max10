@@ -834,31 +834,15 @@ document.getElementById('nb-tools').addEventListener('click', showNavTools);
 document.getElementById('nb-ai').addEventListener('click', () => window.location.href='assistant.html');
 document.getElementById('nb-goals').addEventListener('click', () => window.location.href='goals.html');
 document.getElementById('nb-gains').addEventListener('click', async function() {
-  if (typeof FreedPaywall !== 'undefined') {
-    const isPremium = await FreedPaywall.checkPremium();
-    if (!isPremium) {
-      FreedPaywall.showPaywall(null);
-      return;
-    }
-  }
   window.location.href = 'gains.html';
 });
 
-// 付费工具 ID
-const PAID_TOOL_IDS = ['tool-whole','tool-sedona','tool-doublesides','tool-financial','tool-relationship','tool-body'];
+// 付费工具 ID（测试仓库已解锁，不再判断）
+const PAID_TOOL_IDS = [];
 
 // tool links
 document.querySelectorAll('#nav-tools .nav-bubble[data-href]').forEach(b => {
   b.addEventListener('click', async function() {
-    if (PAID_TOOL_IDS.includes(b.id) && typeof FreedPaywall !== 'undefined') {
-      const isPremium = await FreedPaywall.checkPremium();
-      if (!isPremium) {
-        FreedPaywall.showPaywall(function() {
-          window.location.href = b.dataset.href;
-        });
-        return;
-      }
-    }
     window.location.href = b.dataset.href;
   });
 });
