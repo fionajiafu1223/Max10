@@ -890,7 +890,9 @@ const _origDraw = draw;
 <!-- 登出菜单 -->
 <div id="auth-menu">
   <button onclick="doLogout()">登出</button>
-  <button onclick="openDeleteAccountModal()" style="color:#5a7aa0;">删除账号</button>
+  <button onclick="openManageSubscription()">管理订阅</button>
+  <button onclick="window.location.href='billing.html'">付款记录</button>
+  <button onclick="openDeleteAccountModal()">删除账号</button>
 </div>
 
 <!-- 登录/注册弹窗 -->
@@ -1035,16 +1037,30 @@ const _origDraw = draw;
           }
         }
 
-        showMsg('注册成功 🌊', 'success');
-        setTimeout(() => { closeAuth(); refreshAuthUI(); }, 800);
+showMsg('注册成功 🌊', 'success');
+setTimeout(() => {
+  closeAuth();
+  refreshAuthUI();
+  var params = new URLSearchParams(window.location.search);
+  var redirectTo = params.get('redirect');
+  if (redirectTo) { window.location.href = decodeURIComponent(redirectTo); }
+}, 800);
+
 
       } else {
         // 登录
         const { error } = await supa.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        showMsg('登录成功 ✨', 'success');
-        setTimeout(() => { closeAuth(); refreshAuthUI(); }, 600);
+showMsg('登录成功 ✨', 'success');
+      setTimeout(() => {
+        closeAuth();
+        refreshAuthUI();
+        var params = new URLSearchParams(window.location.search);
+        var redirectTo = params.get('redirect');
+        if (redirectTo) { window.location.href = decodeURIComponent(redirectTo); }
+      }, 600);
+
       }
     } catch (err) {
       // 友好错误信息
@@ -1375,6 +1391,33 @@ document.addEventListener('DOMContentLoaded', function() {
     FreedPaywall.showPaymentIssueBannerIfNeeded();
   }
 });
+</script>
+<script>
+(function() {
+  var params = new URLSearchParams(location.search);
+  if (params.get('paywall') === '1') {
+    var tryOpen = setInterval(function() {
+      if (typeof FreedPaywall !== 'undefined' && FreedPaywall.showPaywall) {
+        clearInterval(tryOpen);
+        FreedPaywall.showPaywall(null);
+      }
+    }, 100);
+  }
+})();
+</script>
+  <script>
+(function() {
+  var params = new URLSearchParams(location.search);
+  if (params.get('login') === '1') {
+    var tryOpen = setInterval(function() {
+      if (typeof openAuth === 'function') {
+        clearInterval(tryOpen);
+        switchAuthTab('login');
+        openAuth();
+      }
+    }, 100);
+  }
+})();
 </script>
 </body>
 </html>
