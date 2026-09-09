@@ -766,6 +766,20 @@ function showNavTools() {
   }, 300);
 }
 
+function returnToMain() {
+  navState = 'main';
+  document.querySelectorAll('#nav-tools .nav-bubble').forEach(b => b.classList.remove('visible'));
+  setTimeout(() => {
+    document.getElementById('nav-tools').style.display = 'none';
+    document.getElementById('nav-main').style.display = 'block';
+    setTimeout(() => {
+      document.querySelectorAll('#nav-main .nav-bubble').forEach((b, i) => {
+        setTimeout(() => b.classList.add('visible'), i * 60);
+      });
+    }, 50);
+  }, 300);
+}
+
 function returnToHero() {
   bubbleTargetAlpha = 1.0;
   heroEl.style.display = 'flex';
@@ -776,6 +790,16 @@ function returnToHero() {
     document.getElementById('nav-layer').style.display = 'none';
     document.getElementById('nav-layer').style.pointerEvents = 'none';
   }, 400);
+}
+
+function handleBackClick() {
+  if (navState === 'tools') {
+    returnToMain();
+  } else if (navState === 'main') {
+    returnToHero();
+  } else {
+    window.location.href = 'index.html';
+  }
 }
 
 // hero bubble click
@@ -842,7 +866,7 @@ const _origDraw = draw;
      登录系统 — HTML 元素
      ════════════════════════════════════════ -->
 
-<button id="back-to-home" onclick="window.location.href='index.html'">返回</button>
+<button id="back-to-home" onclick="handleBackClick()">返回</button>
 
 <!-- 右上角登录气泡按钮 -->
 <button id="auth-btn" onclick="onAuthBtnClick()" aria-label="登录">
