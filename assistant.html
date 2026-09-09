@@ -188,6 +188,7 @@ body { min-height:100vh; background:transparent; font-family:'Noto Serif SC',ser
 .back-btn:active { transform: scale(0.96); }
 </style></head>
 <body>
+<button class="back-btn" id="webBackBtn" onclick="window.location.href='web.html?nav=main'">返回</button>
 
 <script>
 (function() {
@@ -375,7 +376,7 @@ draw();
   <iframe class="panel-iframe" id="iframe-allowance" src="" allowfullscreen></iframe>
 </div>
 
-<script src="paywall.js"></script>
+<script src="paywall-web.js"></script>
 <script>
 const DESIRE_INFO = {
   control:{label:'想要控制',cls:'bc'},
@@ -414,17 +415,14 @@ function setAsstBubbleColors() {
 
 window.addEventListener('DOMContentLoaded', function() {
   setAsstBubbleColors();
-  // 从欲望释放页面返回时，直接隐藏三球容器并打开卡点释放面板，
-  // 不触发小球的渐入动画，避免 App 内加载较慢时出现"闪现三球"的现象。
+  document.querySelectorAll('.asst-orb-wrap').forEach((wrap, i) => {
+    setTimeout(() => wrap.classList.add('visible'), 150 + i * 120);
+  });
+  // 从欲望释放页面返回时，自动重新打开卡点释放输入面板
   var params = new URLSearchParams(window.location.search);
   if (params.get('openBlockPoint') === '1') {
     history.replaceState(null, '', window.location.pathname);
-    document.getElementById('asst-layer').style.display = 'none';
-    openBlockPoint();
-  } else {
-    document.querySelectorAll('.asst-orb-wrap').forEach((wrap, i) => {
-      setTimeout(() => wrap.classList.add('visible'), 150 + i * 120);
-    });
+    setTimeout(openBlockPoint, 300);
   }
 });
 
@@ -455,6 +453,8 @@ function openBeliefs() {
     document.getElementById('panel-beliefs').classList.add('open');
     var orb = document.getElementById('nav-orb-btn');
     if (orb) orb.style.display = 'none';
+    var webBack = document.getElementById('webBackBtn');
+    if (webBack) webBack.style.display = 'none';
   });
 }
 function closeBeliefs() {
@@ -462,6 +462,8 @@ function closeBeliefs() {
   document.getElementById('asst-layer').style.display = 'block';
   var orb = document.getElementById('nav-orb-btn');
   if (orb) orb.style.display = '';
+  var webBack = document.getElementById('webBackBtn');
+  if (webBack) webBack.style.display = '';
 }
 function openAllowance() {
   requirePremium(function() {
@@ -471,6 +473,8 @@ function openAllowance() {
     document.getElementById('panel-allowance').classList.add('open');
     var orb = document.getElementById('nav-orb-btn');
     if (orb) orb.style.display = 'none';
+    var webBack = document.getElementById('webBackBtn');
+    if (webBack) webBack.style.display = 'none';
   });
 }
 function closeAllowance() {
@@ -478,6 +482,8 @@ function closeAllowance() {
   document.getElementById('asst-layer').style.display = 'block';
   var orb = document.getElementById('nav-orb-btn');
   if (orb) orb.style.display = '';
+  var webBack = document.getElementById('webBackBtn');
+  if (webBack) webBack.style.display = '';
 }
 
 // ── Toast ──
