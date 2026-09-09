@@ -133,7 +133,7 @@ function applyBubbleStyle(el, colorKey, colors) {
 // ── BUILD DOM ──
 const btn = document.createElement('div');
 btn.id = 'nav-orb-btn';
-btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40.90 70.00" style="display:block;width:20px;height:auto"><path d="M26.2 0.0H40.9V19.599999999999994H27.3Q21.8 19.599999999999994 21.8 28.099999999999994H40.9V46.099999999999994H21.8V70.0H0.0V27.099999999999994Q0.0 9.599999999999994 9.0 3.799999999999997Q14.8 0.0 26.2 0.0Z" fill="rgba(255,255,255,0.92)"/></svg>';
+btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40.90 70.00" style="display:block;width:14px;height:auto"><path d="M26.2 0.0H40.9V19.599999999999994H27.3Q21.8 19.599999999999994 21.8 28.099999999999994H40.9V46.099999999999994H21.8V70.0H0.0V27.099999999999994Q0.0 9.599999999999994 9.0 3.799999999999997Q14.8 0.0 26.2 0.0Z" fill="rgba(255,255,255,0.92)"/></svg>';
 document.body.appendChild(btn);
 
 const layer = document.createElement('div');
