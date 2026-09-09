@@ -210,11 +210,7 @@ function closeNav() {
 
 // ── EVENTS ──
 btn.addEventListener('click', () => {
-  if (navState === 'closed') {
-    openMain();
-  } else {
-    closeNav();
-  }
+  window.location.href = 'web.html#nav-main';
 });
 
 document.getElementById('orb-tools').addEventListener('click', openTools);
