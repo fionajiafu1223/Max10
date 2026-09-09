@@ -877,6 +877,7 @@ const _origDraw = draw;
     <input type="email" id="auth-email" class="auth-input" placeholder="邮箱" autocomplete="email" />
     <input type="password" id="auth-password" class="auth-input" placeholder="密码（至少 6 位）" autocomplete="current-password" />
 
+    <div id="forgot-link-wrap" style="text-align:right;margin-bottom:2px;margin-top:-6px;"><span id="forgot-link" onclick="switchAuthTab('forgot')" style="font-family:'Noto Sans SC',sans-serif;font-size:0.70rem;color:rgba(20,60,110,0.50);cursor:pointer;letter-spacing:0.03em;">忘记密码？</span></div>
     <button class="auth-submit" id="auth-submit-btn" onclick="doAuthSubmit()">登 录</button>
 
     <div class="auth-msg" id="auth-msg"></div>
@@ -957,13 +958,42 @@ const _origDraw = draw;
     $('tab-login').classList.toggle('active', tab === 'login');
     $('tab-signup').classList.toggle('active', tab === 'signup');
     $('auth-nickname').style.display = (tab === 'signup') ? 'block' : 'none';
-    $('auth-submit-btn').textContent = (tab === 'signup') ? '注 册' : '登 录';
-    $('auth-password').setAttribute('autocomplete',
-      tab === 'signup' ? 'new-password' : 'current-password');
+    var fw = $('forgot-link-wrap');
+    if (fw) fw.style.display = (tab === 'login') ? 'block' : 'none';
+    if (tab === 'forgot') {
+      $('tab-login').classList.remove('active');
+      $('tab-signup').classList.remove('active');
+      $('auth-nickname').style.display = 'none';
+      $('auth-email').style.display = 'block';
+      $('auth-password').style.display = 'none';
+      if (fw) fw.style.display = 'none';
+      $('auth-submit-btn').textContent = '发送重置邮件';
+      $('auth-subtitle').textContent = '输入注册邮箱，我们将发送重置链接';
+    } else {
+      $('auth-email').style.display = 'block';
+      $('auth-password').style.display = 'block';
+      $('auth-subtitle').textContent = '登录以跨设备同步你的目标与收获';
+      $('auth-submit-btn').textContent = (tab === 'signup') ? '注 册' : '登 录';
+      $('auth-password').setAttribute('autocomplete', tab === 'signup' ? 'new-password' : 'current-password');
+    }
   };
 
   // —— 提交（注册或登录） ——
   window.doAuthSubmit = async function() {
+    if (currentTab === 'forgot') {
+      const email = $('auth-email').value.trim();
+      if (!email) { showMsg('请输入邮箱', 'error'); return; }
+      setBtnLoading(true); clearMsg();
+      try {
+        const { error } = await supa.auth.resetPasswordForEmail(email, {
+          redirectTo: 'https://freedreleasing.com/reset-password.html'
+        });
+        if (error) throw error;
+        showMsg('重置邮件已发送，请查收 📬', 'success');
+      } catch(err) { showMsg(err.message || '发送失败', 'error'); }
+      finally { setBtnLoading(false); }
+      return;
+    }
     const email = $('auth-email').value.trim();
     const password = $('auth-password').value;
     const nickname = $('auth-nickname').value.trim();
