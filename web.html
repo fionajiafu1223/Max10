@@ -345,32 +345,34 @@ canvas { position:fixed; inset:0; display:block; }
   border: 1px solid rgba(80, 180, 130, 0.35);
 }
 
-/* ── 返回胶囊（回主页）── */
+/* ── 返回（F 球样式）── */
 #back-to-home {
   position: fixed;
-  top: max(22px, calc(env(safe-area-inset-top, 0px) + 8px));
-  left: 16px;
+  top: 18px; left: 18px;
+  width: 68px; height: 68px;
+  border-radius: 50%;
   z-index: 200;
-  height: 36px;
-  padding: 0 16px;
-  border-radius: 99px;
-  border: none;
   cursor: pointer;
-  background: rgba(255,255,255,0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   display: flex; align-items: center; justify-content: center;
-  color: rgba(3,80,140,0.85);
-  font-size: 0.82rem;
-  font-family: 'Noto Sans SC', sans-serif;
-  letter-spacing: 0.04em;
-  box-shadow: 0 2px 12px rgba(0,60,120,0.12);
+  background: radial-gradient(circle at 28% 12%,
+    rgba(255,255,255,0.82) 0%,
+    rgba(255,255,255,0.30) 8%,
+    rgba(255,255,255,0.04) 22%,
+    rgba(140,210,255,0.08) 55%,
+    rgba(100,180,240,0.12) 85%,
+    rgba(100,180,240,0) 100%
+  );
+  border: 1px solid rgba(255,255,255,0.60);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    0 4px 20px rgba(60,140,220,0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.2s, transform 0.15s;
+  transition: transform 0.15s;
 }
-#back-to-home:hover { background: rgba(255,255,255,0.68); }
-#back-to-home:active { transform: scale(0.96); }
+#back-to-home:active { transform: scale(0.92); }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Josefin+Sans:ital,wght@0,700;0,900;1,700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
 <!-- Supabase JS SDK（用于登录/注册/会话管理） -->
@@ -864,7 +866,7 @@ const _origDraw = draw;
      登录系统 — HTML 元素
      ════════════════════════════════════════ -->
 
-<button id="back-to-home" onclick="handleBackClick()">返回</button>
+<button id="back-to-home" onclick="handleBackClick()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40.90 70.00" style="display:block;width:9px;height:auto"><path d="M26.2 0.0H40.9V19.599999999999994H27.3Q21.8 19.599999999999994 21.8 28.099999999999994H40.9V46.099999999999994H21.8V70.0H0.0V27.099999999999994Q0.0 9.599999999999994 9.0 3.799999999999997Q14.8 0.0 26.2 0.0Z" fill="rgba(255,255,255,0.92)"/></svg></button>
 
 <!-- 右上角登录气泡按钮 -->
 <button id="auth-btn" onclick="onAuthBtnClick()" aria-label="登录">
@@ -1438,7 +1440,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 (function() {
-  if (location.hash === '#nav-main') {
+  var params = new URLSearchParams(location.search);
+  if (location.hash === '#nav-main' || params.get('nav') === 'main') {
     var tryOpen = setInterval(function() {
       if (typeof showNavMain === 'function') {
         clearInterval(tryOpen);
