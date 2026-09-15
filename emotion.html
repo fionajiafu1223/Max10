@@ -283,7 +283,7 @@ body {
 
   <div class="grid" id="grid"></div>
 
-  <button class="confirm-btn" id="confirmBtn" disabled onclick="confirm()">确 认</button>
+  <button class="confirm-btn" id="confirmBtn" disabled onclick="submitCheckin()">确 认</button>
   <button class="skip-btn" onclick="skip()">跳过</button>
 
   <!-- 完成后切换到这个视图 -->
@@ -367,7 +367,7 @@ async function saveCheckin(level) {
 }
 
 // 确认
-async function confirm() {
+async function submitCheckin() {
   if (!selected) return;
   await saveCheckin(selected.level);
   showDone();
