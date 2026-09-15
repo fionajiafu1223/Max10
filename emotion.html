@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>情绪签到 · Freed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Noto+Sans+SC:wght@300;400&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: transparent;
+  font-family: 'Noto Serif SC', serif;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── 背景泡泡 canvas（复用gains的） ── */
+
+/* ── 底部弹出 sheet ── */
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(240, 246, 252, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px 24px 0 0;
+  border-top: 1px solid rgba(255,255,255,0.85);
+  padding: 16px 20px 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 -8px 32px rgba(0,60,120,0.10);
+}
+
+.handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(100,140,200,0.35);
+  border-radius: 2px;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: rgba(3,80,140,0.9);
+  text-align: center;
+}
+
+/* ── 九宫格 ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.emotion-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 6px 10px;
+  background: rgba(255,255,255,0.70);
+  border: 1.5px solid transparent;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(6px);
+}
+
+.emotion-btn:active {
+  transform: scale(0.95);
+}
+
+.emotion-btn.selected {
+  border-color: rgba(74,159,212,0.75);
+  background: rgba(200,230,255,0.75);
+}
+
+.emotion-btn img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.emotion-name {
+  font-size: 0.75rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  color: #1a3050;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+/* ── 确认按钮 ── */
+.confirm-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #4a9fd4, #2a7abf);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.confirm-btn:hover { opacity: 0.9; }
+.confirm-btn:active { transform: scale(0.98); }
+
+.confirm-btn:disabled {
+  background: rgba(180,200,220,0.55);
+  color: rgba(100,140,180,0.7);
+  cursor: default;
+}
+
+.skip-btn {
+  font-size: 0.8rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  color: rgba(100,140,180,0.75);
+  cursor: pointer;
+  padding: 2px 0;
+  letter-spacing: 0.04em;
+  background: none;
+  border: none;
+}
+
+/* ── 完成提示 ── */
+.done-view {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0 4px;
+  width: 100%;
+}
+
+.done-char {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+.done-text {
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: rgba(3,80,140,0.85);
+  text-align: center;
+}
+
+.done-sub {
+  font-size: 0.78rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  color: rgba(80,120,170,0.7);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+</style>
+</head>
+<body>
+
+<!-- 背景泡泡（复用gains） -->
+<script>
+(function() {
+  var canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;';
+  document.body.insertBefore(canvas, document.body.firstChild);
+  var ctx = canvas.getContext('2d');
+  var W, H, t = 0;
+  const EMOTION_COLORS = [
+    {r:144,g:96,b:208},{r:48,g:80,b:176},{r:80,g:110,b:160},
+    {r:192,g:96,b:16},{r:192,g:32,b:32},{r:176,g:128,b:0},
+    {r:16,g:160,b:144},{r:16,g:160,b:80},{r:74,g:176,b:224},
+  ];
+  class Bubble {
+    constructor(fromBottom) { this.reset(fromBottom); }
+    reset(startAtBottom) {
+      this.x=Math.random()*W; this.y=startAtBottom?H+20+Math.random()*100:Math.random()*H;
+      this.r=2+Math.random()*22; this.vy=-(0.4+Math.random()*1.2); this.vx=0;
+      this.wobbleAmp=0.4+Math.random()*1.2; this.wobbleFreq=0.8+Math.random()*1.5;
+      this.wobblePhase=Math.random()*Math.PI*2; this.opacity=0.20+Math.random()*0.20;
+      this.life=0; this.maxLife=(H+200)/Math.abs(this.vy)*(0.7+Math.random()*0.5);
+      this.vy*=(0.8+this.r/30);
+      this.color=EMOTION_COLORS[Math.floor(Math.random()*EMOTION_COLORS.length)];
+    }
+    update(t) {
+      this.life++;
+      this.x+=Math.sin(t*this.wobbleFreq+this.wobblePhase)*this.wobbleAmp;
+      this.y+=this.vy;
+      const progress=this.life/this.maxLife;
+      if(progress<0.08) this.opacity=(progress/0.08)*(0.25+Math.random()*0.01);
+      else if(progress>0.85) this.opacity*=0.97;
+      if(this.y<-this.r*3||this.life>this.maxLife) this.reset(true);
+    }
+    draw() {
+      const {x,y,r,opacity:a,color:{r:cr,g:cg,b:cb}}=this;
+      const glow=ctx.createRadialGradient(x,y,r*0.4,x,y,r*2.2);
+      glow.addColorStop(0,`rgba(${cr},${cg},${cb},${a*0.65})`);
+      glow.addColorStop(1,`rgba(${cr},${cg},${cb},0)`);
+      ctx.beginPath();ctx.arc(x,y,r*2.2,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
+      const shell=ctx.createRadialGradient(x-r*0.32,y-r*0.32,r*0.01,x,y,r);
+      shell.addColorStop(0.00,`rgba(255,255,255,${a*0.70})`);
+      shell.addColorStop(0.12,`rgba(255,255,255,${a*0.15})`);
+      shell.addColorStop(0.55,`rgba(${cr},${cg},${cb},${a*0.48})`);
+      shell.addColorStop(0.82,`rgba(${cr},${cg},${cb},${a*0.62})`);
+      shell.addColorStop(1.00,`rgba(${cr},${cg},${cb},${a*0.75})`);
+      ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=shell;ctx.fill();
+      ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(${cr},${cg},${cb},${a*0.90})`;
+      ctx.lineWidth=Math.max(0.5,r*0.06);ctx.stroke();
+      const sp=ctx.createRadialGradient(x-r*0.35,y-r*0.35,0,x-r*0.30,y-r*0.30,r*0.32);
+      sp.addColorStop(0,`rgba(255,255,255,${Math.min(1,a*1.6)})`);
+      sp.addColorStop(1,`rgba(255,255,255,0)`);
+      ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=sp;ctx.fill();
+    }
+  }
+  const BUBBLES=Array.from({length:55},(_,i)=>new Bubble(i>20));
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  function draw(){
+    requestAnimationFrame(draw);t+=0.01;ctx.clearRect(0,0,W,H);
+    var bg=ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0,'#cdeeff');bg.addColorStop(0.4,'#a8d8f0');
+    bg.addColorStop(0.7,'#7abde0');bg.addColorStop(1,'#4a8fbf');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    BUBBLES.forEach(b=>{b.update(t);b.draw();});
+  }
+  window.addEventListener('resize',resize);resize();draw();
+})();
+</script>
+
+<!-- sheet -->
+<div class="sheet" id="sheet">
+  <div class="handle"></div>
+  <p class="title">此刻你在哪种情绪里？</p>
+
+  <div class="grid" id="grid"></div>
+
+  <button class="confirm-btn" id="confirmBtn" disabled onclick="confirm()">确 认</button>
+  <button class="skip-btn" onclick="skip()">跳过</button>
+
+  <!-- 完成后切换到这个视图 -->
+  <div class="done-view" id="doneView">
+    <img class="done-char" id="doneChar" src="" alt="">
+    <p class="done-text" id="doneText"></p>
+    <p class="done-sub">已记录，继续加油 🌊</p>
+  </div>
+</div>
+
+<script>
+const SUPA_URL = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
+
+const EMOTIONS = [
+  { level: 1, name: '万念俱灰', img: 'emotions/1-wannianjuhui.png' },
+  { level: 2, name: '悲苦',     img: 'emotions/2-beiku.png' },
+  { level: 3, name: '恐惧',     img: 'emotions/3-kongju.png' },
+  { level: 4, name: '贪求',     img: 'emotions/4-tanqiu.png' },
+  { level: 5, name: '愤怒',     img: 'emotions/5-fennu.png' },
+  { level: 6, name: '自尊自傲', img: 'emotions/6-zizunziao.png' },
+  { level: 7, name: '无畏',     img: 'emotions/7-wuwei.png' },
+  { level: 8, name: '接纳',     img: 'emotions/8-jiena.png' },
+  { level: 9, name: '平和',     img: 'emotions/9-pinghe.png' },
+];
+
+let selected = null;
+
+// 渲染九宫格
+const grid = document.getElementById('grid');
+EMOTIONS.forEach(e => {
+  const btn = document.createElement('button');
+  btn.className = 'emotion-btn';
+  btn.dataset.level = e.level;
+  btn.innerHTML = `<img src="${e.img}" alt="${e.name}"><span class="emotion-name">${e.name}</span>`;
+  btn.onclick = () => {
+    document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selected = e;
+    document.getElementById('confirmBtn').disabled = false;
+  };
+  grid.appendChild(btn);
+});
+
+// 获取当前用户
+function getCurrentUserId() {
+  try {
+    const raw = localStorage.getItem('sb-ryoaxziysgdkjcjiuqti-auth-token');
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    const token = obj && obj.access_token;
+    if (!token) return null;
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+    if (!payload || !payload.sub) return null;
+    if (payload.exp && payload.exp * 1000 < Date.now()) return null;
+    return payload.sub;
+  } catch(_) { return null; }
+}
+
+// 写入 Supabase
+async function saveCheckin(level) {
+  const userId = getCurrentUserId();
+  const today = new Date().toISOString().slice(0, 10);
+  const body = { emotion_level: level, checked_at: new Date().toISOString() };
+  if (userId) body.user_id = userId;
+
+  try {
+    await fetch(SUPA_URL + '/rest/v1/daily_checkins', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer ' + SUPA_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify(body),
+    });
+  } catch(_) {}
+}
+
+// 确认
+async function confirm() {
+  if (!selected) return;
+  await saveCheckin(selected.level);
+  showDone();
+}
+
+// 跳过
+function skip() {
+  window.location.href = 'index.html';
+}
+
+// 完成视图
+function showDone() {
+  document.querySelector('.title').style.display = 'none';
+  document.getElementById('grid').style.display = 'none';
+  document.getElementById('confirmBtn').style.display = 'none';
+  document.querySelector('.skip-btn').style.display = 'none';
+
+  const doneView = document.getElementById('doneView');
+  document.getElementById('doneChar').src = selected.img;
+  document.getElementById('doneText').textContent = selected.name;
+  doneView.style.display = 'flex';
+
+  // 2秒后回主页
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 2000);
+}
+</script>
+
+<script src="nav-orb.js"></script>
+</body>
+</html>
