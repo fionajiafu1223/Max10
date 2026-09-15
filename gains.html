@@ -370,8 +370,8 @@ window.addEventListener('resize',resize);resize();draw();
           <button class="gain-sort-btn" id="etab-all" onclick="setEmotionTab('all')">全部</button>
         </div>
         <div style="display:flex;gap:10px;margin-bottom:6px;font-size:0.68rem;color:#7a9ab0;font-family:'Noto Sans SC',sans-serif;">
-          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#5b8fc9;margin-right:3px;"></span>每日签到</span>
-          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f5c518;border:1.5px solid #c9920a;margin-right:3px;"></span>释放后记录</span>
+          <span><span style="display:inline-block;width:20px;height:2px;background:#5b8fc9;margin-right:3px;vertical-align:middle;border-top:2px dashed #5b8fc9;"></span>每日签到</span>
+          <span><span style="display:inline-block;width:20px;height:2px;margin-right:3px;vertical-align:middle;border-top:2px dashed #c9920a;"></span>释放后记录</span>
         </div>
         <div style="position:relative;width:100%;height:220px;">
           <canvas id="emotionCanvas" style="display:block;width:100%;height:220px;"></canvas>
@@ -835,6 +835,9 @@ function drawEmotionChart(canvas,rows){
     ctx.beginPath();var started=false;
     emotionBubbles.forEach(function(b){if(b.isRelease)return;if(!started){ctx.moveTo(b.x,b.targetY);started=true;}else ctx.lineTo(b.x,b.targetY);});
     ctx.strokeStyle='rgba(91,143,201,0.28)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();var started2=false;
+    emotionBubbles.forEach(function(b){if(!b.isRelease)return;if(!started2){ctx.moveTo(b.x,b.targetY);started2=true;}else ctx.lineTo(b.x,b.targetY);});
+    ctx.strokeStyle='rgba(201,146,10,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
     emotionBubbles.forEach(function(b){
       var age=(Date.now()-b.born)/350;b.alpha=Math.min(1,age);
       var y=b.targetY+Math.sin(t*55*0.018+b.phase)*b.amp;
