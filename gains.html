@@ -825,7 +825,7 @@ function drawEmotionChart(canvas,rows){
   function frame(){
     emotionAnimId=requestAnimationFrame(frame);t+=0.018;
     ctx.clearRect(0,0,W,H);
-    ctx.font='9px sans-serif';ctx.textAlign='right';
+    ctx.font='11px sans-serif';ctx.textAlign='right';
     for(var i=1;i<=9;i++){var y=levelToY(i);ctx.fillStyle='rgba(90,120,160,0.65)';ctx.fillText(EMOTION_LABELS[i-1],PAD_LEFT-4,y+3);ctx.beginPath();ctx.moveTo(PAD_LEFT,y);ctx.lineTo(W-PAD_RIGHT,y);ctx.strokeStyle='rgba(0,0,0,0.05)';ctx.lineWidth=1;ctx.stroke();}
     ctx.textAlign='center';ctx.fillStyle='rgba(90,120,160,0.7)';
     for(var i=0;i<n;i+=step)ctx.fillText(dates[i],idxToX(i,n),H-6);
