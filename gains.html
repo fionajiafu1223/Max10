@@ -802,7 +802,7 @@ async function loadEmotionChart(){
   else if(emotionTab==='three')since=new Date(now-90*86400000);
   else since=new Date(2024,0,1);
   try{
-    var rows=await supaFetch('/rest/v1/daily_checkins?user_id=eq.'+currentUser.id+'&checked_at=gte.'+since.toISOString()+'&order=checked_at.asc&limit=200', {useAuth: true});
+    var rows=await supaFetch('/rest/v1/daily_checkins?user_id=eq.'+currentUser.id+'&checked_at=gte.'+since.toISOString()+'&order=checked_at.asc&limit=200');
     if(!rows||rows.length===0){canvas.style.display='none';empty.style.display='block';return;}
     canvas.style.display='block';empty.style.display='none';
     drawEmotionChart(canvas,rows);
@@ -810,8 +810,11 @@ async function loadEmotionChart(){
 }
 function drawEmotionChart(canvas,rows){
   var W=canvas.offsetWidth,H=220;
-  canvas.width=W;canvas.height=H;
+  var dpr=window.devicePixelRatio||1;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
   var ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
   var PAD_LEFT=54,PAD_RIGHT=12,PAD_TOP=12,PAD_BOTTOM=28;
   function levelToY(lv){return PAD_TOP+(H-PAD_TOP-PAD_BOTTOM)*(1-(lv-1)/8);}
   function idxToX(i,n){if(n===1)return PAD_LEFT+(W-PAD_LEFT-PAD_RIGHT)/2;return PAD_LEFT+(i/(n-1))*(W-PAD_LEFT-PAD_RIGHT);}
@@ -825,7 +828,7 @@ function drawEmotionChart(canvas,rows){
   function frame(){
     emotionAnimId=requestAnimationFrame(frame);t+=0.018;
     ctx.clearRect(0,0,W,H);
-    ctx.font='11px sans-serif';ctx.textAlign='right';
+    ctx.font='9px sans-serif';ctx.textAlign='right';
     for(var i=1;i<=9;i++){var y=levelToY(i);ctx.fillStyle='rgba(90,120,160,0.65)';ctx.fillText(EMOTION_LABELS[i-1],PAD_LEFT-4,y+3);ctx.beginPath();ctx.moveTo(PAD_LEFT,y);ctx.lineTo(W-PAD_RIGHT,y);ctx.strokeStyle='rgba(0,0,0,0.05)';ctx.lineWidth=1;ctx.stroke();}
     ctx.textAlign='center';ctx.fillStyle='rgba(90,120,160,0.7)';
     for(var i=0;i<n;i+=step)ctx.fillText(dates[i],idxToX(i,n),H-6);
