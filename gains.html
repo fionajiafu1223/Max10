@@ -802,7 +802,7 @@ async function loadEmotionChart(){
   else if(emotionTab==='three')since=new Date(now-90*86400000);
   else since=new Date(2024,0,1);
   try{
-    var rows=await supaFetch('/rest/v1/daily_checkins?user_id=eq.'+currentUser.id+'&checked_at=gte.'+since.toISOString()+'&order=checked_at.asc&limit=200');
+    var rows=await supaFetch('/rest/v1/daily_checkins?user_id=eq.'+currentUser.id+'&checked_at=gte.'+since.toISOString()+'&order=checked_at.asc&limit=200',{useAuth:true});
     if(!rows||rows.length===0){canvas.style.display='none';empty.style.display='block';return;}
     canvas.style.display='block';empty.style.display='none';
     drawEmotionChart(canvas,rows);
