@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Freed 语音大球试验</title>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{width:100%;height:100%;overflow:hidden;background:#4aaed8}
+canvas{position:fixed;inset:0;display:block}
+
+#hero-bubble{
+  position:fixed;z-index:9;left:50%;top:44%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  background:radial-gradient(circle at 28% 12%,
+    rgba(255,255,255,0.82) 0%,rgba(255,255,255,0.30) 8%,rgba(255,255,255,0.04) 22%,
+    rgba(140,210,255,0.08) 55%,rgba(100,180,240,0.12) 85%,rgba(100,180,240,0) 100%);
+  border:1px solid rgba(255,255,255,0.75);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.45),0 6px 40px rgba(80,160,220,0.20);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  will-change:transform,box-shadow;
+}
+#hero-bubble .text-wrap{margin-top:-8%}
+#hero-bubble .line1,#hero-bubble .line2{
+  font-family:'ITC Bauhaus','Josefin Sans',sans-serif;font-weight:500;
+  font-size:min(1.6vw,1.6vh);color:rgba(255,255,255,0.92);line-height:1.5;white-space:nowrap}
+#hero-bubble .line1{letter-spacing:0.10em}
+#hero-bubble .line2{letter-spacing:0.20em}
+#hero-bubble h1{font-family:'ITC Bauhaus','Josefin Sans',sans-serif;font-weight:700;
+  font-size:min(5vw,5vh);letter-spacing:0.12em;color:rgba(235,250,255,0.97);margin-top:3px;line-height:1}
+
+#caption{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 7%);z-index:10;text-align:center;
+  font-family:'PingFang SC','Noto Sans SC',sans-serif;font-size:16px;letter-spacing:.06em;line-height:1.7;
+  color:rgba(240,252,255,0.95);text-shadow:0 1px 8px rgba(0,60,120,0.45);padding:0 28px;min-height:3.4em}
+
+#panel{position:fixed;left:0;right:0;bottom:0;z-index:20;
+  padding:10px 14px calc(env(safe-area-inset-bottom,0px) + 18px);
+  display:flex;flex-direction:column;align-items:center;gap:10px}
+#status{font-family:'PingFang SC','Noto Sans SC',sans-serif;font-size:12px;color:rgba(220,245,255,0.85);
+  text-align:center;min-height:1.4em;text-shadow:0 1px 4px rgba(0,40,80,.5)}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chip{position:relative;font-family:'PingFang SC','Noto Sans SC',sans-serif;font-size:14px;
+  color:rgba(240,252,255,0.96);text-shadow:0 1px 3px rgba(0,60,120,0.5);
+  padding:9px 16px;border-radius:999px;border:none;cursor:pointer;
+  background:radial-gradient(circle at 32% 28%,rgba(255,255,255,0.45) 0%,rgba(220,235,250,0.22) 30%,rgba(80,140,200,0.22) 100%);
+  box-shadow:inset 0 0 12px rgba(180,220,255,0.45),0 3px 12px rgba(20,80,140,0.30);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);-webkit-tap-highlight-color:transparent}
+.chip.on{background:radial-gradient(circle at 32% 28%,rgba(255,255,255,0.7) 0%,rgba(120,200,255,0.55) 45%,rgba(40,120,200,0.6) 100%)}
+.chip:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.chip input{position:absolute;width:1px;height:1px;opacity:0}
+.small .chip{font-size:12px;padding:6px 12px}
+.small span{font-family:'PingFang SC',sans-serif;font-size:12px;color:rgba(220,245,255,.85);align-self:center}
+.being{font-family:'ITC Bauhaus','Josefin Sans',sans-serif;font-size:0.55rem;font-weight:500;
+  letter-spacing:0.12em;color:rgba(200,235,255,0.38);text-align:center}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hero-bubble">
+  <div class="text-wrap">
+    <div class="line1">Releasing is part of life</div>
+    <div class="line2">until</div>
+    <h1>Freed</h1>
+  </div>
+</div>
+<p id="caption"></p>
+<div id="panel">
+  <p id="status">选择一种声音，看看大球的反应</p>
+  <div class="row">
+    <button class="chip" id="bMic">我说话</button>
+    <button class="chip" id="bGuide">带领语音（模拟）</button>
+    <label class="chip">上传一段语音<input type="file" id="file" accept="audio/*"></label>
+  </div>
+  <div class="row small" role="group" aria-label="反应幅度">
+    <span>反应幅度</span>
+    <button class="chip" data-g="0.6">柔和</button>
+    <button class="chip on" data-g="1">适中</button>
+    <button class="chip" data-g="1.6">明显</button>
+  </div>
+  <div class="being">Be not the doer, get everything only by releasing.</div>
+</div>
+
+<script>
+/* ===== 原首页背景（海洋、光束、焦散、情绪小气泡） ===== */
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+let W,H;
+function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight}
+resize();addEventListener('resize',resize);
+
+function drawBg(){const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#c2ecf8');bg.addColorStop(.25,'#8ed4ee');bg.addColorStop(.55,'#4aaed8');
+  bg.addColorStop(.8,'#1a7ab5');bg.addColorStop(1,'#0d4870');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)}
+function drawRays(t){ctx.save();
+  const rays=[{x:.25,width:.12,drift:.015},{x:.45,width:.08,drift:-.010},{x:.62,width:.14,drift:.012},{x:.80,width:.07,drift:-.008},{x:.15,width:.06,drift:.018}];
+  rays.forEach((r,i)=>{const cx=(r.x+Math.sin(t*.3+i)*r.drift)*W,hw=r.width*W*.5;
+    const g=ctx.createLinearGradient(0,0,0,H*.75);
+    g.addColorStop(0,`rgba(180,240,255,${.055+Math.sin(t*.4+i)*.015})`);g.addColorStop(.6,'rgba(170,235,255,0.035)');g.addColorStop(1,'rgba(180,240,255,0)');
+    ctx.beginPath();ctx.moveTo(cx-hw*.2,0);ctx.lineTo(cx+hw*.2,0);ctx.lineTo(cx+hw,H*.75);ctx.lineTo(cx-hw,H*.75);ctx.closePath();ctx.fillStyle=g;ctx.fill()});
+  ctx.restore()}
+function drawCaustics(t){ctx.save();ctx.globalAlpha=.06;
+  for(let i=0;i<8;i++){const x=(.1+i*.12+Math.sin(t*.5+i)*.04)*W,y=H*.88+Math.sin(t*.6+i*1.3)*12,r=20+Math.sin(t*.4+i)*8;
+    const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'rgba(180,240,255,0.8)');g.addColorStop(1,'rgba(180,240,255,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}ctx.restore()}
+
+const EMOTION_COLORS=[{r:144,g:96,b:208},{r:48,g:80,b:176},{r:80,g:110,b:160},{r:192,g:96,b:16},{r:192,g:32,b:32},{r:176,g:128,b:0},{r:16,g:160,b:144},{r:16,g:160,b:80},{r:74,g:176,b:224}];
+class Bubble{
+  constructor(b){this.reset(b)}
+  reset(bottom){this.x=Math.random()*W;this.y=bottom?H+20+Math.random()*100:Math.random()*H;this.r=2+Math.random()*22;
+    this.vy=-(.4+Math.random()*1.2);this.wobbleAmp=.4+Math.random()*1.2;this.wobbleFreq=.8+Math.random()*1.5;this.wobblePhase=Math.random()*Math.PI*2;
+    this.opacity=.2+Math.random()*.2;this.life=0;this.maxLife=(H+200)/Math.abs(this.vy)*(.7+Math.random()*.5);this.vy*=(.8+this.r/30);
+    this.color=EMOTION_COLORS[Math.floor(Math.random()*EMOTION_COLORS.length)]}
+  update(t,boost){this.life+=boost;this.x+=Math.sin(t*this.wobbleFreq+this.wobblePhase)*this.wobbleAmp;this.y+=this.vy*boost;
+    const p=this.life/this.maxLife;if(p<.08)this.opacity=(p/.08)*.25;else if(p>.85)this.opacity*=.97;
+    if(this.y<-this.r*3||this.life>this.maxLife)this.reset(true)}
+  draw(){const{x,y,r}=this,a=this.opacity,{r:cr,g:cg,b:cb}=this.color;
+    const glow=ctx.createRadialGradient(x,y,r*.4,x,y,r*2.2);glow.addColorStop(0,`rgba(${cr},${cg},${cb},${a*.65})`);glow.addColorStop(1,`rgba(${cr},${cg},${cb},0)`);
+    ctx.beginPath();ctx.arc(x,y,r*2.2,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
+    const s=ctx.createRadialGradient(x-r*.32,y-r*.32,r*.01,x,y,r);
+    s.addColorStop(0,`rgba(255,255,255,${a*.7})`);s.addColorStop(.12,`rgba(255,255,255,${a*.15})`);
+    s.addColorStop(.55,`rgba(${cr},${cg},${cb},${a*.48})`);s.addColorStop(.82,`rgba(${cr},${cg},${cb},${a*.62})`);s.addColorStop(1,`rgba(${cr},${cg},${cb},${a*.75})`);
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=s;ctx.fill();
+    ctx.strokeStyle=`rgba(${cr},${cg},${cb},${a*.9})`;ctx.lineWidth=Math.max(.5,r*.06);ctx.stroke();
+    const sp=ctx.createRadialGradient(x-r*.35,y-r*.35,0,x-r*.3,y-r*.3,r*.32);sp.addColorStop(0,`rgba(255,255,255,${Math.min(1,a*1.6)})`);sp.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=sp;ctx.fill()}
+}
+
+
+/* ===== 声音分析 ===== */
+const statusEl=document.getElementById('status'),capEl=document.getElementById('caption');
+let actx,analyser,timeBuf,freqBuf,current=null,simLevel=null;
+let gain=1,level=0,pitch=.3,avg=0,lastOnset=0;
+const ripples=[];
+function ensureCtx(){
+  if(!actx){actx=new(window.AudioContext||window.webkitAudioContext)();analyser=actx.createAnalyser();analyser.fftSize=1024;analyser.smoothingTimeConstant=.6;
+    timeBuf=new Float32Array(analyser.fftSize);freqBuf=new Uint8Array(analyser.frequencyBinCount)}
+  if(actx.state==='suspended')actx.resume()}
+function stopAll(){if(current){try{current.stop()}catch(e){}current=null}
+  if('speechSynthesis'in window)speechSynthesis.cancel();simLevel=null;capEl.textContent='';
+  document.querySelectorAll('#bMic,#bGuide').forEach(b=>b.classList.remove('on'))}
+function readAudio(){
+  if(simLevel)return{rms:simLevel(),cen:.35};
+  if(!analyser||!current)return{rms:0,cen:pitch};
+  analyser.getFloatTimeDomainData(timeBuf);let s=0;for(let i=0;i<timeBuf.length;i++)s+=timeBuf[i]*timeBuf[i];
+  const rms=Math.sqrt(s/timeBuf.length);analyser.getByteFrequencyData(freqBuf);
+  let num=0,den=0;const lim=Math.floor(freqBuf.length*.4);for(let i=2;i<lim;i++){num+=i*freqBuf[i];den+=freqBuf[i]}
+  return{rms:Math.min(1,rms*5),cen:den>0?num/den/lim:pitch}}
+
+document.getElementById('bMic').onclick=async function(){
+  if(this.classList.contains('on')){stopAll();statusEl.textContent='已停止';return}
+  stopAll();ensureCtx();
+  try{const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});
+    const src=actx.createMediaStreamSource(stream);src.connect(analyser);
+    current={stop(){src.disconnect();stream.getTracks().forEach(t=>t.stop())}};
+    this.classList.add('on');statusEl.textContent='正在听你说话，再点一次停止'}
+  catch(e){statusEl.textContent='麦克风没有打开：请在浏览器里直接打开这个页面，并允许使用麦克风'}};
+
+const guideLines=['先深吸一口气，让自己慢慢放松下来。','现在，感受一下此刻心里的情绪。','它在身体的哪里？不用分析，只是看着它。','你愿意欢迎它吗？','你能放它走吗？'];
+document.getElementById('bGuide').onclick=function(){
+  if(this.classList.contains('on')){stopAll();statusEl.textContent='已停止';return}
+  stopAll();if(!('speechSynthesis'in window)){statusEl.textContent='这个浏览器不支持朗读';return}
+  this.classList.add('on');statusEl.textContent='系统朗读无法被分析，大球按字的节奏模拟起伏';
+  const btn=this;let idx=0;
+  const next=()=>{if(idx>=guideLines.length||!btn.classList.contains('on')){stopAll();statusEl.textContent='带领结束';return}
+    const text=guideLines[idx++];capEl.textContent=text;
+    const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=.8;
+    const zh=speechSynthesis.getVoices().find(v=>/zh[-_]CN/i.test(v.lang));if(zh)u.voice=zh;
+    u.onstart=()=>{const t0=performance.now(),per=1000/(3.6*u.rate),marks=[];let t=0;
+      [...text].forEach(ch=>{if('，。？！、'.includes(ch))t+=per*1.6;else{marks.push(t);t+=per}});
+      simLevel=()=>{const e=performance.now()-t0;let v=0;
+        for(const m of marks){const d=e-m;if(d>-40&&d<per*1.4)v=Math.max(v,Math.exp(-Math.pow((d-per*.3)/(per*.35),2)))}
+        return v*(.55+.15*Math.sin(e/90))}};
+    u.onend=()=>{simLevel=()=>0;setTimeout(next,1600)};
+    speechSynthesis.speak(u)};
+  next()};
+
+document.getElementById('file').onchange=async function(){
+  const f=this.files[0];if(!f)return;stopAll();ensureCtx();statusEl.textContent='正在读取…';
+  try{const buf=await actx.decodeAudioData(await f.arrayBuffer());const src=actx.createBufferSource();src.buffer=buf;
+    src.connect(analyser);analyser.connect(actx.destination);
+    src.onended=()=>{if(current&&current.src===src){current=null;statusEl.textContent='播放结束，可以再上传一段'}};
+    src.start();current={src,stop(){src.stop();analyser.disconnect()}};statusEl.textContent='正在播放：'+f.name}
+  catch(e){statusEl.textContent='这个文件无法播放，换一个 mp3 或 m4a 试试'}
+  this.value=''};
+
+document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('[data-g]').forEach(x=>x.classList.remove('on'));b.classList.add('on');gain=+b.dataset.g});
+
+/* ===== 主循环：大球随声音变化 ===== */
+const heroEl=document.getElementById('hero-bubble');
+let t=0,last=performance.now();
+function draw(now){
+  requestAnimationFrame(draw);
+  const dt=Math.min(50,now-last)/1000;last=now;t+=.012;
+  const {rms,cen}=readAudio();
+  const target=Math.min(1,rms*gain);
+  level+=(target>level?.35:.06)*(target-level);   // 快起慢落，像呼吸
+  pitch+=.05*(cen-pitch);avg+=.02*(level-avg);
+
+  drawBg();drawRays(t);drawCaustics(t);
+
+  // 原来的上下漂浮 + 声音带来的膨胀和轻微形变
+  const heroR=Math.min(W,H)*.18,d=heroR*2;
+  heroEl.style.width=d+'px';heroEl.style.height=d+'px';
+  const bob=Math.sin(now/1000*Math.PI*2/3.8)*-5;
+  const s=1+level*.14*gain;
+  const sq=level*.035*Math.sin(now/1000*(5+pitch*10));      // 音调越高，形变越快
+  heroEl.style.transform=`translate(-50%,calc(-50% + ${bob}px)) scale(${s*(1+sq)},${s*(1-sq)})`;
+  heroEl.style.boxShadow=`inset 0 1px 0 rgba(255,255,255,0.45),inset 0 0 ${20+level*50}px rgba(200,240,255,${level*.45}),0 6px ${40+level*70}px rgba(80,160,220,${.2+level*.55})`;
+
+  // 节奏处荡出的波纹
+  if(level>.18&&level>avg*1.5&&now-lastOnset>260){lastOnset=now;ripples.push({r:0,a:.55*Math.min(1,level*1.4)})}
+  const cx=W*.5,cy=H*.44+bob,R=heroR*s;
+  // 大球外的一圈光晕，随声音变亮变大
+  const haloR=R*(1.75+level*.45);
+  const halo=ctx.createRadialGradient(cx,cy,R*.92,cx,cy,haloR);
+  halo.addColorStop(0,`rgba(200,240,255,${.22+level*.38})`);
+  halo.addColorStop(.35,`rgba(150,215,255,${.12+level*.22})`);
+  halo.addColorStop(1,'rgba(120,200,255,0)');
+  ctx.fillStyle=halo;ctx.beginPath();ctx.arc(cx,cy,haloR,0,Math.PI*2);ctx.fill();
+  for(let i=ripples.length-1;i>=0;i--){const p=ripples[i];p.r+=dt*heroR*.9;p.a-=dt*.6;
+    if(p.a<=0){ripples.splice(i,1);continue}
+    ctx.beginPath();ctx.arc(cx,cy,R+p.r,0,Math.PI*2);ctx.strokeStyle=`rgba(220,248,255,${p.a})`;ctx.lineWidth=1.5;ctx.stroke()}
+}
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
