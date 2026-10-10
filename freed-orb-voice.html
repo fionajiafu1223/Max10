@@ -131,7 +131,7 @@ class Bubble{
 /* ===== 声音分析 ===== */
 const statusEl=document.getElementById('status'),capEl=document.getElementById('caption');
 let actx,analyser,timeBuf,freqBuf,current=null,simLevel=null;
-let gain=1,level=0,pitch=.3,avg=0,lastOnset=0;
+let gain=1,level=0,pitch=.3,avg=0,lastOnset=0,peak=.05;
 const ripples=[];
 function ensureCtx(){
   if(!actx){actx=new(window.AudioContext||window.webkitAudioContext)();analyser=actx.createAnalyser();analyser.fftSize=1024;analyser.smoothingTimeConstant=.6;
@@ -146,7 +146,10 @@ function readAudio(){
   analyser.getFloatTimeDomainData(timeBuf);let s=0;for(let i=0;i<timeBuf.length;i++)s+=timeBuf[i]*timeBuf[i];
   const rms=Math.sqrt(s/timeBuf.length);analyser.getByteFrequencyData(freqBuf);
   let num=0,den=0;const lim=Math.floor(freqBuf.length*.4);for(let i=2;i<lim;i++){num+=i*freqBuf[i];den+=freqBuf[i]}
-  return{rms:Math.min(1,rms*5),cen:den>0?num/den/lim:pitch}}
+  // 自动适应音量：不管声音大小，起伏都能充分体现
+  peak=Math.max(peak*.997,rms,.02);
+  const norm=rms<.006?0:Math.min(1,rms/peak);
+  return{rms:norm,cen:den>0?num/den/lim:pitch}}
 
 document.getElementById('bMic').onclick=async function(){
   if(this.classList.contains('on')){stopAll();statusEl.textContent='已停止';return}
@@ -206,13 +209,14 @@ function draw(now){
   const heroR=Math.min(W,H)*.18,d=heroR*2;
   heroEl.style.width=d+'px';heroEl.style.height=d+'px';
   // 像水里的泡泡：用柔软的弹簧把大球拉向目标位置，带一点晃动和回弹
-  const idleY=Math.sin(now/1000*Math.PI*2/3.8)*-6;
-  const idleX=Math.sin(now/1000*Math.PI*2/7.3)*4;
+  const idleY=Math.sin(now/1000*Math.PI*2/3.8)*-12;
+  const idleX=Math.sin(now/1000*Math.PI*2/7.3)*8;
   swayPhase+=dt*(1.0+pitch*3)*(.25+level*1.2);
-  const tY=idleY-level*heroR*.16*gain;                       // 说话时轻轻浮起
-  const tX=idleX+level*heroR*.14*gain*Math.sin(swayPhase);   // 随韵律左右摇摆
+  const tY=idleY-level*heroR*.7*gain;                        // 说话时浮起
+  const tX=idleX+level*heroR*.6*gain*Math.sin(swayPhase);    // 随韵律左右摇摆
   pvx+=((tX-px)*5.5-pvx*1.8)*dt; pvy+=((tY-py)*5.5-pvy*1.8)*dt;
   px+=pvx*dt; py+=pvy*dt;
+  px=Math.max(-W*.25,Math.min(W*.25,px)); py=Math.max(-H*.15,Math.min(H*.15,py));
   const bob=py;
   const s=1+level*.14*gain;
   const sq=level*.035*Math.sin(now/1000*(5+pitch*10));      // 音调越高，形变越快
@@ -222,7 +226,7 @@ function draw(now){
   // 节奏处荡出的波纹
   if(level>.18&&level>avg*1.5&&now-lastOnset>260){lastOnset=now;ripples.push({r:0,a:.55*Math.min(1,level*1.4)});
     // 每个字音给大球一个向上、略带左右的推力
-    pvy-=heroR*.55*level*gain; pvx+=(Math.random()-.5)*heroR*.45*level*gain}
+    pvy-=heroR*2.2*level*gain; pvx+=(Math.random()-.5)*heroR*1.8*level*gain}
   const cx=W*.5+px,cy=H*.44+py,R=heroR*s;
   // 大球外的一圈光晕，随声音变亮变大
   const haloR=R*(1.75+level*.45);
