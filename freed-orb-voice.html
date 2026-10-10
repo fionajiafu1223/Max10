@@ -191,6 +191,7 @@ document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{
 /* ===== 主循环：大球随声音变化 ===== */
 const heroEl=document.getElementById('hero-bubble');
 let t=0,last=performance.now();
+let px=0,py=0,pvx=0,pvy=0,swayPhase=0; // 大球在水里的位移和速度
 function draw(now){
   requestAnimationFrame(draw);
   const dt=Math.min(50,now-last)/1000;last=now;t+=.012;
@@ -204,15 +205,25 @@ function draw(now){
   // 原来的上下漂浮 + 声音带来的膨胀和轻微形变
   const heroR=Math.min(W,H)*.18,d=heroR*2;
   heroEl.style.width=d+'px';heroEl.style.height=d+'px';
-  const bob=Math.sin(now/1000*Math.PI*2/3.8)*-5;
+  // 像水里的泡泡：用柔软的弹簧把大球拉向目标位置，带一点晃动和回弹
+  const idleY=Math.sin(now/1000*Math.PI*2/3.8)*-6;
+  const idleX=Math.sin(now/1000*Math.PI*2/7.3)*4;
+  swayPhase+=dt*(1.0+pitch*3)*(.25+level*1.2);
+  const tY=idleY-level*heroR*.16*gain;                       // 说话时轻轻浮起
+  const tX=idleX+level*heroR*.14*gain*Math.sin(swayPhase);   // 随韵律左右摇摆
+  pvx+=((tX-px)*5.5-pvx*1.8)*dt; pvy+=((tY-py)*5.5-pvy*1.8)*dt;
+  px+=pvx*dt; py+=pvy*dt;
+  const bob=py;
   const s=1+level*.14*gain;
   const sq=level*.035*Math.sin(now/1000*(5+pitch*10));      // 音调越高，形变越快
-  heroEl.style.transform=`translate(-50%,calc(-50% + ${bob}px)) scale(${s*(1+sq)},${s*(1-sq)})`;
+  heroEl.style.transform=`translate(calc(-50% + ${px}px),calc(-50% + ${py}px)) scale(${s*(1+sq)},${s*(1-sq)})`;
   heroEl.style.boxShadow=`inset 0 1px 0 rgba(255,255,255,0.45),inset 0 0 ${20+level*50}px rgba(200,240,255,${level*.45}),0 6px ${40+level*70}px rgba(80,160,220,${.2+level*.55})`;
 
   // 节奏处荡出的波纹
-  if(level>.18&&level>avg*1.5&&now-lastOnset>260){lastOnset=now;ripples.push({r:0,a:.55*Math.min(1,level*1.4)})}
-  const cx=W*.5,cy=H*.44+bob,R=heroR*s;
+  if(level>.18&&level>avg*1.5&&now-lastOnset>260){lastOnset=now;ripples.push({r:0,a:.55*Math.min(1,level*1.4)});
+    // 每个字音给大球一个向上、略带左右的推力
+    pvy-=heroR*.55*level*gain; pvx+=(Math.random()-.5)*heroR*.45*level*gain}
+  const cx=W*.5+px,cy=H*.44+py,R=heroR*s;
   // 大球外的一圈光晕，随声音变亮变大
   const haloR=R*(1.75+level*.45);
   const halo=ctx.createRadialGradient(cx,cy,R*.92,cx,cy,haloR);
