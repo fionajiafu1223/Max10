@@ -2209,11 +2209,9 @@ function handleDecision(allow) {
     setTimeout(() => mEl.remove(), 2100);
     released += atSurface.length;
     document.getElementById('counter').textContent = tf('counter', released);
-    showToast(t('toast_allow'));
   } else {
     mEl.classList.add('go-sky');
     setTimeout(() => mEl.remove(), 2100);
-    showToast(t('toast_deny'));
   }
 
   for (const e of atSurface) {
@@ -3863,7 +3861,6 @@ function stepGo(d) {
   }
   stepsData.idx = Math.max(0, Math.min(n - 1, stepsData.idx + d));
   renderStep();
-  if (typeof showToast === 'function') showToast('🌊 看看这一步里有哪些欲望');
 }
 
 window.addEventListener('load', function() {
