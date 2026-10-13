@@ -960,6 +960,18 @@
   }
   .active-goal-banner.show { opacity: 1; }
   /* ── 步骤释放模式 ── */
+  .step-guide {
+    display:none; margin-top:4px; pointer-events:auto;
+    font-family:'Noto Serif SC', serif; font-size:0.74rem; line-height:1.7;
+    color:rgba(240,250,255,0.92); text-align:center; letter-spacing:0.04em;
+    text-shadow:0 1px 6px rgba(0,40,100,0.35);
+  }
+  .active-goal-banner.steps-mode .step-guide { display:block; }
+  .step-guide-more {
+    display:inline-block; margin-left:6px; padding:1px 8px; border-radius:99px;
+    font-size:0.62rem; color:rgba(255,255,255,0.8); background:rgba(255,255,255,0.16);
+    cursor:pointer; white-space:nowrap;
+  }
   .step-nav { display:none; gap:8px; margin-top:6px; pointer-events:auto; }
   .active-goal-banner.steps-mode .step-nav { display:flex; }
   .step-nav button {
@@ -1167,6 +1179,7 @@
 <div class="active-goal-banner" id="activeGoalBanner">
   <span class="active-goal-label">当前正在释放的目标</span>
   <span class="active-goal-text" id="activeGoalText"></span>
+  <div class="step-guide"><span id="stepGuideText"></span><span class="step-guide-more" onclick="nextGuide()">换个问法 ↻</span></div>
   <div class="step-nav">
     <button class="ghost" id="stepPrevBtn" onclick="stepGo(-1)">‹ 上一步</button>
     <button id="stepNextBtn" onclick="stepGo(1)">下一步 ›</button>
@@ -3807,11 +3820,31 @@ function initStepsMode() {
   renderStep();
   return true;
 }
+var STEP_GUIDES = [
+  '当你准备去「{s}」的时候，心里升起了什么欲望？',
+  '想象你正在「{s}」，此刻你最想要的是什么？',
+  '如果「{s}」进行得不顺利，你最担心什么？那份担心背后，你想要的是什么？',
+  '「{s}」完成之后，你希望别人怎么看你？',
+  '在「{s}」这件事上，你想控制哪些结果？',
+  '「{s}」这一步里，有没有哪个部分让你觉得不安全、想要抓紧？'
+];
+var guideIdx = 0;
+function renderGuide() {
+  var step = stepsData.steps[stepsData.idx];
+  document.getElementById('stepGuideText').textContent = STEP_GUIDES[guideIdx].replace('{s}', step);
+}
+function nextGuide() {
+  if (!stepsData) return;
+  guideIdx = (guideIdx + 1) % STEP_GUIDES.length;
+  renderGuide();
+}
 function renderStep() {
+  guideIdx = 0;
   var n = stepsData.steps.length, i = stepsData.idx;
   var label = document.querySelector('#activeGoalBanner .active-goal-label');
   label.textContent = (stepsData.goal ? stepsData.goal + ' · ' : '') + '第 ' + (i + 1) + ' / ' + n + ' 步';
   document.getElementById('activeGoalText').textContent = stepsData.steps[i];
+  renderGuide();
   if (typeof activeGoalText !== 'undefined') activeGoalText = stepsData.steps[i];
   document.getElementById('stepPrevBtn').disabled = i === 0;
   document.getElementById('stepNextBtn').textContent = i === n - 1 ? '完成 ✓' : '下一步 ›';

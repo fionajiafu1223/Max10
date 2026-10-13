@@ -59,12 +59,9 @@
     z-index:5; position:relative; transition:none;
   }
   .num {
-    flex:0 0 auto; width:30px; height:30px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Noto Serif SC', serif; font-size:0.78rem;
-    background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.85), rgba(255,255,255,0.18) 45%, rgba(120,190,240,0.25));
-    border:1px solid rgba(255,255,255,0.6);
-    color:#0f4a8a; font-weight:600;
+    flex:0 0 auto; min-width:22px; text-align:right;
+    font-family:'Noto Serif SC', serif; font-size:0.82rem;
+    color:rgba(235,248,255,0.7); letter-spacing:0.02em;
   }
   .step-text {
     flex:1; min-width:0; border:none; background:transparent; outline:none;
@@ -197,7 +194,7 @@
       li.dataset.idx = i;
       li.innerHTML =
         '<div class="handle" title="拖动排序">⋮⋮</div>' +
-        '<div class="num">' + (i + 1) + '</div>' +
+        '<div class="num">' + (i + 1) + '.</div>' +
         '<textarea class="step-text" rows="1" maxlength="200"></textarea>' +
         '<button class="icon-btn up" aria-label="上移">↑</button>' +
         '<button class="icon-btn down" aria-label="下移">↓</button>' +
