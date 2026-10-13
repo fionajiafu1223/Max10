@@ -959,6 +959,35 @@
     width: min(88vw, 480px); max-height: 50vh; overflow-y: auto;
   }
   .active-goal-banner.show { opacity: 1; }
+  /* ── 步骤释放模式 ── */
+  .step-nav { display:none; gap:8px; margin-top:6px; pointer-events:auto; }
+  .active-goal-banner.steps-mode .step-nav { display:flex; }
+  .step-nav button {
+    border:none; border-radius:99px; padding:6px 16px; cursor:pointer;
+    font-family:'Noto Serif SC', serif; font-size:0.72rem; letter-spacing:0.08em;
+    background:rgba(255,255,255,0.9); color:#1a3a66; font-weight:600;
+  }
+  .step-nav button.ghost { background:rgba(255,255,255,0.22); color:#fff; font-weight:400; }
+  .step-nav button:disabled { opacity:0.35; }
+  .steps-done {
+    position:fixed; inset:0; z-index:60; display:none;
+    align-items:center; justify-content:center; background:rgba(10,40,80,0.35);
+  }
+  .steps-done.show { display:flex; }
+  .steps-done-card {
+    width:min(84vw, 360px); padding:26px 22px; border-radius:22px; text-align:center;
+    background:rgba(255,255,255,0.2); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.4); color:#fff;
+    font-family:'Noto Serif SC', serif;
+  }
+  .steps-done-card h3 { font-weight:400; font-size:1.05rem; letter-spacing:0.12em; margin-bottom:10px; }
+  .steps-done-card p { font-size:0.76rem; line-height:1.7; opacity:0.85; margin-bottom:18px; }
+  .steps-done-card button {
+    display:block; width:100%; margin-top:8px; border:none; border-radius:99px; padding:11px 0;
+    font-family:'Noto Serif SC', serif; font-size:0.82rem; cursor:pointer;
+    background:rgba(255,255,255,0.92); color:#1a3a66; font-weight:600;
+  }
+  .steps-done-card button.ghost { background:rgba(255,255,255,0.2); color:#fff; font-weight:400; }
   .active-goal-label {
     font-size: 0.58rem; color: rgba(200,230,255,0.75);
     font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.08em;
@@ -1138,6 +1167,20 @@
 <div class="active-goal-banner" id="activeGoalBanner">
   <span class="active-goal-label">当前正在释放的目标</span>
   <span class="active-goal-text" id="activeGoalText"></span>
+  <div class="step-nav">
+    <button class="ghost" id="stepPrevBtn" onclick="stepGo(-1)">‹ 上一步</button>
+    <button id="stepNextBtn" onclick="stepGo(1)">下一步 ›</button>
+  </div>
+</div>
+
+<!-- 步骤释放：全部完成 -->
+<div class="steps-done" id="stepsDone">
+  <div class="steps-done-card">
+    <h3>所有步骤都释放过了</h3>
+    <p>每一步里的欲望都看见过、放下过<br>现在可以轻松地去做了</p>
+    <button onclick="location.href='steps.html'">回到步骤</button>
+    <button class="ghost" onclick="document.getElementById('stepsDone').classList.remove('show')">继续释放</button>
+  </div>
 </div>
 
 <!-- Release Queue Guidance (gentle question above decision buttons) -->
@@ -3750,6 +3793,46 @@ function discardRecording() {
 // ═══════════════════════════════════════════════════
 //  AUTO-START FROM ASSISTANT / GOALS
 // ═══════════════════════════════════════════════════
+// ── 步骤释放模式（来自 steps.html）──
+var stepsData = null;
+function initStepsMode() {
+  var raw = sessionStorage.getItem('releaseSteps');
+  if (!raw) return false;
+  try { stepsData = JSON.parse(raw); } catch(_) { stepsData = null; }
+  if (!stepsData || !stepsData.steps || !stepsData.steps.length) {
+    sessionStorage.removeItem('releaseSteps'); stepsData = null; return false;
+  }
+  if (!(stepsData.idx >= 0 && stepsData.idx < stepsData.steps.length)) stepsData.idx = 0;
+  document.getElementById('activeGoalBanner').classList.add('show', 'steps-mode');
+  renderStep();
+  return true;
+}
+function renderStep() {
+  var n = stepsData.steps.length, i = stepsData.idx;
+  var label = document.querySelector('#activeGoalBanner .active-goal-label');
+  label.textContent = (stepsData.goal ? stepsData.goal + ' · ' : '') + '第 ' + (i + 1) + ' / ' + n + ' 步';
+  document.getElementById('activeGoalText').textContent = stepsData.steps[i];
+  if (typeof activeGoalText !== 'undefined') activeGoalText = stepsData.steps[i];
+  document.getElementById('stepPrevBtn').disabled = i === 0;
+  document.getElementById('stepNextBtn').textContent = i === n - 1 ? '完成 ✓' : '下一步 ›';
+  try { sessionStorage.setItem('releaseSteps', JSON.stringify(stepsData)); } catch(_) {}
+}
+function stepGo(d) {
+  if (!stepsData) return;
+  var n = stepsData.steps.length;
+  if (d > 0 && stepsData.idx === n - 1) {
+    sessionStorage.removeItem('releaseSteps');
+    stepsData = null;
+    var b = document.getElementById('activeGoalBanner');
+    b.classList.remove('show', 'steps-mode');
+    document.getElementById('stepsDone').classList.add('show');
+    return;
+  }
+  stepsData.idx = Math.max(0, Math.min(n - 1, stepsData.idx + d));
+  renderStep();
+  if (typeof showToast === 'function') showToast('🌊 看看这一步里有哪些欲望');
+}
+
 window.addEventListener('load', function() {
   setTimeout(function() {
     try {
@@ -3765,6 +3848,8 @@ window.addEventListener('load', function() {
           return;
         }
       }
+      // From steps.html: step-by-step release
+      if (initStepsMode()) return;
       // From goals: single goal text to display
       var goalText = sessionStorage.getItem('releaseGoalText');
       if (goalText) {

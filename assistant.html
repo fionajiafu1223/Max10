@@ -326,23 +326,30 @@ draw();
 
   <!-- 上：卡点释放 -->
   <div class="asst-orb-wrap" id="wrap-blockpoint"
-       style="--bob-dur:3.4s;--bob-delay:0.0s;left:50%;top:30%;"
+       style="--bob-dur:3.4s;--bob-delay:0.0s;left:30%;top:38%;"
        onclick="openBlockPoint()">
     <div class="asst-orb-name">卡点<br>释放</div>
   </div>
 
   <!-- 中：限制性信念释放 -->
   <div class="asst-orb-wrap" id="wrap-beliefs"
-       style="--bob-dur:3.9s;--bob-delay:0.5s;left:50%;top:52%;"
+       style="--bob-dur:3.9s;--bob-delay:0.5s;left:70%;top:38%;"
        onclick="openBeliefs()">
     <div class="asst-orb-name">限制性信念<br>释放</div>
   </div>
 
   <!-- 下：自我允许释放 -->
   <div class="asst-orb-wrap" id="wrap-allowance"
-       style="--bob-dur:3.6s;--bob-delay:1.0s;left:50%;top:74%;"
+       style="--bob-dur:3.6s;--bob-delay:1.0s;left:30%;top:60%;"
        onclick="openAllowance()">
     <div class="asst-orb-name">自我允许<br>释放</div>
+  </div>
+
+  <!-- 最下：步骤释放 -->
+  <div class="asst-orb-wrap" id="wrap-steps"
+       style="--bob-dur:3.8s;--bob-delay:1.4s;left:70%;top:60%;"
+       onclick="openSteps()">
+    <div class="asst-orb-name">步骤<br>释放</div>
   </div>
 
 </div>
@@ -391,6 +398,7 @@ const ASST_GLOWS = {
   'wrap-blockpoint': 'rgba(100,200,120,0.36)',   // 嫩绿 — 卡点释放
   'wrap-beliefs':    'rgba(170,140,210,0.34)',    // 薰衣草紫 — 限制性信念释放
   'wrap-allowance':  'rgba(230,155,100,0.34)',    // 淡橘 — 自我允许释放
+  'wrap-steps':      'rgba(90,185,215,0.34)',     // 湖蓝 — 步骤释放
 };
 
 function setAsstBubbleColors() {
@@ -476,6 +484,11 @@ function openAllowance() {
     if (orb) orb.style.display = 'none';
     var webBack = document.getElementById('webBackBtn');
     if (webBack) webBack.style.display = 'none';
+  });
+}
+function openSteps() {
+  requirePremium(function() {
+    window.location.href = 'steps.html';
   });
 }
 function closeAllowance() {
