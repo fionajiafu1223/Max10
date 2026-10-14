@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+<script src="supabase-client.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>步骤释放 · Freed Releasing</title>
@@ -97,6 +98,22 @@
     background:rgba(255,255,255,0.88); color:#1a3a66;
     font-family:'Noto Serif SC', serif; font-size:0.8rem; font-weight:600; cursor:pointer;
   }
+  .goal-picker { display:flex; flex-direction:column; gap:8px; margin-bottom:24px; }
+  .goal-opt {
+    display:flex; align-items:center; gap:10px; width:100%;
+    padding:12px 14px; cursor:pointer; text-align:left; color:#fff;
+    font-family:'Noto Serif SC', serif; font-size:0.88rem; letter-spacing:0.04em; line-height:1.5;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .goal-opt .gtext { flex:1; min-width:0; }
+  .goal-opt .gcnt { flex:0 0 auto; font-family:'Noto Sans SC', sans-serif; font-size:0.62rem; color:rgba(230,245,255,0.72); letter-spacing:0.04em; }
+  .goal-opt.active { background:rgba(255,255,255,0.32); border-color:rgba(255,255,255,0.75); box-shadow:0 4px 18px rgba(0,40,100,0.18); }
+  .goal-empty a { color:#fff; }
+  .clear-btn {
+    display:block; margin:14px auto 0; background:none; border:none;
+    color:rgba(225,243,255,0.62); font-size:0.66rem; letter-spacing:0.08em;
+    text-decoration:underline; text-underline-offset:3px; cursor:pointer; padding:6px 10px;
+  }
   .hint { font-size:0.62rem; color:rgba(225,243,255,0.62); text-align:center; margin-top:12px; letter-spacing:0.05em; }
 
   .bottom {
@@ -130,11 +147,10 @@
   <h1>步骤释放</h1>
   <p class="sub">把目标拆成几个行动步骤<br>再逐一释放每一步里的欲望</p>
 
-  <div class="label">我的目标</div>
-  <div class="glass goal-box">
-    <textarea id="goal" rows="2" maxlength="200" placeholder="写下你想实现的目标…"></textarea>
-  </div>
+  <div class="label">选择一个目标</div>
+  <div class="goal-picker" id="goalPicker"><div class="empty">加载目标中…</div></div>
 
+  <div id="editor" hidden>
   <div class="label">行动步骤</div>
   <ul class="steps" id="steps"></ul>
 
@@ -143,39 +159,119 @@
     <button id="addBtn">添加</button>
   </div>
   <p class="hint">按住 ⋮⋮ 拖动，或用 ↑↓ 调整顺序 · 点击文字可修改</p>
+  <button class="clear-btn" id="clearBtn" hidden>清空这个目标的步骤</button>
+  </div>
 </div>
 
 <div class="bottom">
   <button class="start-btn" id="startBtn" disabled>开始释放</button>
-  <div class="start-note" id="startNote">至少写下一个步骤</div>
+  <div class="start-note" id="startNote">先选择一个目标</div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 (function() {
-  var KEY = 'stepsDraft';
-  var state = load();
+  var SUPA_URL = 'https://ryoaxziysgdkjcjiuqti.supabase.co';
+  var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5b2F4eml5c2dka2pjaml1cXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDg2MDAsImV4cCI6MjA4OTA4NDYwMH0.ORG_8Ue8LjYfReMvKo1iQOFNGN7fcTz1_fMs8Gq1Kds';
+  var STORE = 'stepsByGoal';      // { 目标id: [步骤…] }，只存本机
+  var LAST  = 'stepsLastGoal';
+  var sfetch = window.freedFetch || window.fetch.bind(window);
 
-  var goalEl  = document.getElementById('goal');
+  var goals = [];
+  var currentId = null;
+  var store = readStore();
+  var state = { goal:'', steps:[] };
+
+  var pickerEl = document.getElementById('goalPicker');
+  var editorEl = document.getElementById('editor');
   var listEl  = document.getElementById('steps');
   var inputEl = document.getElementById('stepInput');
   var startEl = document.getElementById('startBtn');
   var noteEl  = document.getElementById('startNote');
 
-  goalEl.value = state.goal || '';
-  render();
-
-  function load() {
-    try {
-      var d = JSON.parse(localStorage.getItem(KEY) || 'null');
-      if (d && Array.isArray(d.steps)) return d;
-    } catch(_) {}
-    return { goal:'', steps:[] };
+  function readStore() {
+    try { var d = JSON.parse(localStorage.getItem(STORE) || '{}'); return (d && typeof d === 'object') ? d : {}; }
+    catch(_) { return {}; }
   }
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(_) {}
+    if (!currentId) return;
+    if (state.steps.length) store[currentId] = state.steps.slice();
+    else delete store[currentId];
+    try { localStorage.setItem(STORE, JSON.stringify(store)); } catch(_) {}
+    renderPicker();
   }
+  function readUser() {
+    try {
+      var obj = JSON.parse(localStorage.getItem('sb-ryoaxziysgdkjcjiuqti-auth-token') || 'null');
+      var token = obj && obj.access_token;
+      if (!token) return null;
+      var payload = JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+      if (!payload || !payload.sub) return null;
+      return { id: payload.sub, token: token };
+    } catch(_) { return null; }
+  }
+  function localGoals() {
+    try {
+      return (JSON.parse(localStorage.getItem('freed-goals') || '[]') || []).map(function(g) {
+        return { id: String(g.id || ('local-' + g.ts)), text: g.text || '' };
+      });
+    } catch(_) { return []; }
+  }
+  async function loadGoals() {
+    var u = readUser();
+    if (u) {
+      try {
+        var res = await sfetch(SUPA_URL + '/rest/v1/user_goals?user_id=eq.' + u.id + '&select=id,text,ts&order=ts.desc', {
+          headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + u.token }
+        });
+        if (res.ok) {
+          var rows = await res.json();
+          return rows.map(function(r) { return { id: String(r.id), text: r.text || '' }; });
+        }
+      } catch(_) {}
+    }
+    return localGoals();
+  }
+  function escapeHtml(t) {
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function renderPicker() {
+    if (!goals.length) {
+      pickerEl.innerHTML = '<div class="empty goal-empty">目标表里还没有目标<br><a href="goals.html">去目标表写下一个目标 →</a></div>';
+      return;
+    }
+    pickerEl.innerHTML = '';
+    goals.forEach(function(g) {
+      var n = (store[g.id] || []).length;
+      var b = document.createElement('button');
+      b.className = 'goal-opt glass' + (g.id === currentId ? ' active' : '');
+      b.innerHTML = '<span class="gtext">' + escapeHtml(g.text) + '</span>' +
+                    '<span class="gcnt">' + (n ? n + ' 步' : '未拆分') + '</span>';
+      b.onclick = function() { selectGoal(g.id); };
+      pickerEl.appendChild(b);
+    });
+  }
+  function selectGoal(id) {
+    var g = goals.find(function(x) { return x.id === id; });
+    if (!g) return;
+    currentId = id;
+    state = { goal: g.text, steps: (store[id] || []).slice() };
+    try { localStorage.setItem(LAST, id); } catch(_) {}
+    inputEl.value = '';
+    editorEl.hidden = false;
+    renderPicker(); render();
+  }
+
+  loadGoals().then(function(list) {
+    goals = list;
+    renderPicker();
+    var last = null;
+    try { last = localStorage.getItem(LAST); } catch(_) {}
+    if (last && goals.some(function(g) { return g.id === last; })) selectGoal(last);
+    else if (goals.length === 1) selectGoal(goals[0].id);
+  });
+
   function toast(msg) {
     var t = document.getElementById('toast');
     t.textContent = msg; t.classList.add('show');
@@ -222,6 +318,7 @@
     var ok = state.steps.some(function(s){ return s.trim(); });
     startEl.disabled = !ok;
     noteEl.textContent = ok ? ('共 ' + state.steps.length + ' 步，将依次释放') : '至少写下一个步骤';
+    if (clearEl) updateClear();
   }
 
   function move(from, to) {
@@ -280,14 +377,25 @@
     if (!v) return;
     state.steps.push(v);
     inputEl.value = '';
-    save(); render();
+    save(); render(); updateClear();
     inputEl.focus();
   }
   document.getElementById('addBtn').onclick = addStep;
   inputEl.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addStep(); }
   });
-  goalEl.addEventListener('input', function() { state.goal = goalEl.value; save(); });
+
+  var clearEl = document.getElementById('clearBtn');
+  function updateClear() { clearEl.hidden = !state.steps.length; }
+  clearEl.onclick = function() {
+    if (!confirm('清空这个目标的所有步骤？')) return;
+    state.steps = [];
+    inputEl.value = '';
+    try { sessionStorage.removeItem('releaseSteps'); } catch(_) {}
+    save(); render(); updateClear();
+    inputEl.focus();
+  };
+  updateClear();
 
   startEl.onclick = function() {
     var steps = state.steps.map(function(s){ return s.trim(); }).filter(Boolean);
