@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+<script src="supabase-client.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>付款记录 - Freed</title>
@@ -124,6 +125,7 @@ html, body {
   const WORKER_URL = 'https://api.freedreleasing.com';
 
   const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  global: { fetch: window.freedFetch },
     auth: { persistSession: true, autoRefreshToken: true, storageKey: 'sb-ryoaxziysgdkjcjiuqti-auth-token' }
   });
 

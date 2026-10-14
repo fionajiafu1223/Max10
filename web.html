@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+<script src="supabase-client.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Freed</title>
@@ -932,6 +933,7 @@ const _origDraw = draw;
   // 创建 Supabase 客户端，挂在全局便于其他页面（goals.html/gains.html）共用
   // 注意：storageKey 必须三个文件保持一致，这样登录态才能跨页面共享
   const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  global: { fetch: window.freedFetch },
     auth: {
       persistSession: true,
       autoRefreshToken: true,

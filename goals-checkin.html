@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+<script src="supabase-client.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>目标表 · Freed</title>
@@ -550,7 +551,7 @@ async function supaFetch(path, opts) {
     if (u && u.token) token = u.token;
     delete opts.useAuth;
   }
-  var res = await fetch(SUPA_URL + path, Object.assign({}, opts, {
+  var res = await freedFetch(SUPA_URL + path, Object.assign({}, opts, {
     headers: Object.assign({
       'apikey': SUPA_KEY,
       'Authorization': 'Bearer ' + token,
@@ -1030,6 +1031,7 @@ async function syncAllReminders() {
   if (!window.supabase) return;
 
   const supa = window.supabase.createClient(SUPA_URL_AUTH, SUPA_KEY_AUTH, {
+  global: { fetch: window.freedFetch },
     auth: {
       persistSession: true,
       autoRefreshToken: true,

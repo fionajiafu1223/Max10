@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+<script src="supabase-client.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>情绪签到 · Freed</title>
@@ -265,7 +266,7 @@ confirmBtn.addEventListener('click', function() {
     if (raw2) { var obj2 = JSON.parse(raw2); if (obj2 && obj2.access_token) userToken = obj2.access_token; }
   } catch(e) {}
 
-  fetch(SUPA_URL + '/rest/v1/daily_checkins', {
+  freedFetch(SUPA_URL + '/rest/v1/daily_checkins', {
     method: 'POST',
     headers: {
       'apikey': SUPA_KEY,

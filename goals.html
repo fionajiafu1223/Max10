@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+<script src="supabase-client.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>目标表 · Freed</title>
@@ -577,7 +578,7 @@ async function supaFetch(path, opts) {
     if (u && u.token) token = u.token;
     delete opts.useAuth;
   }
-  var res = await fetch(SUPA_URL + path, Object.assign({}, opts, {
+  var res = await freedFetch(SUPA_URL + path, Object.assign({}, opts, {
     headers: Object.assign({'apikey':SUPA_KEY,'Authorization':'Bearer '+token,'Content-Type':'application/json','Prefer':'return=representation'}, opts.headers || {})
   }));
   if (!res.ok) return null;
@@ -796,7 +797,8 @@ function openPlaza(cat) {
   const DEFAULT_STORAGE_KEY = 'sb-ryoaxziysgdkjcjiuqti-auth-token';
   try { const oldVal=localStorage.getItem('freed-auth'); const newVal=localStorage.getItem(DEFAULT_STORAGE_KEY); if(oldVal&&!newVal) localStorage.setItem(DEFAULT_STORAGE_KEY,oldVal); } catch(_) {}
   if (!window.supabase) return;
-  window.supabase.createClient(SUPA_URL_AUTH, SUPA_KEY_AUTH, {auth:{persistSession:true,autoRefreshToken:true,storageKey:'sb-ryoaxziysgdkjcjiuqti-auth-token'}});
+  window.supabase.createClient(SUPA_URL_AUTH, SUPA_KEY_AUTH, {
+  global: { fetch: window.freedFetch },auth:{persistSession:true,autoRefreshToken:true,storageKey:'sb-ryoaxziysgdkjcjiuqti-auth-token'}});
 })();
 </script>
 

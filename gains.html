@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+<script src="supabase-client.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>收获本 · Freed</title>
@@ -455,6 +456,7 @@ try {
   if (oldVal && !newVal) localStorage.setItem(DEFAULT_STORAGE_KEY, oldVal);
 } catch(_) {}
 const supaAuth = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
+  global: { fetch: window.freedFetch },
   auth: { persistSession:true, autoRefreshToken:true, storageKey:'sb-ryoaxziysgdkjcjiuqti-auth-token' }
 });
 window.freedSupa = supaAuth;
@@ -479,7 +481,7 @@ function showToast(msg) {
 async function supaFetch(path,opts={}) {
   let token=SUPA_KEY;
   if(opts.useAuth){try{const sess=await supaAuth.auth.getSession();const t=sess&&sess.data&&sess.data.session&&sess.data.session.access_token;if(t)token=t;}catch(_){}delete opts.useAuth;}
-  const res=await fetch(SUPA_URL+path,{...opts,headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+token,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})}});
+  const res=await freedFetch(SUPA_URL+path,{...opts,headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+token,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})}});
   if(!res.ok)return null;
   const ct=res.headers.get('content-type')||'';
   return ct.includes('json')?res.json():res.text();
@@ -619,7 +621,7 @@ window.closeWarnMenu=function(){document.getElementById('warn-menu-overlay').cla
 window.doReportEntry=async function(){
   if(!_warnTargetEntryId||!currentUser){closeWarnMenu();return;}
   const reported=getReportedIds();if(reported.indexOf(_warnTargetEntryId+'')===- 1){reported.push(_warnTargetEntryId+'');saveReportedIds(reported);}
-  try{const sess=await supaAuth.auth.getSession();const token=sess&&sess.data&&sess.data.session&&sess.data.session.access_token;if(token){await fetch(SUPA_URL+'/rest/v1/gain_reports',{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+token,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({entry_id:_warnTargetEntryId,reporter_id:currentUser.id})});}}catch(e){}
+  try{const sess=await supaAuth.auth.getSession();const token=sess&&sess.data&&sess.data.session&&sess.data.session.access_token;if(token){await freedFetch(SUPA_URL+'/rest/v1/gain_reports',{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+token,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({entry_id:_warnTargetEntryId,reporter_id:currentUser.id})});}}catch(e){}
   closeWarnMenu();showToast('已举报，该内容已从你的视图中移除');loadSharedGains();
 };
 window.doBlockUser=function(){if(!_warnTargetUserId){closeWarnMenu();return;}const blocked=getBlockedUsers();if(blocked.indexOf(_warnTargetUserId)===-1){blocked.push(_warnTargetUserId);saveBlockedUsers(blocked);}closeWarnMenu();showToast('已屏蔽该用户，其所有内容已隐藏');loadSharedGains();};
