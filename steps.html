@@ -8,11 +8,12 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Noto+Sans+SC:wght@300;400&display=swap');
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html { height:100%; }
+  html { height:100%; background:#5CA6D6; }
   body { min-height:100vh; }
   body {
     font-family:'Noto Sans SC', sans-serif;
     background: linear-gradient(180deg, #AFDCF3 0%, #7FBEE3 50%, #5CA6D6 100%);
+    background-attachment: fixed;
     color: #0e2840;
     min-height:100%;
   }
@@ -137,7 +138,7 @@
     position:fixed; left:0; right:0; bottom:0;
     padding: 18px 0 calc(22px + env(safe-area-inset-bottom, 0px));
     display:flex; flex-direction:column; align-items:center; gap:8px;
-    background: linear-gradient(180deg, rgba(210,232,255,0) 0%, rgba(210,232,255,0.85) 50%);
+    background: linear-gradient(180deg, rgba(92,166,214,0) 0%, rgba(92,166,214,0.9) 50%);
   }
   /* 底栏：目标列表时隐藏，步骤编辑时显示 */
   .bottom.hidden { display:none; }
@@ -151,7 +152,7 @@
   }
   .start-btn:active { transform:scale(0.97); }
   .start-btn:disabled { opacity:0.35; cursor:default; }
-  .start-note { font-size:0.64rem; color:rgba(40,90,150,0.65); letter-spacing:0.06em; }
+  .start-note { font-size:0.64rem; color:rgba(255,255,255,0.85); letter-spacing:0.06em; }
 
   .toast {
     position:fixed; top:40%; left:50%; transform:translate(-50%,-50%);
