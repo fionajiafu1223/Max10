@@ -270,6 +270,7 @@
   function showGoalList() {
     currentId = null;
     state = { goal:'', steps:[] };
+    try { sessionStorage.removeItem('stepsCurrentGoal'); } catch(_) {}
     viewGoals.style.display = 'block';
     viewSteps.style.display = 'none';
     bottomEl.classList.add('hidden');
@@ -279,6 +280,7 @@
     var g = goals.find(function(x) { return x.id === id; });
     if (!g) return;
     currentId = id;
+    try { sessionStorage.setItem('stepsCurrentGoal', id); } catch(_) {}
     state = { goal: g.text, steps: (store[id] || []).slice() };
     document.getElementById('currentGoalText').textContent = g.text;
     inputEl.value = '';
@@ -313,7 +315,13 @@
 
   loadGoals().then(function(list) {
     goals = list;
-    renderPicker();
+    var savedId = null;
+    try { savedId = sessionStorage.getItem('stepsCurrentGoal'); } catch(_) {}
+    if (savedId && goals.some(function(g){ return g.id === savedId; })) {
+      showEditor(savedId);
+    } else {
+      renderPicker();
+    }
   });
 
   document.getElementById('backBtn').onclick = showGoalList;
