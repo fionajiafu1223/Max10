@@ -963,7 +963,7 @@
   /* ── 步骤释放模式 ── */
   .step-guide {
     display:none; margin-top:6px; pointer-events:auto;
-    font-family:'Noto Serif SC', serif; font-size:0.82rem; line-height:1.6;
+    font-family:'Noto Serif SC', serif; font-size:0.88rem; line-height:1.65;
     color:rgba(240,250,255,0.92); text-align:center; letter-spacing:0.04em;
     text-shadow:0 1px 6px rgba(0,40,100,0.35);
   }
@@ -1001,16 +1001,13 @@
     background:rgba(255,255,255,0.92); color:#1a3a66; font-weight:600;
   }
   .steps-done-card button.ghost { background:rgba(255,255,255,0.2); color:#fff; font-weight:400; }
-  .active-goal-label {
-    font-size: 0.58rem; color: rgba(200,230,255,0.75);
-    font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.08em;
-  }
+  .active-goal-label { display: none; }
   .active-goal-text {
     background: rgba(255,255,255,0.18); backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 16px; padding: 8px 18px;
-    font-family: 'Noto Serif SC', serif; font-size: 0.82rem;
-    color: rgba(255,255,255,0.92); letter-spacing: 0.06em;
+    border-radius: 16px; padding: 10px 20px;
+    font-family: 'Noto Serif SC', serif; font-size: 0.96rem;
+    color: rgba(255,255,255,0.95); letter-spacing: 0.06em;
     text-shadow: 0 1px 6px rgba(0,40,100,0.3);
     width: 100%; text-align: center;
     white-space: normal; word-break: break-all; line-height: 1.5;
@@ -1180,6 +1177,8 @@
 <div class="active-goal-banner" id="activeGoalBanner">
   <span class="active-goal-label">当前正在释放的目标</span>
   <span class="active-goal-text" id="activeGoalText"></span>
+  <div class="step-counter-row" id="stepCounterRow" style="display:none;font-size:0.72rem;color:rgba(210,240,255,0.75);letter-spacing:0.06em;margin-top:4px;"></div>
+  <div class="step-current-text" id="stepCurrentText" style="display:none;font-family:'Noto Serif SC',serif;font-size:0.88rem;color:rgba(255,255,255,0.95);text-align:center;margin-top:2px;letter-spacing:0.04em;"></div>
   <div class="step-guide"><span id="stepGuideText"></span><span class="step-guide-more" onclick="nextGuide()">换个问法 ↻</span></div>
   <div class="step-nav">
     <button class="ghost" id="stepPrevBtn" onclick="stepGo(-1)">‹ 上一步</button>
@@ -3840,9 +3839,14 @@ function nextGuide() {
 function renderStep() {
   guideIdx = 0;
   var n = stepsData.steps.length, i = stepsData.idx;
-  var label = document.querySelector('#activeGoalBanner .active-goal-label');
-  label.textContent = (stepsData.goal ? stepsData.goal + ' · ' : '') + '第 ' + (i + 1) + ' / ' + n + ' 步';
-  document.getElementById('activeGoalText').textContent = stepsData.steps[i];
+  // 框里放目标文字
+  document.getElementById('activeGoalText').textContent = stepsData.goal || '';
+  // 步骤计数
+  var counterEl = document.getElementById('stepCounterRow');
+  if (counterEl) { counterEl.textContent = '第 ' + (i + 1) + ' / ' + n + ' 步'; counterEl.style.display = 'block'; }
+  // 当前步骤文字
+  var stepTextEl = document.getElementById('stepCurrentText');
+  if (stepTextEl) { stepTextEl.textContent = stepsData.steps[i]; stepTextEl.style.display = 'block'; }
   renderGuide();
   if (typeof activeGoalText !== 'undefined') activeGoalText = stepsData.steps[i];
   document.getElementById('stepPrevBtn').disabled = i === 0;

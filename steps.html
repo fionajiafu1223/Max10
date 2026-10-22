@@ -243,6 +243,7 @@
     }
     pickerEl.innerHTML = '';
     goals.forEach(function(g) {
+      if (currentId && g.id !== currentId) return; // 选中后只显示选中的
       var n = (store[g.id] || []).length;
       var b = document.createElement('button');
       b.className = 'goal-opt glass' + (g.id === currentId ? ' active' : '');
@@ -253,6 +254,16 @@
     });
   }
   function selectGoal(id) {
+    // 再次点击选中的目标 → 取消选中
+    if (currentId === id) {
+      currentId = null;
+      state = { goal:'', steps:[] };
+      editorEl.hidden = true;
+      startEl.disabled = true;
+      noteEl.textContent = '先选择一个目标';
+      try { localStorage.removeItem(LAST); } catch(_) {}
+      renderPicker(); return;
+    }
     var g = goals.find(function(x) { return x.id === id; });
     if (!g) return;
     currentId = id;
