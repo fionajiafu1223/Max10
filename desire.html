@@ -3843,10 +3843,10 @@ function renderStep() {
   document.getElementById('activeGoalText').textContent = stepsData.goal || '';
   // 步骤计数
   var counterEl = document.getElementById('stepCounterRow');
-  if (counterEl) { counterEl.textContent = '第 ' + (i + 1) + ' / ' + n + ' 步'; counterEl.style.display = 'block'; }
+  if (counterEl) { counterEl.style.display = 'none'; }
   // 当前步骤文字
   var stepTextEl = document.getElementById('stepCurrentText');
-  if (stepTextEl) { stepTextEl.textContent = stepsData.steps[i]; stepTextEl.style.display = 'block'; }
+  if (stepTextEl) { stepTextEl.style.display = 'none'; }
   renderGuide();
   if (typeof activeGoalText !== 'undefined') activeGoalText = stepsData.steps[i];
   document.getElementById('stepPrevBtn').disabled = i === 0;
