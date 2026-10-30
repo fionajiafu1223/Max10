@@ -124,42 +124,93 @@
     return null;
   }
 
-  // ─── 与 App 端基本一致：查询 /subscription/status ───
-  // 改动点：请求失败/无 token 时不再写入 _premiumCache/_cacheTime，
-  // 这样下次调用会重新尝试查询，而不是被"假的非会员结果"缓存 5 分钟。
+  // 单次查询 /subscription/status；非 2xx 抛错并带上 HTTP 状态码
+  async function fetchStatusOnce(token) {
+    const res = await fetch(`${WORKER_URL}/subscription/status`, {
+      method: 'GET', headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      const e = new Error('HTTP ' + res.status);
+      e._httpStatus = res.status;
+      throw e;
+    }
+    return res.json();
+  }
+
+  // 等 token 就绪：刚登录时 session 写入 localStorage 可能有延迟
+  async function getTokenWithWait(maxWaitMs) {
+    let token = getToken();
+    const deadline = Date.now() + (maxWaitMs || 0);
+    while (!token && Date.now() < deadline) {
+      await new Promise(function(r){ setTimeout(r, 300); });
+      token = getToken();
+    }
+    return token;
+  }
+
+  // token 过期（401）时，用页面上的 Supabase 客户端续期，拿新 token
+  // 页面没有客户端或续期失败（比如连不上 supabase.co）就返回 null
+  async function refreshToken() {
+    try {
+      const client = window.freedSupa;
+      if (!client || !client.auth) return null;
+      const { data, error } = await client.auth.refreshSession();
+      if (error) return null;
+      return (data && data.session && data.session.access_token) || getToken();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // 未知状态（查询彻底失败、又没有历史结果）时放行：
+  // 宁可漏放，也不把付费用户误锁在付费墙外（与 App 端一致）
+  const FAIL_OPEN_WHEN_UNKNOWN = true;
+
+  // ─── 查询会员状态（与 App 端加固版一致，另加 token 过期自动续期）───
+  // 只有成功确认过的结果才写缓存；查询失败＝未知状态，绝不缓存“非会员”
   async function checkPremium(forceRefresh) {
     const now = Date.now();
     if (!forceRefresh && _premiumCache !== null && (now - _cacheTime) < CACHE_TTL) return _premiumCache;
 
-    const token = getToken();
+    let token = await getTokenWithWait(1500);
     if (!token) {
-      // 没有 token：如果之前没有过成功的查询结果，就按未登录处理返回 false，
-      // 但不写入缓存 —— 一旦 token 稍后加载出来，下次调用会重新查，不受 5 分钟限制。
+      // 确实没有 token＝未登录
       reportCheckFailure('no_token');
-      return _premiumCache !== null ? _premiumCache : false;
+      _premiumCache = false; _paymentIssueCache = false; _cacheTime = now;
+      return false;
     }
 
-    try {
-      const res = await fetch(`${WORKER_URL}/subscription/status`, {
-        method: 'GET', headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (!res.ok) {
-        // 接口返回错误（比如 401 token 过期、500 等）：同样不写入缓存，
-        // 保留上一次已知结果作为兜底显示，避免网络抖动直接把会员打回付费墙。
-        reportCheckFailure('http_error', { status: res.status });
-        return _premiumCache !== null ? _premiumCache : false;
+    let lastErr = null;
+    let refreshed = false;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const data = await fetchStatusOnce(token);
+        _premiumCache = data.is_premium === true;
+        _paymentIssueCache = data.payment_issue === true;
+        _cacheTime = now;
+        return _premiumCache;
+      } catch (err) {
+        lastErr = err;
+        if (err._httpStatus === 401 || err._httpStatus === 403) {
+          // token 过期：只续期一次，续期成功立刻用新 token 重查
+          if (refreshed) break;
+          refreshed = true;
+          const newToken = await refreshToken();
+          if (!newToken) break;
+          token = newToken;
+          continue;
+        }
+        if (attempt < 2) await new Promise(function(r){ setTimeout(r, 500 * (attempt + 1)); });
       }
-      const data = await res.json();
-      _premiumCache = data.is_premium === true;
-      _paymentIssueCache = data.payment_issue === true;
-      _cacheTime = now;
-      return _premiumCache;
-    } catch(err) {
-      reportCheckFailure('network_error', { msg: err && err.message });
-      // 网络请求本身失败（超时/断网/DNS等）：不写入缓存，保留旧结果兜底，
-      // 下次调用（比如切换页面、下次点击）会立刻重新尝试，不用等 5 分钟或手动刷新好几次。
-      return _premiumCache !== null ? _premiumCache : false;
     }
+
+    if (lastErr) {
+      reportCheckFailure(lastErr._httpStatus ? 'http_error' : 'network_error',
+        { status: lastErr._httpStatus, msg: lastErr.message });
+    }
+    // 查询彻底失败：不写缓存，下次会重新查
+    if (_premiumCache !== null) return _premiumCache;
+    return FAIL_OPEN_WHEN_UNKNOWN;
   }
 
   // 是否存在扣款问题（需先调用过 checkPremium，缓存共享）
@@ -477,7 +528,8 @@
   // 支付成功后轮询确认 is_premium 状态（最多等10秒，每2秒查一次）
   async function pollPremiumStatus(attempt) {
     attempt = attempt || 0;
-    const isPremium = await checkPremium(true);
+    // 只认服务器确认过的结果，不认“查询失败时放行”
+    const isPremium = (await checkPremium(true)) && _premiumCache === true;
     if (isPremium) {
       setMsg('✓ 订阅成功，感谢支持！', 'success');
       setTimeout(() => {
