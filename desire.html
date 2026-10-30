@@ -2452,7 +2452,7 @@ function saveMyItems(items) {
 }
 
 async function supaFetch(path, opts = {}) {
-  const res = await freedFetch(SUPA_URL + path, {
+  const res = await (window.freedFetch || fetch)(SUPA_URL + path, {
     ...opts,
     headers: {
       'apikey': SUPA_KEY,
@@ -3902,3 +3902,5 @@ window.addEventListener('load', function() {
 });
 </script>
 <script src="nav-orb.js"></script>
+<script src="paywall-web.js"></script>
+<script src="free-limit.js" data-feature="desire"></script>
